@@ -681,12 +681,31 @@
     }
 
     function saveToLocalStorage() {
+        // १. मुख्य आफ्नै data save गर्ने
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_savings', JSON.stringify(savings));
 
         let netIncomeTotal = incomes.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
         let netSavingsTotal = savings.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
+        // २. Overview पेजसँग मिल्ने गरी 'transactions' र 'savings' Key हरूमा पनि डाटा पठाउने
+        const formattedTxns = incomes.map(item => ({
+            amount: item.amount,
+            type: 'income',
+            date: item.date,
+            name: item.name
+        }));
+        localStorage.setItem('transactions', JSON.stringify(formattedTxns));
+
+        const formattedSavings = savings.map(item => ({
+            amount: item.amount,
+            title: item.title,
+            category: item.category,
+            date: item.date
+        }));
+        localStorage.setItem('savings', JSON.stringify(formattedSavings));
+
+        // ३. Overview stats हरू अपडेट गर्ने
         localStorage.setItem('overview_total_income', netIncomeTotal);
         localStorage.setItem('overview_total_savings', netSavingsTotal);
 
