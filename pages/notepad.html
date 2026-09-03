@@ -21,7 +21,7 @@
         const savedFontSize = localStorage.getItem('font_size') || 'normal';
         if (savedFontSize === 'small') {
             document.documentElement.style.fontSize = '14px';
-        } else if (savedFontSize === 'large') {
+        } else if (savedFontSize === 'large' || savedFontSize === 'extra') {
             document.documentElement.style.fontSize = '18px';
         } else {
             document.documentElement.style.fontSize = '16px';
@@ -45,7 +45,7 @@
     </style>
 </head>
 
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-24 transition-colors duration-300 w-full m-0">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0">
 
 <!-- Full Width Container matching Index Layout -->
 <div class="space-y-3 w-full flex-1 mt-1">
@@ -135,10 +135,42 @@
     </div>
 </div>
 
+<!-- Custom Confirmation Modal (Replaces browser confirm alert) -->
+<div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl w-full max-w-sm space-y-4 border border-slate-200 dark:border-slate-800 text-center">
+        <div class="text-rose-500 text-3xl mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p id="confirm-modal-text" class="text-xs font-medium text-slate-800 dark:text-slate-200">Are you sure you want to delete this note?</p>
+        <div class="flex justify-center gap-3 pt-2">
+            <button id="confirm-cancel-btn" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-white px-4 py-2 rounded-xl text-xs font-medium transition">Cancel</button>
+            <button id="confirm-ok-btn" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-xl text-xs font-medium transition shadow-md">Delete</button>
+        </div>
+    </div>
+</div>
+
 <!-- Custom Notification Toast -->
-<div id="toast-notification" class="fixed bottom-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
+<div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
     <span id="toast-message">Notification message</span>
 </div>
+
+<!-- GLOBAL FIXED FOOTER NAVIGATION -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 flex justify-around items-center text-slate-400 shadow-lg">
+    <a href="index.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
+        <i class="fa-solid fa-house text-base"></i>
+        <span>Home</span>
+    </a>
+    <a href="income.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
+        <i class="fa-solid fa-wallet text-base"></i>
+        <span>Income</span>
+    </a>
+    <a href="notes.html" class="flex flex-col items-center gap-1 text-indigo-500 font-bold transition text-[11px]">
+        <i class="fa-solid fa-note-sticky text-base"></i>
+        <span>Notes</span>
+    </a>
+    <a href="settings.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
+        <i class="fa-solid fa-gear text-base"></i>
+        <span>Settings</span>
+    </a>
+</nav>
 
 <script>
 const translations = {
@@ -194,7 +226,7 @@ const translations = {
 
 function t(key) {
     const lang = localStorage.getItem('language') || 'en';
-    return translations[lang][key] || translations['en'][key] || key;
+    return translations[lang] ? (translations[lang][key] || translations['en'][key] || key) : key;
 }
 
 function showToast(message) {
@@ -206,6 +238,30 @@ function showToast(message) {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0', 'pointer-events-none');
     }, 2000);
+}
+
+// Custom Modal Alert to prevent browser "domain says" alerts
+function showConfirm(message, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-modal-text').innerText = message;
+    modal.classList.remove('hidden');
+
+    const cancelBtn = document.getElementById('confirm-cancel-btn');
+    const okBtn = document.getElementById('confirm-ok-btn');
+
+    const closeHandler = () => {
+        modal.classList.add('hidden');
+        cancelBtn.removeEventListener('click', closeHandler);
+        okBtn.removeEventListener('click', okHandler);
+    };
+
+    const okHandler = () => {
+        closeHandler();
+        if (onConfirm) onConfirm();
+    };
+
+    cancelBtn.addEventListener('click', closeHandler);
+    okBtn.addEventListener('click', okHandler);
 }
 
 let notes = [];
@@ -240,7 +296,7 @@ function applySettings() {
 
     const size = localStorage.getItem('font_size') || 'normal';
     if (size === 'small') document.documentElement.style.fontSize = '14px';
-    else if (size === 'large') document.documentElement.style.fontSize = '18px';
+    else if (size === 'large' || size === 'extra') document.documentElement.style.fontSize = '18px';
     else document.documentElement.style.fontSize = '16px';
 
     const fontFamily = localStorage.getItem('font_family') || 'Poppins';
@@ -414,11 +470,11 @@ function togglePin(id) {
 }
 
 function deleteNote(id) {
-    if (confirm(t('delete_confirm'))) {
+    showConfirm(t('delete_confirm'), () => {
         notes = notes.filter(n => n.id !== id);
         saveToStorage();
         renderNotes();
-    }
+    });
 }
 
 function updateCounters() {
