@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Income & Savings - Digital Notebook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Dynamic Theme, Font & Layout Loader from Settings -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        const savedFontSize = localStorage.getItem('font_size') || 'normal';
+        if (savedFontSize === 'small') {
+            document.documentElement.style.fontSize = '14px';
+        } else if (savedFontSize === 'large') {
+            document.documentElement.style.fontSize = '18px';
+        } else {
+            document.documentElement.style.fontSize = '16px';
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: var(--app-font, 'Poppins'), sans-serif; 
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 4px; }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-24 transition-colors duration-300 w-full m-0">
+
+<!-- Full Width Container matching Index Layout -->
+<div class="space-y-4 w-full flex-1">
+    <!-- Header Section with Month Filter -->
+    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4 transition-colors duration-300">
+        <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
+            <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">💰</span> 
+            <span data-i18n="page_title">Income & Savings Tracker</span>
+        </h1>
+        
+        <!-- Monthly Filter Dropdown -->
+        <div class="flex items-center gap-2 w-full md:w-auto">
+            <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
+            <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-3 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-auto">
+            <button onclick="clearMonthFilter()" class="text-[11px] text-slate-500 hover:text-indigo-500 underline whitespace-nowrap" data-i18n="show_all">Show All</button>
+        </div>
+    </div>
+
+    <!-- Total Dashboard Summary Cards -->
+    <div class="grid grid-cols-2 gap-4">
+        <div id="card-income-box" class="bg-emerald-50 dark:bg-emerald-950/40 p-4 md:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 transition-colors duration-300">
+            <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider" data-i18n="total_income">Total Income</p>
+            <h2 id="total-income-display" class="text-xl md:text-2xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
+        </div>
+        <div id="card-savings-box" class="bg-purple-50 dark:bg-purple-950/40 p-4 md:p-5 rounded-2xl border border-purple-200 dark:border-purple-900/50 transition-colors duration-300">
+            <p class="text-[11px] text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider" data-i18n="total_savings">Total Savings</p>
+            <h2 id="total-savings-display" class="text-xl md:text-2xl font-extrabold text-purple-800 dark:text-purple-200 mt-1">Rs 0</h2>
+        </div>
+    </div>
+
+    <!-- 1. ADD INCOME SECTION -->
+    <div id="income-card-container" class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-emerald-600"></i> <span data-i18n="add_income_title">Add Income</span>
+            </h3>
+            <div class="w-full md:w-56">
+                <input type="text" id="search-income" placeholder="Search income source..." data-i18n-placeholder="search_income_ph" oninput="renderIncomeTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+        </div>
+
+        <form id="income-form" class="space-y-3" onsubmit="saveIncome(event)">
+            <input type="hidden" id="edit-income-index" value="">
+            <div>
+                <input type="text" id="income-source-name" placeholder="Income Source Name" data-i18n-placeholder="source_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="any" id="income-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('income', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="number" step="any" id="income-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('income', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
+                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
+                <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-emerald-600/20" data-i18n="btn_add_income">Add Income</button>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto pt-3">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+                <thead class="text-slate-400 uppercase border-b border-slate-100 dark:border-slate-800 text-[11px]">
+                    <tr>
+                        <th class="py-3 px-3" data-i18n="th_date">Date</th>
+                        <th class="py-3 px-4" data-i18n="th_source">Source</th>
+                        <th class="py-3 px-4" data-i18n="th_amount">Amount</th>
+                        <th class="py-3 px-3 text-right" data-i18n="th_action">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="income-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. ADD SAVINGS SECTION -->
+    <div id="savings-card-container" class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-purple-600"></i> <span data-i18n="add_savings_title">Add Savings</span>
+            </h3>
+            <div class="w-full md:w-56">
+                <input type="text" id="search-savings" placeholder="Search savings title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+        </div>
+
+        <form id="savings-form" class="space-y-3" onsubmit="saveSavings(event)">
+            <input type="hidden" id="edit-savings-index" value="">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="md:col-span-2">
+                    <input type="text" id="savings-title" placeholder="Savings Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <!-- Savings Category Dropdown Feature -->
+                <div>
+                    <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="Bank" data-i18n="cat_bank">🏦 Bank Account</option>
+                        <option value="Cash" data-i18n="cat_cash">💵 Cash / Wallet</option>
+                        <option value="Investment" data-i18n="cat_investment">📈 Shares / Investment</option>
+                        <option value="Emergency" data-i18n="cat_emergency">🚨 Emergency Fund</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="any" id="savings-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('savings', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                        <input type="number" step="any" id="savings-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('savings', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
+                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
+                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">Add Savings</button>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto pt-3">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+                <thead class="text-slate-400 uppercase border-b border-slate-100 dark:border-slate-800 text-[11px]">
+                    <tr>
+                        <th class="py-3 px-3" data-i18n="th_date">Date</th>
+                        <th class="py-3 px-4" data-i18n="th_title">Title</th>
+                        <th class="py-3 px-3" data-i18n="th_category">Category</th>
+                        <th class="py-3 px-4" data-i18n="th_amount">Amount</th>
+                        <th class="py-3 px-3 text-right" data-i18n="th_action">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="savings-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const translations = {
+        en: {
+            page_title: "Income & Savings Tracker",
+            total_income: "Total Income",
+            total_savings: "Total Savings",
+            show_all: "Show All",
+            add_income_title: "Add Income",
+            add_savings_title: "Add Savings",
+            search_income_ph: "Search income source...",
+            search_savings_ph: "Search savings title...",
+            source_ph: "Income Source Name",
+            savings_title_ph: "Savings Title",
+            amount_label: "Amount (NPR / INR)",
+            date_label: "Date",
+            btn_cancel: "Cancel",
+            btn_add_income: "Add Income",
+            btn_update_income: "Update Income",
+            btn_add_savings: "Add Savings",
+            btn_update_savings: "Update Savings",
+            th_date: "Date",
+            th_source: "Source",
+            th_title: "Title",
+            th_category: "Category",
+            th_amount: "Amount",
+            th_action: "Action",
+            cat_bank: "🏦 Bank Account",
+            cat_cash: "💵 Cash / Wallet",
+            cat_investment: "📈 Shares / Investment",
+            cat_emergency: "🚨 Emergency Fund",
+            no_records: "No records found.",
+            edit: "Edit",
+            del: "Del",
+            confirm_del_income: "Are you sure you want to delete this income record?",
+            confirm_del_savings: "Are you sure you want to delete this savings record?"
+        },
+        np: {
+            page_title: "आय तथा बचत ट्र्याकर",
+            total_income: "कुल आम्दानी (Total Income)",
+            total_savings: "कुल बचत (Total Savings)",
+            show_all: "सबै हेर्नुहोस्",
+            add_income_title: "आम्दानी थप्नुहोस्",
+            add_savings_title: "बचत थप्नुहोस्",
+            search_income_ph: "आम्दानी स्रोत खोज्नुहोस्...",
+            search_savings_ph: "बचत शीर्षक खोज्नुहोस्...",
+            source_ph: "आम्दानी स्रोतको नाम",
+            savings_title_ph: "बचतको शीर्षक",
+            amount_label: "रकम (NPR / INR)",
+            date_label: "मिति (Date)",
+            btn_cancel: "रद्द गर्नुहोस्",
+            btn_add_income: "आम्दानी थप्नुहोस्",
+            btn_add_savings: "बचत थप्नुहोस्",
+            btn_update_income: "आम्दानी अपडेट गर्नुहोस्",
+            btn_update_savings: "बचत अपडेट गर्नुहोस्",
+            th_date: "मिति",
+            th_source: "स्रोत",
+            th_title: "शीर्षक",
+            th_category: "प्रकार",
+            th_amount: "रकम",
+            th_action: "कार्य",
+            cat_bank: "🏦 बैंक खाता",
+            cat_cash: "💵 नगद / वालेट",
+            cat_investment: "📈 शेयर / लगानी",
+            cat_emergency: "🚨 आपतकालीन कोष",
+            no_records: "कुनै रेकर्ड फेला परेन।",
+            edit: "सच्याउने",
+            del: "मेटाउने",
+            confirm_del_income: "के तपाईं यो आम्दानी रेकर्ड मेटाउन चाहनुहुन्छ?",
+            confirm_del_savings: "के तपाईं यो बचत रेकर्ड मेटाउन चाहनुहुन्छ?"
+        }
+    };
+
+    function t(key) {
+        const lang = localStorage.getItem('language') || 'en';
+        return translations[lang][key] || translations['en'][key] || key;
+    }
+
+    function applySettings() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        const fontFamily = localStorage.getItem('font_family') || 'Poppins';
+        document.body.style.fontFamily = fontFamily + ", sans-serif";
+
+        const cardShape = localStorage.getItem('card_shape') || 'rounded-2xl';
+        const incomeCard = document.getElementById('income-card-container');
+        const savingsCard = document.getElementById('savings-card-container');
+        const cardIncBox = document.getElementById('card-income-box');
+        const cardSavBox = document.getElementById('card-savings-box');
+
+        [incomeCard, savingsCard, cardIncBox, cardSavBox].forEach(el => {
+            if(el) {
+                el.className = el.className.replace(/rounded-(none|2xl|3xl)/g, '');
+                el.classList.add(cardShape);
+            }
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            el.innerText = t(key);
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            el.placeholder = t(key);
+        });
+    }
+
+    let incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
+    let savings = JSON.parse(localStorage.getItem('my_savings')) || [];
+
+    document.getElementById('income-date').valueAsDate = new Date();
+    document.getElementById('savings-date').valueAsDate = new Date();
+
+    function convertCurrency(type, source) {
+        const conversionRate = 1.6;
+        if (type === 'income') {
+            const nprInput = document.getElementById('income-amount');
+            const inrInput = document.getElementById('income-amount-inr');
+            if (source === 'npr' && nprInput.value !== '') {
+                inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
+            } else if (source === 'inr' && inrInput.value !== '') {
+                nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
+            }
+        } else if (type === 'savings') {
+            const nprInput = document.getElementById('savings-amount');
+            const inrInput = document.getElementById('savings-amount-inr');
+            if (source === 'npr' && nprInput.value !== '') {
+                inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
+            } else if (source === 'inr' && inrInput.value !== '') {
+                nprInput.value = (parseFloat(nprInput.value) * conversionRate).toFixed(2);
+            }
+        }
+    }
+
+    function saveIncome(event) {
+        event.preventDefault();
+        const index = document.getElementById('edit-income-index').value;
+        const name = document.getElementById('income-source-name').value;
+        const amount = parseFloat(document.getElementById('income-amount').value);
+        const date = document.getElementById('income-date').value;
+
+        if (index === "") {
+            incomes.push({ name, amount, date });
+        } else {
+            incomes[index] = { name, amount, date };
+        }
+
+        incomes.sort((a, b) => new Date(b.date) - new Date(a.date));
+        resetIncomeForm();
+        saveToLocalStorage();
+        renderIncomeTable();
+        updateDashboard();
+    }
+
+    function saveSavings(event) {
+        event.preventDefault();
+        const index = document.getElementById('edit-savings-index').value;
+        const title = document.getElementById('savings-title').value;
+        const category = document.getElementById('savings-category').value;
+        const amount = parseFloat(document.getElementById('savings-amount').value);
+        const date = document.getElementById('savings-date').value;
+
+        if (index === "") {
+            savings.push({ title, category, amount, date });
+        } else {
+            savings[index] = { title, category, amount, date };
+        }
+
+        savings.sort((a, b) => new Date(b.date) - new Date(a.date));
+        resetSavingsForm();
+        saveToLocalStorage();
+        renderSavingsTable();
+        updateDashboard();
+    }
+
+    function filterByMonth() {
+        renderIncomeTable();
+        renderSavingsTable();
+        updateDashboard();
+    }
+
+    function clearMonthFilter() {
+        document.getElementById('month-filter').value = '';
+        renderIncomeTable();
+        renderSavingsTable();
+        updateDashboard();
+    }
+
+    function renderIncomeTable() {
+        const tbody = document.getElementById('income-table-body');
+        const searchQuery = document.getElementById('search-income').value.toLowerCase();
+        const selectedMonth = document.getElementById('month-filter').value;
+        tbody.innerHTML = '';
+
+        const filteredIncomes = incomes.filter(inc => {
+            const matchesSearch = inc.name.toLowerCase().includes(searchQuery);
+            const matchesMonth = selectedMonth ? inc.date.startsWith(selectedMonth) : true;
+            return matchesSearch && matchesMonth;
+        });
+
+        if (filteredIncomes.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+            return;
+        }
+
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+        filteredIncomes.forEach((inc) => {
+            const idx = incomes.indexOf(inc);
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${inc.date}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${inc.name}</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold text-xs">${currSymbol}${inc.amount.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right space-x-2">
+                        <button type="button" onclick="editIncome(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
+                        <button type="button" onclick="confirmDeleteIncome(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function renderSavingsTable() {
+        const tbody = document.getElementById('savings-table-body');
+        const searchQuery = document.getElementById('search-savings').value.toLowerCase();
+        const selectedMonth = document.getElementById('month-filter').value;
+        tbody.innerHTML = '';
+
+        const filteredSavings = savings.filter(sav => {
+            const matchesSearch = sav.title.toLowerCase().includes(searchQuery);
+            const matchesMonth = selectedMonth ? sav.date.startsWith(selectedMonth) : true;
+            return matchesSearch && matchesMonth;
+        });
+
+        if (filteredSavings.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+            return;
+        }
+
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+        filteredSavings.forEach((sav) => {
+            const idx = savings.indexOf(sav);
+            const catBadge = sav.category || 'Bank';
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${sav.date}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${sav.title}</td>
+                    <td class="py-3 px-3"><span class="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-lg text-[10px] font-semibold">${catBadge}</span></td>
+                    <td class="py-3 px-4 text-purple-600 dark:text-purple-400 font-bold text-xs">${currSymbol}${sav.amount.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right space-x-2">
+                        <button type="button" onclick="editSavings(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
+                        <button type="button" onclick="confirmDeleteSavings(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function confirmDeleteIncome(idx) {
+        if (confirm(t('confirm_del_income'))) {
+            incomes.splice(idx, 1);
+            saveToLocalStorage();
+            renderIncomeTable();
+            updateDashboard();
+        }
+    }
+
+    function confirmDeleteSavings(idx) {
+        if (confirm(t('confirm_del_savings'))) {
+            savings.splice(idx, 1);
+            saveToLocalStorage();
+            renderSavingsTable();
+            updateDashboard();
+        }
+    }
+
+    function editIncome(idx) {
+        const inc = incomes[idx];
+        document.getElementById('edit-income-index').value = idx;
+        document.getElementById('income-source-name').value = inc.name;
+        document.getElementById('income-amount').value = inc.amount;
+        convertCurrency('income', 'npr');
+        document.getElementById('income-date').value = inc.date;
+        document.getElementById('income-submit-btn').innerText = t('btn_update_income');
+        document.getElementById('income-cancel-btn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function editSavings(idx) {
+        const sav = savings[idx];
+        document.getElementById('edit-savings-index').value = idx;
+        document.getElementById('savings-title').value = sav.title;
+        document.getElementById('savings-category').value = sav.category || 'Bank';
+        document.getElementById('savings-amount').value = sav.amount;
+        convertCurrency('savings', 'npr');
+        document.getElementById('savings-date').value = sav.date;
+        document.getElementById('savings-submit-btn').innerText = t('btn_update_savings');
+        document.getElementById('savings-cancel-btn').classList.remove('hidden');
+        window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    function resetIncomeForm() {
+        document.getElementById('income-form').reset();
+        document.getElementById('edit-income-index').value = "";
+        document.getElementById('income-amount-inr').value = "";
+        document.getElementById('income-date').valueAsDate = new Date();
+        document.getElementById('income-submit-btn').innerText = t('btn_add_income');
+        document.getElementById('income-cancel-btn').classList.add('hidden');
+    }
+
+    function resetSavingsForm() {
+        document.getElementById('savings-form').reset();
+        document.getElementById('edit-savings-index').value = "";
+        document.getElementById('savings-amount-inr').value = "";
+        document.getElementById('savings-date').valueAsDate = new Date();
+        document.getElementById('savings-submit-btn').innerText = t('btn_add_savings');
+        document.getElementById('savings-cancel-btn').classList.add('hidden');
+    }
+
+    function updateDashboard() {
+        const selectedMonth = document.getElementById('month-filter').value;
+        
+        let filteredInc = selectedMonth ? incomes.filter(i => i.date.startsWith(selectedMonth)) : incomes;
+        let filteredSav = selectedMonth ? savings.filter(s => s.date.startsWith(selectedMonth)) : savings;
+
+        let totalIncome = filteredInc.reduce((sum, item) => sum + item.amount, 0);
+        let totalSavings = filteredSav.reduce((sum, item) => sum + item.amount, 0);
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+        document.getElementById('total-income-display').innerText = currSymbol + totalIncome.toLocaleString();
+        document.getElementById('total-savings-display').innerText = currSymbol + totalSavings.toLocaleString();
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('my_incomes', JSON.stringify(incomes));
+        localStorage.setItem('my_savings', JSON.stringify(savings));
+
+        // Sync total counts to Index Overview Dashboard
+        let netIncomeTotal = incomes.reduce((sum, item) => sum + item.amount, 0);
+        let netSavingsTotal = savings.reduce((sum, item) => sum + item.amount, 0);
+        localStorage.setItem('overview_total_income', netIncomeTotal);
+        localStorage.setItem('overview_total_savings', netSavingsTotal);
+    }
+
+    // Initialize Page Settings and Tables
+    applySettings();
+    renderIncomeTable();
+    renderSavingsTable();
+    updateDashboard();
+</script>
+
+</body>
+</html>
