@@ -631,11 +631,28 @@
             });
         }
 
+        // ४. REAL-TIME EVENT LISTENERS
         document.addEventListener("DOMContentLoaded", () => {
             updateDynamicHeader();
             loadHeaderAvatar();
             loadSidebarData();
+            calculateTotalsAndSync();
             renderPieChart();
+        });
+
+        // पेजमा फर्किंदा (Focus हुँदा) स्वतः अप्डेट हुने
+        window.addEventListener('focus', () => {
+            calculateTotalsAndSync();
+            renderPieChart();
+        });
+
+        // लोकल स्टोरेजमा परिवर्तन हुँदा रियल-टाइम सिङ्क हुने
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'transactions' || event.key === 'savings' || event.key === 'profile_name') {
+                calculateTotalsAndSync();
+                renderPieChart();
+                updateDynamicHeader();
+            }
         });
     </script>
 </body>
