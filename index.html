@@ -209,7 +209,7 @@
             <h3 class="text-xl font-extrabold text-amber-500 mt-1"><span id="curr-symbol-3">₹</span> <span id="this-month-expense">0</span></h3>
         </div>
 
-        <!-- CARD 4: TOTAL INCOME (सच्याइएको: Details थिच्दा cashflow.html मा जाने बनाइएको) -->
+        <!-- CARD 4: TOTAL INCOME -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
@@ -249,7 +249,7 @@
         </div>
     </main>
 
-    <!-- FOOTER NAVIGATION BAR -->
+    <!-- FOOTER NAVIGATION BAR (Corrected relative links to prevent 404 on subpages) -->
     <footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center text-center">
             <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
@@ -328,8 +328,32 @@
         });
     </script>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC & PIN PROTECTION -->
     <script>
+        // एप खोल्नेबित्तिकै PIN कोड चेक गर्ने सिस्टम
+        (function checkAppPinLock() {
+            const savedPin = localStorage.getItem('app_pin');
+            if (savedPin) {
+                let attempts = 3;
+                let isAuthenticated = false;
+                while (attempts > 0) {
+                    let enteredPin = prompt(`सुरक्षा लक: कृपया आफ्नो ४-अंकको PIN हाल्नुहोस् (बाँकी प्रयास: ${attempts}):`);
+                    if (enteredPin === savedPin) {
+                        isAuthenticated = true;
+                        break;
+                    } else {
+                        attempts--;
+                        if (attempts > 0) alert("गलत PIN! फेरि प्रयास गर्नुहोस्।");
+                    }
+                }
+                if (!isAuthenticated) {
+                    alert("धेरैपटक गलत PIN हाल्नुभयो! एप बन्द गरिँदैछ।");
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1120;color:white;font-family:sans-serif;'><h2>🔒 App Locked for Security</h2></div>";
+                    throw new Error("App Locked");
+                }
+            }
+        })();
+
         function showToast(msg, type = "info") {
             const container = document.getElementById('toast-container');
             if(!container) return;
@@ -557,7 +581,6 @@
             renderPieChart();
         });
 
-        // अटोमेटिक रिफ्रेस गर्नको लागि (Storage परिवर्तन हुँदा वा ट्याबमा फर्किंदा)
         window.addEventListener('focus', () => {
             calculateTotalsAndSync();
             renderPieChart();
