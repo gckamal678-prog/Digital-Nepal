@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Income & Savings - Digital Notebook</title>
+    <title>Income & Cashflow - Digital Notebook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -55,7 +55,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4 transition-colors duration-300">
         <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
             <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">💰</span> 
-            <span data-i18n="page_title">Income & Savings Tracker</span>
+            <span data-i18n="page_title">Income & Cashflow Tracker</span>
         </h1>
         
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
@@ -86,7 +86,7 @@
             <h2 id="total-income-display" class="text-xl md:text-2xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
         </div>
         <div id="card-savings-box" class="bg-purple-50 dark:bg-purple-950/40 p-4 md:p-5 rounded-2xl border border-purple-200 dark:border-purple-900/50 transition-colors duration-300">
-            <p class="text-[11px] text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider" data-i18n="total_savings">Total Savings</p>
+            <p class="text-[11px] text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider" data-i18n="total_savings">Total Cashflow</p>
             <h2 id="total-savings-display" class="text-xl md:text-2xl font-extrabold text-purple-800 dark:text-purple-200 mt-1">Rs 0</h2>
         </div>
     </div>
@@ -143,14 +143,14 @@
         </div>
     </div>
 
-    <!-- 2. ADD SAVINGS SECTION -->
+    <!-- 2. ADD CASHFLOW / SAVINGS SECTION -->
     <div id="savings-card-container" class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i class="fa-solid fa-circle-plus text-purple-600"></i> <span data-i18n="add_savings_title">Add Savings</span>
+                <i class="fa-solid fa-circle-plus text-purple-600"></i> <span data-i18n="add_savings_title">Add Cashflow</span>
             </h3>
             <div class="w-full md:w-56">
-                <input type="text" id="search-savings" placeholder="Search savings title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                <input type="text" id="search-savings" placeholder="Search cashflow title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
             </div>
         </div>
 
@@ -158,7 +158,7 @@
             <input type="hidden" id="edit-savings-index" value="">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="md:col-span-2">
-                    <input type="text" id="savings-title" placeholder="Savings Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" id="savings-title" placeholder="Cashflow Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
                 <div>
                     <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
@@ -186,7 +186,7 @@
 
             <div class="flex gap-2 pt-2">
                 <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
-                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">Add Savings</button>
+                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">Add Cashflow</button>
             </div>
         </form>
 
@@ -243,10 +243,10 @@
             <i class="fa-solid fa-money-bill-transfer text-base"></i>
             <span class="text-[10px] font-medium">Txns</span>
         </a>
-        <!-- Saving (Active) -->
+        <!-- Cashflow (Active) -->
         <a href="cashflow.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
             <i class="fa-solid fa-piggy-bank text-base"></i>
-            <span class="text-[10px]">Saving</span>
+            <span class="text-[10px]">Cashflow</span>
         </a>
         <!-- Note Pad -->
         <a href="notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
@@ -264,23 +264,23 @@
 <script>
     const translations = {
         en: {
-            page_title: "Income & Savings Tracker",
+            page_title: "Income & Cashflow Tracker",
             total_income: "Total Income",
-            total_savings: "Total Savings",
+            total_savings: "Total Cashflow",
             show_all: "Show All",
             add_income_title: "Add Income",
-            add_savings_title: "Add Savings",
+            add_savings_title: "Add Cashflow",
             search_income_ph: "Search income source...",
-            search_savings_ph: "Search savings title...",
+            search_savings_ph: "Search cashflow title...",
             source_ph: "Income Source Name",
-            savings_title_ph: "Savings Title",
+            savings_title_ph: "Cashflow Title",
             amount_label: "Amount (NPR / INR)",
             date_label: "Date",
             btn_cancel: "Cancel",
             btn_add_income: "Add Income",
             btn_update_income: "Update Income",
-            btn_add_savings: "Add Savings",
-            btn_update_savings: "Update Savings",
+            btn_add_savings: "Add Cashflow",
+            btn_update_savings: "Update Cashflow",
             th_date: "Date",
             th_source: "Source",
             th_title: "Title",
@@ -295,26 +295,26 @@
             edit: "Edit",
             del: "Del",
             confirm_del_income: "Are you sure you want to delete this income record?",
-            confirm_del_savings: "Are you sure you want to delete this savings record?"
+            confirm_del_savings: "Are you sure you want to delete this cashflow record?"
         },
         np: {
-            page_title: "आय तथा बचत ट्र्याकर",
+            page_title: "आय तथा नगद प्रवाह ट्र्याकर",
             total_income: "कुल आम्दानी (Total Income)",
-            total_savings: "कुल बचत (Total Savings)",
+            total_savings: "कुल नगद प्रवाह (Total Cashflow)",
             show_all: "सबै हेर्नुहोस्",
             add_income_title: "आम्दानी थप्नुहोस्",
-            add_savings_title: "बचत थप्नुहोस्",
+            add_savings_title: "नगद प्रवाह (Cashflow) थप्नुहोस्",
             search_income_ph: "आम्दानी स्रोत खोज्नुहोस्...",
-            search_savings_ph: "बचत शीर्षक खोज्नुहोस्...",
+            search_savings_ph: "नगद प्रवाह शीर्षक खोज्नुहोस्...",
             source_ph: "आम्दानी स्रोतको नाम",
-            savings_title_ph: "बचतको शीर्षक",
+            savings_title_ph: "नगद प्रवाहको शीर्षक",
             amount_label: "रकम (NPR / INR)",
             date_label: "मिति (Date)",
             btn_cancel: "रद्द गर्नुहोस्",
             btn_add_income: "आम्दानी थप्नुहोस्",
-            btn_add_savings: "बचत थप्नुहोस्",
+            btn_add_savings: "नगद प्रवाह थप्नुहोस्",
             btn_update_income: "आम्दानी अपडेट गर्नुहोस्",
-            btn_update_savings: "बचत अपडेट गर्नुहोस्",
+            btn_update_savings: "नगद प्रवाह अपडेट गर्नुहोस्",
             th_date: "मिति",
             th_source: "स्रोत",
             th_title: "शीर्षक",
@@ -329,7 +329,7 @@
             edit: "सच्याउने",
             del: "मेटाउने",
             confirm_del_income: "के तपाईं यो आम्दानी रेकर्ड मेटाउन चाहनुहुन्छ?",
-            confirm_del_savings: "के तपाईं यो बचत रेकर्ड मेटाउन चाहनुहुन्छ?"
+            confirm_del_savings: "के तपाईं यो नगद प्रवाह रेकर्ड मेटाउन चाहनुहुन्छ?"
         }
     };
 
@@ -374,7 +374,7 @@
     }
 
     let incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
-    let savings = JSON.parse(localStorage.getItem('my_savings')) || [];
+    let savings = JSON.parse(localStorage.getItem('my_cashflow')) || [];
     let modalCallback = null;
 
     document.getElementById('income-date').valueAsDate = new Date();
@@ -497,10 +497,10 @@
 
         if (index === "") {
             savings.push({ title, category, amount, date });
-            showToast("बचत थपियो!", "success");
+            showToast("नगद प्रवाह थपियो!", "success");
         } else {
             savings[index] = { title, category, amount, date };
-            showToast("बचत अपडेट गरियो!", "success");
+            showToast("नगद प्रवाह अपडेट गरियो!", "success");
         }
 
         savings.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -611,14 +611,14 @@
 
     function confirmDeleteSavings(idx) {
         showCustomModal(
-            "Delete Savings",
+            "Delete Cashflow",
             t('confirm_del_savings'),
             () => {
                 savings.splice(idx, 1);
                 saveToLocalStorage();
                 renderSavingsTable();
                 updateDashboard();
-                showToast("बचत रेकर्ड मेटाइयो!", "warning");
+                showToast("नगद प्रवाह रेकर्ड मेटाइयो!", "warning");
             }
         );
     }
@@ -644,7 +644,7 @@
         convertCurrency('savings', 'npr');
         document.getElementById('savings-date').value = sav.date;
         document.getElementById('savings-submit-btn').innerText = t('btn_update_savings');
-        document.getElementById('savings-cancel-btn').classList.remove('hidden');
+        document.getElementById('savings-cancel-btn').classList.add('hidden');
         window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
@@ -681,39 +681,9 @@
     }
 
     function saveToLocalStorage() {
-        // १. मुख्य आफ्नै data save गर्ने
+        // छुट्टै की प्रयोग गरिएको ताकि transactions पेजसँग द्वन्द्व नहोस्
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
-        localStorage.setItem('my_savings', JSON.stringify(savings));
-
-        let netIncomeTotal = incomes.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-        let netSavingsTotal = savings.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-
-        // २. Overview पेजसँग मिल्ने गरी 'transactions' र 'savings' Key हरूमा पनि डाटा पठाउने
-        const formattedTxns = incomes.map(item => ({
-            amount: item.amount,
-            type: 'income',
-            date: item.date,
-            name: item.name
-        }));
-        localStorage.setItem('transactions', JSON.stringify(formattedTxns));
-
-        const formattedSavings = savings.map(item => ({
-            amount: item.amount,
-            title: item.title,
-            category: item.category,
-            date: item.date
-        }));
-        localStorage.setItem('savings', JSON.stringify(formattedSavings));
-
-        // ३. Overview stats हरू अपडेट गर्ने
-        localStorage.setItem('overview_total_income', netIncomeTotal);
-        localStorage.setItem('overview_total_savings', netSavingsTotal);
-
-        const overviewData = JSON.parse(localStorage.getItem('overview_stats') || '{}');
-        overviewData.totalIncome = netIncomeTotal;
-        overviewData.totalSavings = netSavingsTotal;
-        overviewData.lastUpdated = new Date().toISOString();
-        localStorage.setItem('overview_stats', JSON.stringify(overviewData));
+        localStorage.setItem('my_cashflow', JSON.stringify(savings));
     }
 
     function exportToCSV() {
@@ -726,14 +696,14 @@
             csv += `"Income","${i.date}","${i.name}","-","${i.amount}"\n`;
         });
         savings.forEach(s => {
-            csv += `"Savings","${s.date}","${s.title}","${s.category || 'Bank'}","${s.amount}"\n`;
+            csv += `"Cashflow","${s.date}","${s.title}","${s.category || 'Bank'}","${s.amount}"\n`;
         });
         
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.setAttribute('href', url);
-        a.setAttribute('download', `Income_Savings_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+        a.setAttribute('download', `Income_Cashflow_Backup_${new Date().toISOString().slice(0,10)}.csv`);
         a.click();
         showToast("CSV फाईल डाउनलोड भयो!", "success");
     }
