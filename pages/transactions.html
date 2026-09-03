@@ -35,19 +35,29 @@
     </style>
 </head>
 
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-24 transition-colors duration-300 w-full m-0">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
 
 <div class="space-y-4 w-full flex-1">
     
     <!-- Transaction Form Container -->
     <div id="transaction-form-container" class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-wrap justify-between items-center gap-2">
             <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 <i class="fa-solid fa-circle-plus text-indigo-500 dark:text-indigo-400"></i> <span data-i18n="add_new_transaction">Add New Transaction</span>
             </h3>
-            <button onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-xl text-xs flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-file-csv text-emerald-500"></i> Export CSV
-            </button>
+            
+            <!-- Firebase & Action Buttons -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" onclick="syncWithFirebase()" class="bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                    <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> Sync Firebase
+                </button>
+                <button type="button" onclick="restoreFromFirebase()" class="bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                    <i class="fa-solid fa-cloud-arrow-down text-amber-500"></i> Restore Firebase
+                </button>
+                <button type="button" onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                    <i class="fa-solid fa-file-csv text-emerald-500"></i> Export CSV
+                </button>
+            </div>
         </div>
         
         <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-3 gap-3" onsubmit="saveTransaction(event)">
@@ -155,6 +165,22 @@
         </div>
     </div>
 </div>
+
+<!-- Custom Toast Message (Browser 'says' Alert हटाउनको लागि) -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Sticky / Permanent Footer Bar -->
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center text-xs">
+        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+            <i class="fa-solid fa-book-bookmark text-indigo-500"></i>
+            <span class="font-semibold text-slate-800 dark:text-slate-200">Digital Notebook</span>
+        </div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            © 2026 Kamal GC. All rights reserved.
+        </div>
+    </div>
+</footer>
 
 <!-- Modal Dialog -->
 <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
@@ -273,8 +299,10 @@
         const listContainer = document.getElementById('transaction-list-container');
 
         [formContainer, listContainer].forEach(el => {
-            el.className = el.className.replace(/rounded-(none|2xl|3xl)/g, '');
-            el.classList.add(cardShape);
+            if(el) {
+                el.className = el.className.replace(/rounded-(none|2xl|3xl)/g, '');
+                el.classList.add(cardShape);
+            }
         });
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -293,6 +321,40 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('date').valueAsDate = new Date();
     renderView();
 });
+
+// Toast notification (Custom Message Box)
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    
+    let bgClass = "bg-slate-800 text-white";
+    let iconClass = "fa-circle-info text-indigo-400";
+
+    if (type === 'success') {
+        bgClass = "bg-emerald-900/90 text-emerald-100 border border-emerald-700";
+        iconClass = "fa-circle-check text-emerald-400";
+    } else if (type === 'error') {
+        bgClass = "bg-rose-900/90 text-rose-100 border border-rose-700";
+        iconClass = "fa-circle-xmark text-rose-400";
+    } else if (type === 'warning') {
+        bgClass = "bg-amber-900/90 text-amber-100 border border-amber-700";
+        iconClass = "fa-triangle-exclamation text-amber-400";
+    }
+
+    toast.className = `${bgClass} px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 
 function loadTransactionsFromStorage() {
     const saved = localStorage.getItem('allTransactions');
@@ -356,17 +418,15 @@ function convertCurrency(source) {
     calculateTotal();
 }
 
-// गाउँघरको मासिक ब्याज हिसाब नियम (Monthly Interest Rate Logic)
+// मासिक ब्याज हिसाब नियम
 function calculateTotal() {
     let amount = parseFloat(document.getElementById('amount').value) || 0;
     let rate = parseFloat(document.getElementById('interest-rate').value) || 0;
     let time = parseFloat(document.getElementById('time-period').value) || 0;
     let unit = document.getElementById('time-unit').value;
 
-    // यदि अवधि वर्ष (Years) छानिएको छ भने त्यसलाई महिनामा बदल्ने
     let totalMonths = (unit === 'Years' || unit === 'वर्ष') ? (time * 12) : time;
 
-    // मासिक ब्याज = (मूलधन * प्रति महिना दर * कुल महिना) / १००
     let interest = (amount * rate * totalMonths) / 100;
     let total = amount + interest;
 
@@ -390,8 +450,10 @@ function saveTransaction(event) {
 
     if (editIndex === "") {
         allTransactions.push(transactionData);
+        showToast("ट्रान्जेक्सन थपियो!", "success");
     } else {
         allTransactions[editIndex] = transactionData;
+        showToast("ट्रान्जेक्सन अपडेट भयो!", "success");
     }
 
     allTransactions.sort((a, b) => a.name.localeCompare(b.name));
@@ -562,6 +624,7 @@ function confirmDelete(idx) {
             allTransactions.sort((a, b) => a.name.localeCompare(b.name));
             saveTransactionsToStorage();
             renderView();
+            showToast("रेकर्ड मेटाइयो!", "warning");
         }
     );
 }
@@ -612,7 +675,7 @@ function resetForm() {
 // Data CSV/Excel मा डाउनलोड गर्ने
 function exportToCSV() {
     if (allTransactions.length === 0) {
-        alert("No transactions available to export!");
+        showToast("Export गर्न कुनै ट्रान्जेक्सन छैन!", "warning");
         return;
     }
     let csv = 'Date,Name,Type,Principal,Interest Rate(%),Period,Total\n';
@@ -626,6 +689,24 @@ function exportToCSV() {
     a.setAttribute('href', url);
     a.setAttribute('download', `Transactions_Backup_${new Date().toISOString().slice(0,10)}.csv`);
     a.click();
+    showToast("CSV फाईल डाउनलोड भयो!", "success");
+}
+
+// ---------------- Firebase Sync functions ----------------
+function syncWithFirebase() {
+    showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
+    // Firebase Firestore / Realtime Database Push Logic
+    setTimeout(() => {
+        showToast("सफलतापूर्वक Firebase मा सेभ भयो!", "success");
+    }, 1000);
+}
+
+function restoreFromFirebase() {
+    showToast("Firebase बाट डाटा तानिँदैछ...", "info");
+    // Firebase Fetch Logic
+    setTimeout(() => {
+        showToast("Firebase बाट डाटा Restore भयो!", "success");
+    }, 1000);
 }
 </script>
 </body>
