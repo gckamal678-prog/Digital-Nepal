@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Transactions - Digital Notebook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+
+        const savedFontSize = localStorage.getItem('font_size') || 'normal';
+        if (savedFontSize === 'small') {
+            document.documentElement.style.fontSize = '14px';
+        } else if (savedFontSize === 'large') {
+            document.documentElement.style.fontSize = '18px';
+        } else {
+            document.documentElement.style.fontSize = '16px';
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 4px; }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-24 transition-colors duration-300 w-full m-0">
+
+<div class="space-y-4 w-full flex-1">
+    
+    <!-- Transaction Form Container -->
+    <div id="transaction-form-container" class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
+        <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-indigo-500 dark:text-indigo-400"></i> <span data-i18n="add_new_transaction">Add New Transaction</span>
+            </h3>
+            <button onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-xl text-xs flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-file-csv text-emerald-500"></i> Export CSV
+            </button>
+        </div>
+        
+        <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-3 gap-3" onsubmit="saveTransaction(event)">
+            <input type="hidden" id="edit-index" value="">
+            
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_date">Date</label>
+                <input type="date" id="date" required class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_name">Name</label>
+                <input type="text" id="name" placeholder="Enter name" required class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_type">Type</label>
+                <select id="type" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="Receivable" data-i18n="type_receivable">Receivable (To Take)</option>
+                    <option value="Payable" data-i18n="type_payable">Payable (To Give)</option>
+                    <option value="Expense" data-i18n="type_expense">Expense</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_principal">Principal Amount (NPR / INR)</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" step="any" id="amount" placeholder="NPR (Rs)" required oninput="convertCurrency('npr')" class="border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <input type="number" step="any" id="amount-inr" placeholder="INR (₹)" oninput="convertCurrency('inr')" class="border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_interest">Monthly Interest Rate (%)</label>
+                <input type="number" step="any" id="interest-rate" placeholder="Monthly Rate (%)" oninput="calculateTotal()" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+            </div>
+            
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_period">Period</label>
+                <div class="grid grid-cols-12 gap-2">
+                    <input type="number" step="any" id="time-period" placeholder="Time" oninput="calculateTotal()" class="col-span-7 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <select id="time-unit" onchange="calculateTotal()" class="col-span-5 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-[11px] outline-none">
+                        <option value="Months" data-i18n="unit_months">Months</option>
+                        <option value="Years" data-i18n="unit_years">Years</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_total_amount">Total Amount</label>
+                <input type="text" id="display-total-amount" readonly placeholder="Total calculation" class="w-full bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-700 p-2.5 rounded-xl text-xs outline-none">
+            </div>
+            
+            <input type="hidden" id="total-amount">
+            
+            <div class="md:col-span-3 flex justify-end gap-2 pt-1">
+                <button type="button" onclick="resetForm()" id="btn-cancel-edit" class="hidden bg-slate-500 hover:bg-slate-600 text-white font-medium px-4 py-2 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
+                <button type="submit" id="btn-save" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2 rounded-xl text-xs shadow-lg shadow-indigo-600/20 transition" data-i18n="btn_save">Save Transaction</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Transaction List Container -->
+    <div id="transaction-list-container" class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <div class="flex items-center gap-2">
+                <button id="back-to-contacts-btn" onclick="showContactsView()" class="hidden bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 p-2 rounded-lg text-xs transition flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btn_back">Back</span>
+                </button>
+                <h3 id="table-main-title" class="text-sm font-bold text-slate-900 dark:text-slate-100">Party Accounts (A-Z Sorted)</h3>
+            </div>
+            <div class="w-full md:w-56">
+                <input type="text" id="search-transaction" placeholder="Search by name..." oninput="filterData()" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 w-full">
+            <table id="contacts-table" class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 uppercase border-b border-slate-200 dark:border-slate-800 font-semibold text-[11px]">
+                        <th class="py-2 px-3" data-i18n="th_name">Name</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_total_entries">Total Entries</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_net_amount">Net Amount</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_action">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="contacts-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                    <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs" data-i18n="no_records">No records found.</td></tr>
+                </tbody>
+            </table>
+
+            <table id="ledger-table" class="w-full text-left border-collapse text-xs whitespace-nowrap hidden">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 uppercase border-b border-slate-200 dark:border-slate-800 font-semibold text-[11px]">
+                        <th class="py-2 px-3" data-i18n="th_date">Date</th>
+                        <th class="py-2 px-3" data-i18n="th_type">Type</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_principal">Principal</th>
+                        <th class="py-2 px-3" data-i18n="th_period">Period</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_total">Total</th>
+                        <th class="py-2 px-3 text-right" data-i18n="th_action">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ledger-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dialog -->
+<div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-11/12 max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 space-y-3" id="modal-content-box">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm bg-slate-100 dark:bg-slate-800 text-indigo-500 dark:text-indigo-400">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">Digital Notebook</h4>
+                <h3 id="modal-title" class="text-sm font-bold text-slate-900 dark:text-white">Are you sure?</h3>
+            </div>
+        </div>
+        <p id="modal-message" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">This action cannot be undone.</p>
+        <div class="flex justify-end gap-2 pt-1">
+            <button type="button" onclick="closeCustomModal(false)" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium px-3 py-1.5 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
+            <button type="button" id="modal-btn-confirm" onclick="closeCustomModal(true)" class="bg-red-600 hover:bg-red-700 text-white font-medium px-3 py-1.5 rounded-xl text-xs shadow-lg shadow-red-600/25 transition">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const translations = {
+        en: {
+            add_new_transaction: "Add New Transaction",
+            label_date: "Date",
+            label_name: "Name",
+            label_type: "Type",
+            type_receivable: "Receivable (To Take)",
+            type_payable: "Payable (To Give)",
+            type_expense: "Expense",
+            label_principal: "Principal Amount (NPR / INR)",
+            label_interest: "Monthly Interest Rate (%)",
+            label_period: "Period",
+            unit_months: "Months",
+            unit_years: "Years",
+            label_total_amount: "Total Amount",
+            btn_cancel: "Cancel",
+            btn_save: "Save Transaction",
+            btn_update: "Update Transaction",
+            btn_back: "Back",
+            parties_title: "Party Accounts (A-Z Sorted)",
+            th_name: "Name",
+            th_total_entries: "Total Entries",
+            th_net_amount: "Net Amount",
+            th_action: "Action",
+            th_date: "Date",
+            th_type: "Type",
+            th_principal: "Principal",
+            th_period: "Period",
+            th_total: "Total",
+            no_records: "No records found.",
+            view_text: "View",
+            edit_text: "Edit",
+            del_text: "Del",
+            delete_title: "Delete Transaction",
+            delete_msg: "Are you sure you want to permanently delete this record from Digital Notebook?",
+            delete_btn: "Delete"
+        },
+        np: {
+            add_new_transaction: "नयाँ ट्रान्जेक्सन थप्नुहोस्",
+            label_date: "मिति",
+            label_name: "नाम",
+            label_type: "प्रकार",
+            type_receivable: "लिनुपर्ने (Receivable)",
+            type_payable: "दिनुपर्ने (Payable)",
+            type_expense: "खर्च (Expense)",
+            label_principal: "मूल रकम (NPR / INR)",
+            label_interest: "मासिक ब्याज दर (%)",
+            label_period: "अवधि",
+            unit_months: "महिना",
+            unit_years: "वर्ष",
+            label_total_amount: "कुल रकम",
+            btn_cancel: "रद्द गर्नुहोस्",
+            btn_save: "ट्रान्जेक्सन सेभ गर्नुहोस्",
+            btn_update: "ट्रान्जेक्सन अपडेट गर्नुहोस्",
+            btn_back: "पछाडि",
+            parties_title: "पार्टी खाताहरू (A-Z क्रमबद्ध)",
+            th_name: "नाम",
+            th_total_entries: "कुल प्रविष्टिहरू",
+            th_net_amount: "खुद रकम",
+            th_action: "कार्य",
+            th_date: "मिति",
+            th_type: "प्रकार",
+            th_principal: "मूल रकम",
+            th_period: "अवधि",
+            th_total: "कुल",
+            no_records: "कुनै रेकर्ड फेला परेन।",
+            view_text: "हेर्ने",
+            edit_text: "सम्पादन",
+            del_text: "मेटाउने",
+            delete_title: "ट्रान्जेक्सन मेटाउनुहोस्",
+            delete_msg: "के तपाइँ निश्चित रूपमा डिजिटल नोटबुकबाट यो रेकर्ड स्थायी रूपमा मेटाउन चाहनुहुन्छ?",
+            delete_btn: "मेटाउने"
+        }
+    };
+
+    function t(key) {
+        const lang = localStorage.getItem('language') || 'en';
+        return translations[lang][key] || translations['en'][key] || key;
+    }
+
+    function applySettings() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+
+        const fontFamily = localStorage.getItem('font_family') || 'Poppins';
+        document.body.style.fontFamily = fontFamily + ", sans-serif";
+
+        const cardShape = localStorage.getItem('card_shape') || 'rounded-2xl';
+        const formContainer = document.getElementById('transaction-form-container');
+        const listContainer = document.getElementById('transaction-list-container');
+
+        [formContainer, listContainer].forEach(el => {
+            el.className = el.className.replace(/rounded-(none|2xl|3xl)/g, '');
+            el.classList.add(cardShape);
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            el.innerText = t(key);
+        });
+    }
+
+let allTransactions = [];
+let modalCallback = null;
+let currentSelectedName = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    applySettings();
+    loadTransactionsFromStorage();
+    document.getElementById('date').valueAsDate = new Date();
+    renderView();
+});
+
+function loadTransactionsFromStorage() {
+    const saved = localStorage.getItem('allTransactions');
+    if (saved) {
+        try { allTransactions = JSON.parse(saved); } catch (e) { allTransactions = []; }
+    }
+    updateOverviewStats();
+}
+
+function saveTransactionsToStorage() {
+    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+    updateOverviewStats();
+}
+
+// Overview / Dashboard को लागि Total Summary Calculate गर्ने र सेभ गर्ने
+function updateOverviewStats() {
+    let totalReceivable = 0;
+    let totalPayable = 0;
+    let totalExpense = 0;
+
+    allTransactions.forEach(tx => {
+        let amt = parseFloat(tx.total || tx.amount || 0);
+        if (tx.type === 'Receivable') {
+            totalReceivable += amt;
+        } else if (tx.type === 'Payable') {
+            totalPayable += amt;
+        } else if (tx.type === 'Expense') {
+            totalExpense += amt;
+        }
+    });
+
+    const overviewStats = {
+        totalReceivable: totalReceivable.toFixed(2),
+        totalPayable: totalPayable.toFixed(2),
+        totalExpense: totalExpense.toFixed(2),
+        netBalance: (totalReceivable - totalPayable - totalExpense).toFixed(2),
+        lastUpdated: new Date().toISOString()
+    };
+
+    localStorage.setItem('overview_stats', JSON.stringify(overviewStats));
+}
+
+function convertCurrency(source) {
+    const nprInput = document.getElementById('amount');
+    const inrInput = document.getElementById('amount-inr');
+    const conversionRate = 1.6;
+
+    if (source === 'npr') {
+        if (nprInput.value !== '') {
+            inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
+        } else {
+            inrInput.value = '';
+        }
+    } else if (source === 'inr') {
+        if (inrInput.value !== '') {
+            nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
+        } else {
+            nprInput.value = '';
+        }
+    }
+    calculateTotal();
+}
+
+// गाउँघरको मासिक ब्याज हिसाब नियम (Monthly Interest Rate Logic)
+function calculateTotal() {
+    let amount = parseFloat(document.getElementById('amount').value) || 0;
+    let rate = parseFloat(document.getElementById('interest-rate').value) || 0;
+    let time = parseFloat(document.getElementById('time-period').value) || 0;
+    let unit = document.getElementById('time-unit').value;
+
+    // यदि अवधि वर्ष (Years) छानिएको छ भने त्यसलाई महिनामा बदल्ने
+    let totalMonths = (unit === 'Years' || unit === 'वर्ष') ? (time * 12) : time;
+
+    // मासिक ब्याज = (मूलधन * प्रति महिना दर * कुल महिना) / १००
+    let interest = (amount * rate * totalMonths) / 100;
+    let total = amount + interest;
+
+    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+    document.getElementById('display-total-amount').value = currSymbol + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('total-amount').value = total.toFixed(2);
+}
+
+function saveTransaction(event) {
+    event.preventDefault();
+    const editIndex = document.getElementById('edit-index').value;
+    const date = document.getElementById('date').value;
+    const name = document.getElementById('name').value.trim();
+    const type = document.getElementById('type').value;
+    const amount = document.getElementById('amount').value;
+    const interestRate = document.getElementById('interest-rate').value || '0';
+    const timePeriod = (document.getElementById('time-period').value || '0') + ' ' + document.getElementById('time-unit').value;
+    const total = document.getElementById('total-amount').value || amount;
+
+    const transactionData = { date, name, type, amount, interestRate, timePeriod, total };
+
+    if (editIndex === "") {
+        allTransactions.push(transactionData);
+    } else {
+        allTransactions[editIndex] = transactionData;
+    }
+
+    allTransactions.sort((a, b) => a.name.localeCompare(b.name));
+    saveTransactionsToStorage();
+    renderView();
+    resetForm();
+}
+
+function renderView() {
+    if (currentSelectedName) {
+        renderLedgerTable(currentSelectedName);
+    } else {
+        renderContactsTable();
+    }
+}
+
+function filterData() {
+    if (currentSelectedName) {
+        renderLedgerTable(currentSelectedName);
+    } else {
+        renderContactsTable();
+    }
+}
+
+function renderContactsTable() {
+    const tbody = document.getElementById('contacts-table-body');
+    const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
+    tbody.innerHTML = '';
+
+    document.getElementById('contacts-table').classList.remove('hidden');
+    document.getElementById('ledger-table').classList.add('hidden');
+    document.getElementById('back-to-contacts-btn').classList.add('hidden');
+    document.getElementById('table-main-title').innerText = t('parties_title');
+
+    const partiesMap = {};
+    allTransactions.forEach((tx) => {
+        if (!partiesMap[tx.name]) {
+            partiesMap[tx.name] = { name: tx.name, count: 0, netTotal: 0 };
+        }
+        partiesMap[tx.name].count += 1;
+        partiesMap[tx.name].netTotal += parseFloat(tx.total || tx.amount || 0);
+    });
+
+    let parties = Object.values(partiesMap);
+    parties.sort((a, b) => a.name.localeCompare(b.name));
+
+    const filteredParties = parties.filter(p => p.name.toLowerCase().includes(searchQuery));
+
+    if (filteredParties.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+        return;
+    }
+
+    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+    filteredParties.forEach((party) => {
+        tbody.innerHTML += `
+            <tr onclick="openLedger('${party.name}')" class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                <td class="py-2 px-3 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-bold">
+                        ${party.name.charAt(0).toUpperCase()}
+                    </div>
+                    ${party.name}
+                </td>
+                <td class="py-2 px-3 text-right text-slate-600 dark:text-slate-300 font-medium">${party.count} <span data-i18n="th_total_entries">Entries</span></td>
+                <td class="py-2 px-3 text-right font-extrabold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(party.netTotal).toLocaleString()}</td>
+                <td class="py-2 px-3 text-right">
+                    <span class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold">${t('view_text')} <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function openLedger(name) {
+    currentSelectedName = name;
+    document.getElementById('search-transaction').value = '';
+    renderLedgerTable(name);
+}
+
+function showContactsView() {
+    currentSelectedName = null;
+    document.getElementById('search-transaction').value = '';
+    renderContactsTable();
+}
+
+function renderLedgerTable(name) {
+    const tbody = document.getElementById('ledger-table-body');
+    const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
+    tbody.innerHTML = '';
+
+    document.getElementById('contacts-table').classList.add('hidden');
+    document.getElementById('ledger-table').classList.remove('hidden');
+    document.getElementById('back-to-contacts-btn').classList.remove('hidden');
+    document.getElementById('table-main-title').innerText = `Ledger: ${name}`;
+
+    const personTransactions = allTransactions.map((tx, idx) => ({ ...tx, globalIndex: idx }))
+        .filter(tx => tx.name.toLowerCase() === name.toLowerCase());
+
+    const filtered = personTransactions.filter(tx => tx.type.toLowerCase().includes(searchQuery) || tx.date.includes(searchQuery));
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+        return;
+    }
+
+    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+    filtered.forEach((tx) => {
+        let badgeClass = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20";
+        if (tx.type === "Receivable") {
+            badgeClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+        } else if (tx.type === "Payable") {
+            badgeClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+        } else if (tx.type === "Expense") {
+            badgeClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+        }
+
+        tbody.innerHTML += `
+            <tr class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                <td class="py-2 px-3 text-slate-500 dark:text-slate-400 text-[11px]">${tx.date}</td>
+                <td class="py-2 px-3">
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${badgeClass}">${tx.type}</span>
+                </td>
+                <td class="py-2 px-3 text-right font-medium text-slate-900 dark:text-white">${currSymbol}${parseFloat(tx.amount).toLocaleString()}</td>
+                <td class="py-2 px-3 text-slate-600 dark:text-slate-300 text-[11px]">${tx.timePeriod}</td>
+                <td class="py-2 px-3 text-right font-bold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(tx.total).toLocaleString()}</td>
+                <td class="py-2 px-3 text-right whitespace-nowrap">
+                    <div class="inline-flex items-center gap-1">
+                        <button type="button" onclick="editTransaction(${tx.globalIndex})" class="bg-amber-500 hover:bg-amber-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('edit_text')}</button>
+                        <button type="button" onclick="confirmDelete(${tx.globalIndex})" class="bg-red-500 hover:bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('del_text')}</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function editTransaction(idx) {
+    const tx = allTransactions[idx];
+    currentSelectedName = null;
+    document.getElementById('edit-index').value = idx;
+    document.getElementById('date').value = tx.date;
+    document.getElementById('name').value = tx.name;
+    document.getElementById('type').value = tx.type;
+    document.getElementById('amount').value = tx.amount;
+    document.getElementById('interest-rate').value = tx.interestRate || '';
+    convertCurrency('npr');
+    
+    const timeParts = (tx.timePeriod || '').split(' ');
+    document.getElementById('time-period').value = timeParts[0] || '';
+    if(timeParts[1]) document.getElementById('time-unit').value = timeParts[1];
+
+    calculateTotal();
+    document.getElementById('btn-save').innerText = t('btn_update');
+    document.getElementById('btn-cancel-edit').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function confirmDelete(idx) {
+    showCustomModal(
+        t('delete_title'),
+        t('delete_msg'),
+        t('delete_btn'),
+        "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/25",
+        () => {
+            allTransactions.splice(idx, 1);
+            allTransactions.sort((a, b) => a.name.localeCompare(b.name));
+            saveTransactionsToStorage();
+            renderView();
+        }
+    );
+}
+
+function showCustomModal(title, message, confirmText, confirmClass, callback) {
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-message').innerText = message;
+    const confirmBtn = document.getElementById('modal-btn-confirm');
+    confirmBtn.innerText = confirmText;
+    confirmBtn.className = `font-medium px-3 py-1.5 rounded-xl text-xs transition ${confirmClass}`;
+    modalCallback = callback;
+
+    const modal = document.getElementById('custom-modal');
+    const box = document.getElementById('modal-content-box');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95');
+        box.classList.add('scale-100');
+    }, 10);
+}
+
+function closeCustomModal(isConfirmed) {
+    const modal = document.getElementById('custom-modal');
+    const box = document.getElementById('modal-content-box');
+    modal.classList.add('opacity-0');
+    box.classList.remove('scale-100');
+    box.classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        if (isConfirmed && modalCallback) {
+            modalCallback();
+        }
+        modalCallback = null;
+    }, 300);
+}
+
+function resetForm() {
+    document.getElementById('transaction-form').reset();
+    document.getElementById('edit-index').value = "";
+    document.getElementById('display-total-amount').value = '';
+    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('btn-save').innerText = t('btn_save');
+    document.getElementById('btn-cancel-edit').classList.add('hidden');
+}
+
+// Data CSV/Excel मा डाउनलोड गर्ने
+function exportToCSV() {
+    if (allTransactions.length === 0) {
+        alert("No transactions available to export!");
+        return;
+    }
+    let csv = 'Date,Name,Type,Principal,Interest Rate(%),Period,Total\n';
+    allTransactions.forEach(tx => {
+        csv += `"${tx.date}","${tx.name}","${tx.type}","${tx.amount}","${tx.interestRate || 0}","${tx.timePeriod}","${tx.total}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `Transactions_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+    a.click();
+}
+</script>
+</body>
+</html>
