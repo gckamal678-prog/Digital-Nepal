@@ -1,0 +1,20 @@
+{
+  "name": "प्रिमियम डिजिटल खाता तथा नोटबुक",
+  "short_name": "मेरो खाता",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "N512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "N1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
