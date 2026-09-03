@@ -40,6 +40,26 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-24 transition-colors duration-300 w-full min-h-screen m-0">
 
+<!-- Custom Toast Notification Container -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+<!-- Custom Master Reset Confirmation Modal (Domain Alert नआउनका लागि) -->
+<div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i> Master Reset Confirm
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">
+            तपाईंको सम्पूर्ण Note, Income, Expense, र Dashboard डाटा मेटिनेछ। पुष्टि गर्न तल <b>RESET</b> टाइप गर्नुहोस्:
+        </p>
+        <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+        <div class="flex gap-2 justify-end">
+            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700">Cancel</button>
+            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700">Reset System</button>
+        </div>
+    </div>
+</div>
+
 <div class="space-y-4 w-full flex-1 mt-1">
     
     <!-- 1. APPEARANCE & THEME SECTION -->
@@ -108,7 +128,7 @@
         </div>
     </div>
 
-    <!-- 3. CURRENCY SETTINGS SECTION (Security Removed) -->
+    <!-- 3. CURRENCY SETTINGS SECTION -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-coins text-indigo-500"></i> <span data-i18n="default_currency">Default Currency Format</span>
@@ -121,11 +141,13 @@
         </div>
     </div>
 
-    <!-- 4. DATA MANAGEMENT & BACKUP SECTION -->
+    <!-- 4. DATA MANAGEMENT & BACKUP SECTION (WITH FIREBASE BUTTONS) -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-database text-indigo-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
         </h3>
+        
+        <!-- Local JSON Options -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
             <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
                 <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
@@ -134,9 +156,22 @@
                 <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
                 <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
             </label>
-            <button onclick="masterReset()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-red-600/20">
+            <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-red-600/20">
                 <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
             </button>
+        </div>
+
+        <!-- Cloud Firebase Sync Options -->
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2">Cloud Backup (Firebase Database)</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
+                </button>
+                <button id="btn-cloud-restore" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Restore from Cloud
+                </button>
+            </div>
         </div>
     </div>
 
@@ -181,7 +216,82 @@
 
 </div>
 
+<!-- Firebase Config & Sync JS Module Integration -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+      authDomain: "digital-a2552.firebaseapp.com",
+      projectId: "digital-a2552",
+      storageBucket: "digital-a2552.firebasestorage.app",
+      messagingSenderId: "218135618179",
+      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Sync LocalStorage to Firebase
+    document.getElementById('btn-cloud-backup').addEventListener('click', async () => {
+        showToast("Cloud Backup सुरु हुँदैछ...");
+        try {
+            const allData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                allData[key] = localStorage.getItem(key);
+            }
+            await set(ref(db, 'users/default_user'), allData);
+            showToast("सफलतापूर्वक Cloud मा Backup भयो!");
+        } catch (error) {
+            showToast("Cloud Backup Error: " + error.message, "error");
+        }
+    });
+
+    // Restore Data from Firebase to LocalStorage
+    document.getElementById('btn-cloud-restore').addEventListener('click', async () => {
+        showToast("Cloud बाट Restore गरिँदैछ...");
+        try {
+            const dbRef = ref(db);
+            const snapshot = await get(child(dbRef, 'users/default_user'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                for (let key in data) {
+                    localStorage.setItem(key, data[key]);
+                }
+                showToast("सफलतापूर्वक Restore भयो! रिफ्रेश हुँदैछ...");
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                showToast("Cloud मा कुनै डाटा भेटिएन!", "error");
+            }
+        } catch (error) {
+            showToast("Restore Error: " + error.message, "error");
+        }
+    });
+</script>
+
 <script>
+    // Custom Toast Function (Standard alert replace गर्न)
+    function showToast(msg, type = "info") {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `p-3 rounded-xl text-xs font-semibold text-white shadow-lg transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 ${
+            type === "error" ? "bg-red-600" : "bg-emerald-600"
+        }`;
+        toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> <span>${msg}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
     const translations = {
         en: {
             appearance_title: "Appearance & Theme",
@@ -327,6 +437,7 @@
 
     function saveCurrency(curr) {
         localStorage.setItem('currency', curr);
+        showToast("Currency Updated!");
     }
 
     function backupData() {
@@ -337,6 +448,7 @@
         a.href = url;
         a.download = 'digital_notebook_backup.json';
         a.click();
+        showToast("JSON Backup Downloaded!");
     }
 
     function restoreData(event) {
@@ -349,19 +461,34 @@
                 for (let key in data) {
                     localStorage.setItem(key, data[key]);
                 }
-                location.reload();
+                showToast("Restore Successful!");
+                setTimeout(() => location.reload(), 1000);
             } catch (err) {
-                alert("Invalid JSON File");
+                showToast("Invalid JSON File!", "error");
             }
         };
         reader.readAsText(file);
     }
 
-    function masterReset() {
-        const confirmation = prompt("Type 'RESET' to confirm Master Reset:");
-        if (confirmation === 'RESET' || confirmation === 'reset') {
+    // Modal Control for Master Reset (Domain Popup हटाउनका लागि)
+    function openResetModal() {
+        document.getElementById('reset-input').value = '';
+        document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+        document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function confirmMasterReset() {
+        const val = document.getElementById('reset-input').value.trim().toUpperCase();
+        if (val === 'RESET') {
             localStorage.clear();
-            location.reload();
+            closeResetModal();
+            showToast("System Reset Successful!");
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast("कृपया 'RESET' सही तरिकाले टाइप गर्नुहोस्!", "error");
         }
     }
 
