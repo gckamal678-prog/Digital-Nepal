@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital NoteBook</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- App Manifest & Meta Tags (PWA support) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1120">
+
+    <style>
+        /* Smooth scrolling and drawer animation */
+        body {
+            background-color: #0b1120;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .sidebar-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .sidebar-drawer {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen relative pb-20">
+
+    <!-- OVERLAY (Sidebar खुल्दा ब्याकग्राउन्ड डार्क गर्न) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-50 hidden sidebar-overlay"></div>
+
+    <!-- SIDEBAR DRAWER -->
+    <aside id="sidebar-drawer" class="fixed top-0 left-0 w-80 h-full bg-[#0f172a] text-slate-200 p-5 overflow-y-auto space-y-6 shadow-2xl border-r border-slate-800 z-50 transform -translate-x-full sidebar-drawer">
+        
+        <!-- Top Section: Logo & App Title & Close Button -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-900/50 p-1.5 flex items-center justify-center border border-indigo-500/30 shadow-inner">
+                    <img src="N512.png" alt="Logo" class="rounded-xl object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/40'">
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-white tracking-wide leading-tight">
+                        Digital <span class="text-red-500 block text-lg">NoteBook</span>
+                    </h1>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl p-1">✕</button>
+        </div>
+
+        <!-- MY WORKSPACE Section -->
+        <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">My Workspace</p>
+            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-[#2a1b28] hover:bg-[#382033] text-red-400 font-semibold rounded-2xl border border-red-500/20 transition group shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📊</span>
+                    <span class="text-sm">Overview</span>
+                </div>
+                <span class="text-xs transition-transform group-hover:translate-x-1">❯</span>
+            </a>
+        </div>
+
+        <!-- PROFILE & ACCOUNT SETTINGS -->
+        <div class="space-y-4 pt-2">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Account Details</p>
+            
+            <!-- Profile Avatar Upload -->
+            <div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                <label for="sidebar-avatar-input" class="relative cursor-pointer group">
+                    <div class="w-14 h-14 rounded-full bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                        <img id="sidebar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                        <span id="sidebar-avatar-icon" class="text-white text-xl">📷</span>
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-[10px] font-bold text-white">Edit</div>
+                </label>
+                <input type="file" id="sidebar-avatar-input" accept="image/*" class="hidden" onchange="handleSidebarAvatarUpload(event)">
+                <div>
+                    <h4 id="sidebar-display-name" class="text-sm font-bold text-white">Guest User</h4>
+                    <p class="text-[10px] text-slate-400">Click icon to set photo</p>
+                </div>
+            </div>
+
+            <!-- Dynamic Inputs -->
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Full Name</label>
+                    <input type="text" id="input-name" placeholder="Enter Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Address</label>
+                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Mobile Number</label>
+                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <button onclick="saveProfileDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl text-xs shadow-md transition">
+                    Save Details
+                </button>
+            </div>
+
+            <!-- Security: PIN Setup -->
+            <div class="pt-2 border-t border-slate-800/80">
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">Create Security PIN (4-Digit)</label>
+                <div class="flex gap-2">
+                    <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">Save PIN</button>
+                </div>
+            </div>
+
+            <!-- Security: Biometric Lock -->
+            <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+                <div>
+                    <h5 class="text-xs font-bold text-white">Biometric Lock</h5>
+                    <p class="text-[10px] text-slate-400">Fingerprint / Face ID</p>
+                </div>
+                <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+            </div>
+        </div>
+    </aside>
+
+    <!-- १. LOCKED HEADER -->
+    <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-[#0b1120]/95 backdrop-blur border-b border-slate-800/80 shadow-lg">
+        <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-indigo-400 transition transform hover:scale-110">
+            ☰
+        </button>
+
+        <div class="text-center">
+            <h1 class="text-lg font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-300 to-red-500 animate-pulse">
+                Digital <span class="text-red-500 animate-bounce inline-block">NoteBook</span>
+            </h1>
+        </div>
+
+        <div class="relative cursor-pointer group" onclick="toggleSidebar()">
+            <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md transition duration-300 group-hover:scale-105 group-hover:border-red-500">
+                <img id="header-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                <span id="header-avatar-icon" class="text-white text-sm">📷</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="bg-[#0b1120] text-white px-4 pt-4 space-y-4">
+        
+        <!-- २. Dynamic Greeting & Date Section -->
+        <section class="pb-2">
+            <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
+            <h2 id="dynamic-greeting" class="text-2xl font-bold text-white tracking-tight">Good morning</h2>
+            <p class="text-xs text-slate-400 mt-1">Here is what is happening with your money today.</p>
+        </section>
+
+        <!-- CARD 1: TOTAL RECEIVABLE -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL RECEIVABLE</p>
+            <h3 class="text-xl font-extrabold text-blue-400 mt-1">₹ <span id="total-receivable">0</span></h3>
+        </div>
+
+        <!-- CARD 2: TOTAL PAYABLE -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL PAYABLE</p>
+            <h3 class="text-xl font-extrabold text-rose-500 mt-1">₹ <span id="total-payable">0</span></h3>
+        </div>
+
+        <!-- CARD 3: THIS MONTH'EXPENSE -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">THIS MONTH'S EXPENSE</p>
+            <h3 class="text-xl font-extrabold text-amber-500 mt-1">₹ <span id="this-month-expense">0</span></h3>
+        </div>
+
+        <!-- CARD 4: TOTAL INCOME -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
+                <h3 class="text-xl font-extrabold text-emerald-400 mt-1">₹ <span id="total-income">0</span></h3>
+            </div>
+            <a href="pages/transactions.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+                Details ➔
+            </a>
+        </div>
+
+        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL SAVINGS & INVESTMENT</p>
+                <h3 class="text-xl font-extrabold text-purple-400 mt-1">₹ <span id="total-savings">0</span></h3>
+            </div>
+            <a href="pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+                View Goal ➔
+            </a>
+        </div>
+
+        <!-- CHART CARD: TRANSACTION STATUS -->
+        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-5 shadow-sm space-y-6">
+            <h4 class="text-sm font-bold text-white tracking-wide">Transaction Status (Pie Chart)</h4>
+            
+            <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+                <canvas id="transactionPieChart"></canvas>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium text-slate-300 pt-2">
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Income
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span> Receivable
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-purple-500 inline-block"></span> Savings
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Payable
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Expense
+                </span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ३. FOOTER NAVIGATION BAR (Linked to pages/) -->
+    <footer class="fixed bottom-0 left-0 right-0 z-40 bg-[#090d16]/95 backdrop-blur border-t border-slate-800/80 px-2 py-2">
+        <nav class="flex items-center justify-around max-w-md mx-auto">
+            
+            <!-- 1. Overview (Home / Active Page) -->
+            <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-semibold transition">
+                <span class="text-lg">📊</span>
+                <span class="text-[10px] tracking-wide">Overview</span>
+            </a>
+
+            <!-- 2. Txns (pages/transactions.html) -->
+            <a href="pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
+                <span class="text-lg">💸</span>
+                <span class="text-[10px] tracking-wide">Txns</span>
+            </a>
+
+            <!-- 3. Saving (pages/cashflow.html) -->
+            <a href="pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
+                <span class="text-lg">🐷</span>
+                <span class="text-[10px] tracking-wide">Saving</span>
+            </a>
+
+            <!-- 4. Note Pad (pages/notepad.html) -->
+            <a href="pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
+                <span class="text-lg">📝</span>
+                <span class="text-[10px] tracking-wide">Note Pad</span>
+            </a>
+
+            <!-- 5. Setting (pages/settings.html) -->
+            <a href="pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
+                <span class="text-lg">⚙️</span>
+                <span class="text-[10px] tracking-wide">Setting</span>
+            </a>
+
+        </nav>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // १. Sidebar Toggle logic
+        function toggleSidebar() {
+            const drawer = document.getElementById('sidebar-drawer');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (drawer.classList.contains('-translate-x-full')) {
+                drawer.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                drawer.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // २. Dynamic Greeting and Date Logic
+        function updateDynamicHeader() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options).toUpperCase();
+            
+            const dateEl = document.getElementById('dynamic-date');
+            if (dateEl) dateEl.innerText = dateString;
+
+            const hours = now.getHours();
+            let greetingText = 'Good morning';
+
+            if (hours >= 12 && hours < 17) {
+                greetingText = 'Good afternoon';
+            } else if (hours >= 17) {
+                greetingText = 'Good evening';
+            }
+
+            const savedName = localStorage.getItem('profile_name') || '';
+            const greetingEl = document.getElementById('dynamic-greeting');
+            if (greetingEl) {
+                greetingEl.innerText = savedName.trim() !== '' ? `${greetingText}, ${savedName}` : greetingText;
+            }
+        }
+
+        // ३. Load Header & Sidebar Avatar (Instant Display)
+        function loadHeaderAvatar() {
+            const savedImage = localStorage.getItem('profile_avatar');
+            const headerImg = document.getElementById('header-avatar-img');
+            const headerIcon = document.getElementById('header-avatar-icon');
+            const sidebarImg = document.getElementById('sidebar-avatar-img');
+            const sidebarIcon = document.getElementById('sidebar-avatar-icon');
+
+            if (savedImage) {
+                if (headerImg && headerIcon) {
+                    headerImg.src = savedImage;
+                    headerImg.classList.remove('hidden');
+                    headerIcon.classList.add('hidden');
+                }
+                if (sidebarImg && sidebarIcon) {
+                    sidebarImg.src = savedImage;
+                    sidebarImg.classList.remove('hidden');
+                    sidebarIcon.classList.add('hidden');
+                }
+            }
+        }
+
+        // ४. Sidebar Profile Load & Save Logic
+        function loadSidebarData() {
+            const savedName = localStorage.getItem('profile_name') || '';
+            const savedAddress = localStorage.getItem('profile_address') || '';
+            const savedMobile = localStorage.getItem('profile_mobile') || '';
+            const savedEmail = localStorage.getItem('profile_email') || '';
+
+            if (document.getElementById('input-name')) document.getElementById('input-name').value = savedName;
+            if (document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
+            if (document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+            if (document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
+
+            if (document.getElementById('sidebar-display-name')) {
+                document.getElementById('sidebar-display-name').innerText = savedName || 'Guest User';
+            }
+
+            const biometricToggle = document.getElementById('biometric-toggle');
+            if (biometricToggle) {
+                biometricToggle.checked = localStorage.getItem('biometric') === 'true';
+            }
+        }
+
+        function saveProfileDetails() {
+            const name = document.getElementById('input-name').value.trim();
+            const address = document.getElementById('input-address').value.trim();
+            const mobile = document.getElementById('input-mobile').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+
+            localStorage.setItem('profile_name', name);
+            localStorage.setItem('profile_address', address);
+            localStorage.setItem('profile_mobile', mobile);
+            localStorage.setItem('profile_email', email);
+
+            if (document.getElementById('sidebar-display-name')) {
+                document.getElementById('sidebar-display-name').innerText = name || 'Guest User';
+            }
+
+            updateDynamicHeader();
+            alert('Details Saved Successfully!');
+        }
+
+        // फोटो अपलोड साइज कन्ट्रोल (Image Compression before storing)
+        function handleSidebarAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    // Resize Image to max 150x150 to save LocalStorage Space
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 150;
+                    canvas.height = 150;
+                    ctx.drawImage(img, 0, 0, 150, 150);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    try {
+                        localStorage.setItem('profile_avatar', compressedBase64);
+                        loadHeaderAvatar();
+                    } catch (err) {
+                        alert("Storage limit exceeded. Please choose a smaller image.");
+                    }
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function savePin() {
+            const pin = document.getElementById('input-pin').value;
+            if (pin.length === 4) {
+                localStorage.setItem('app_pin', pin);
+                document.getElementById('input-pin').value = '';
+                alert('PIN Created Successfully!');
+            } else {
+                alert('Please enter a valid 4-digit PIN.');
+            }
+        }
+
+        async function toggleBiometric(checkbox) {
+            if (checkbox.checked) {
+                if (window.PublicKeyCredential) {
+                    try {
+                        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                        if (available) {
+                            localStorage.setItem('biometric', 'true');
+                        } else {
+                            checkbox.checked = false;
+                            localStorage.setItem('biometric', 'false');
+                            alert('Biometric authentication is not available on this device.');
+                        }
+                    } catch (e) {
+                        checkbox.checked = false;
+                        localStorage.setItem('biometric', 'false');
+                    }
+                } else {
+                    checkbox.checked = false;
+                    localStorage.setItem('biometric', 'false');
+                    alert('WebAuthn API is not supported on this browser.');
+                }
+            } else {
+                localStorage.setItem('biometric', 'false');
+            }
+        }
+
+        // ५. Render Pie Chart (With Destroy instance fix)
+        let pieChartInstance = null;
+
+        function renderPieChart() {
+            const ctx = document.getElementById('transactionPieChart');
+            if (!ctx) return;
+
+            if (pieChartInstance) {
+                pieChartInstance.destroy(); // Destroy existing instance to prevent bug
+            }
+
+            pieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Income', 'Receivable', 'Savings', 'Payable', 'Expense'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            '#10b981', // Emerald - Income
+                            '#3b82f6', // Blue - Receivable
+                            '#a855f7', // Purple - Savings
+                            '#f43f5e', // Rose - Payable
+                            '#f59e0b'  // Amber - Expense
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // DOM Load Events
+        document.addEventListener("DOMContentLoaded", () => {
+            updateDynamicHeader();
+            loadHeaderAvatar();
+            loadSidebarData();
+            renderPieChart();
+        });
+    </script>
+</body>
+</html>
