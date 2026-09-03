@@ -16,7 +16,6 @@
     <meta name="theme-color" content="#0b1120">
 
     <style>
-        /* Smooth scrolling and drawer animation */
         body {
             background-color: #0b1120;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -26,6 +25,15 @@
         }
         .sidebar-drawer {
             transition: transform 0.3s ease-in-out;
+        }
+
+        /* २. सफा र आकर्षक टाइपिङ / फेड-इन एनिमेसन */
+        @keyframes headerFadeIn {
+            0% { opacity: 0; transform: translateY(-4px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-header-title {
+            animation: headerFadeIn 0.8s ease-out forwards;
         }
     </style>
 </head>
@@ -37,15 +45,16 @@
     <!-- SIDEBAR DRAWER -->
     <aside id="sidebar-drawer" class="fixed top-0 left-0 w-80 h-full bg-[#0f172a] text-slate-200 p-5 overflow-y-auto space-y-6 shadow-2xl border-r border-slate-800 z-50 transform -translate-x-full sidebar-drawer">
         
-        <!-- Top Section: Logo & App Title & Close Button -->
+        <!-- ३. Sidebar Top: N1024.png Logo + Title + Close Button -->
         <div class="flex items-center justify-between pb-4 border-b border-slate-800">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-900/50 p-1.5 flex items-center justify-center border border-indigo-500/30 shadow-inner">
-                    <img src="N512.png" alt="Logo" class="rounded-xl object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/40'">
+                <div class="w-11 h-11 rounded-2xl bg-indigo-600/20 p-1 flex items-center justify-center border border-indigo-500/30 shadow-inner shrink-0 overflow-hidden">
+                    <!-- N1024.png Logo -->
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-indigo-400 font-bold text-lg\'>DN</span>';">
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold text-white tracking-wide leading-tight">
-                        Digital <span class="text-red-500 block text-lg">NoteBook</span>
+                    <h1 class="text-base font-bold text-white tracking-wide leading-tight">
+                        Digital <span class="text-indigo-400 block text-base font-medium">NoteBook</span>
                     </h1>
                 </div>
             </div>
@@ -55,7 +64,7 @@
         <!-- MY WORKSPACE Section -->
         <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">My Workspace</p>
-            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-[#2a1b28] hover:bg-[#382033] text-red-400 font-semibold rounded-2xl border border-red-500/20 transition group shadow-sm">
+            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/20 transition group shadow-sm">
                 <div class="flex items-center gap-3">
                     <span class="text-lg">📊</span>
                     <span class="text-sm">Overview</span>
@@ -131,22 +140,24 @@
         </div>
     </aside>
 
-    <!-- १. LOCKED HEADER -->
+    <!-- LOCKED HEADER -->
     <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-[#0b1120]/95 backdrop-blur border-b border-slate-800/80 shadow-lg">
         <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-indigo-400 transition transform hover:scale-110">
             ☰
         </button>
 
+        <!-- २. Safa & Dynamic Title Animation (रातो हटाइएको) -->
         <div class="text-center">
-            <h1 class="text-lg font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-300 to-red-500 animate-pulse">
-                Digital <span class="text-red-500 animate-bounce inline-block">NoteBook</span>
+            <h1 class="text-base font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400 animate-header-title">
+                Digital NoteBook
             </h1>
         </div>
 
-        <div class="relative cursor-pointer group" onclick="toggleSidebar()">
-            <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md transition duration-300 group-hover:scale-105 group-hover:border-red-500">
+        <!-- १. Avatar Display Only (कुनै Click / Action नभएको) -->
+        <div class="cursor-default pointer-events-none">
+            <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center overflow-hidden shadow-md">
                 <img id="header-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
-                <span id="header-avatar-icon" class="text-white text-sm">📷</span>
+                <span id="header-avatar-icon" class="text-white text-sm">👤</span>
             </div>
         </div>
     </header>
@@ -154,7 +165,7 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="bg-[#0b1120] text-white px-4 pt-4 space-y-4">
         
-        <!-- २. Dynamic Greeting & Date Section -->
+        <!-- Dynamic Greeting & Date Section -->
         <section class="pb-2">
             <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
             <h2 id="dynamic-greeting" class="text-2xl font-bold text-white tracking-tight">Good morning</h2>
@@ -173,7 +184,7 @@
             <h3 class="text-xl font-extrabold text-rose-500 mt-1">₹ <span id="total-payable">0</span></h3>
         </div>
 
-        <!-- CARD 3: THIS MONTH'EXPENSE -->
+        <!-- CARD 3: THIS MONTH'S EXPENSE -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
             <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">THIS MONTH'S EXPENSE</p>
             <h3 class="text-xl font-extrabold text-amber-500 mt-1">₹ <span id="this-month-expense">0</span></h3>
@@ -229,46 +240,34 @@
         </div>
     </main>
 
-    <!-- ३. FOOTER NAVIGATION BAR (Linked to pages/) -->
+    <!-- FOOTER NAVIGATION BAR -->
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-[#090d16]/95 backdrop-blur border-t border-slate-800/80 px-2 py-2">
         <nav class="flex items-center justify-around max-w-md mx-auto">
-            
-            <!-- 1. Overview (Home / Active Page) -->
             <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-semibold transition">
                 <span class="text-lg">📊</span>
                 <span class="text-[10px] tracking-wide">Overview</span>
             </a>
-
-            <!-- 2. Txns (pages/transactions.html) -->
             <a href="pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
                 <span class="text-lg">💸</span>
                 <span class="text-[10px] tracking-wide">Txns</span>
             </a>
-
-            <!-- 3. Saving (pages/cashflow.html) -->
             <a href="pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
                 <span class="text-lg">🐷</span>
                 <span class="text-[10px] tracking-wide">Saving</span>
             </a>
-
-            <!-- 4. Note Pad (pages/notepad.html) -->
             <a href="pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
                 <span class="text-lg">📝</span>
                 <span class="text-[10px] tracking-wide">Note Pad</span>
             </a>
-
-            <!-- 5. Setting (pages/settings.html) -->
             <a href="pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition">
                 <span class="text-lg">⚙️</span>
                 <span class="text-[10px] tracking-wide">Setting</span>
             </a>
-
         </nav>
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // १. Sidebar Toggle logic
         function toggleSidebar() {
             const drawer = document.getElementById('sidebar-drawer');
             const overlay = document.getElementById('sidebar-overlay');
@@ -282,7 +281,6 @@
             }
         }
 
-        // २. Dynamic Greeting and Date Logic
         function updateDynamicHeader() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -307,7 +305,6 @@
             }
         }
 
-        // ३. Load Header & Sidebar Avatar (Instant Display)
         function loadHeaderAvatar() {
             const savedImage = localStorage.getItem('profile_avatar');
             const headerImg = document.getElementById('header-avatar-img');
@@ -329,7 +326,6 @@
             }
         }
 
-        // ४. Sidebar Profile Load & Save Logic
         function loadSidebarData() {
             const savedName = localStorage.getItem('profile_name') || '';
             const savedAddress = localStorage.getItem('profile_address') || '';
@@ -370,7 +366,6 @@
             alert('Details Saved Successfully!');
         }
 
-        // फोटो अपलोड साइज कन्ट्रोल (Image Compression before storing)
         function handleSidebarAvatarUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -380,7 +375,6 @@
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = function() {
-                    // Resize Image to max 150x150 to save LocalStorage Space
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     canvas.width = 150;
@@ -436,7 +430,6 @@
             }
         }
 
-        // ५. Render Pie Chart (With Destroy instance fix)
         let pieChartInstance = null;
 
         function renderPieChart() {
@@ -444,7 +437,7 @@
             if (!ctx) return;
 
             if (pieChartInstance) {
-                pieChartInstance.destroy(); // Destroy existing instance to prevent bug
+                pieChartInstance.destroy();
             }
 
             pieChartInstance = new Chart(ctx, {
@@ -454,11 +447,11 @@
                     datasets: [{
                         data: [0, 0, 0, 0, 0],
                         backgroundColor: [
-                            '#10b981', // Emerald - Income
-                            '#3b82f6', // Blue - Receivable
-                            '#a855f7', // Purple - Savings
-                            '#f43f5e', // Rose - Payable
-                            '#f59e0b'  // Amber - Expense
+                            '#10b981', 
+                            '#3b82f6', 
+                            '#a855f7', 
+                            '#f43f5e', 
+                            '#f59e0b'  
                         ],
                         borderWidth: 0
                     }]
@@ -473,7 +466,6 @@
             });
         }
 
-        // DOM Load Events
         document.addEventListener("DOMContentLoaded", () => {
             updateDynamicHeader();
             loadHeaderAvatar();
