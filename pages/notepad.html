@@ -162,24 +162,35 @@
 </div>
 
 <!-- GLOBAL FIXED FOOTER NAVIGATION (ALWAYS VISIBLE) -->
-<nav class="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-3 flex justify-around items-center text-slate-400 shadow-2xl">
-    <a href="index.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
-        <i class="fa-solid fa-house text-base"></i>
-        <span>Home</span>
-    </a>
-    <a href="income.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
-        <i class="fa-solid fa-wallet text-base"></i>
-        <span>Income</span>
-    </a>
-    <a href="notes.html" class="flex flex-col items-center gap-1 text-indigo-500 font-bold transition text-[11px]">
-        <i class="fa-solid fa-note-sticky text-base"></i>
-        <span>Notes</span>
-    </a>
-    <a href="settings.html" class="flex flex-col items-center gap-1 hover:text-indigo-500 transition text-[11px] font-semibold">
-        <i class="fa-solid fa-gear text-base"></i>
-        <span>Settings</span>
-    </a>
-</nav>
+<footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
+    <div class="max-w-md mx-auto flex justify-between items-center text-center">
+        <!-- Overview -->
+        <a href="../index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-chart-column text-base"></i>
+            <span class="text-[10px] font-medium">Overview</span>
+        </a>
+        <!-- Txns -->
+        <a href="transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-money-bill-transfer text-base"></i>
+            <span class="text-[10px] font-medium">Txns</span>
+        </a>
+        <!-- Saving -->
+        <a href="savings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-piggy-bank text-base"></i>
+            <span class="text-[10px] font-medium">Saving</span>
+        </a>
+        <!-- Note Pad (Active) -->
+        <a href="notepad.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+            <i class="fa-solid fa-note-sticky text-base"></i>
+            <span class="text-[10px]">Note Pad</span>
+        </a>
+        <!-- Setting -->
+        <a href="settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-gear text-base"></i>
+            <span class="text-[10px] font-medium">Setting</span>
+        </a>
+    </div>
+</footer>
 
 <script>
 const translations = {
