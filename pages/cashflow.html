@@ -481,8 +481,8 @@
         }
 
         incomes.sort((a, b) => new Date(b.date) - new Date(a.date));
-        resetIncomeForm();
         saveToLocalStorage();
+        resetIncomeForm();
         renderIncomeTable();
         updateDashboard();
     }
@@ -504,8 +504,8 @@
         }
 
         savings.sort((a, b) => new Date(b.date) - new Date(a.date));
-        resetSavingsForm();
         saveToLocalStorage();
+        resetSavingsForm();
         renderSavingsTable();
         updateDashboard();
     }
@@ -531,7 +531,7 @@
 
         const filteredIncomes = incomes.filter(inc => {
             const matchesSearch = inc.name.toLowerCase().includes(searchQuery);
-            const matchesMonth = selectedMonth ? inc.date.startsWith(selectedMonth) : true;
+            const matchesMonth = selectedMonth ? (inc.date && inc.date.startsWith(selectedMonth)) : true;
             return matchesSearch && matchesMonth;
         });
 
@@ -548,7 +548,7 @@
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${inc.date}</td>
                     <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${inc.name}</td>
-                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold text-xs">${currSymbol}${inc.amount.toLocaleString()}</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold text-xs">${currSymbol}${Number(inc.amount).toLocaleString()}</td>
                     <td class="py-3 px-3 text-right space-x-2">
                         <button type="button" onclick="editIncome(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
                         <button type="button" onclick="confirmDeleteIncome(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
@@ -566,7 +566,7 @@
 
         const filteredSavings = savings.filter(sav => {
             const matchesSearch = sav.title.toLowerCase().includes(searchQuery);
-            const matchesMonth = selectedMonth ? sav.date.startsWith(selectedMonth) : true;
+            const matchesMonth = selectedMonth ? (sav.date && sav.date.startsWith(selectedMonth)) : true;
             return matchesSearch && matchesMonth;
         });
 
@@ -585,7 +585,7 @@
                     <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${sav.date}</td>
                     <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${sav.title}</td>
                     <td class="py-3 px-3"><span class="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-lg text-[10px] font-semibold">${catBadge}</span></td>
-                    <td class="py-3 px-4 text-purple-600 dark:text-purple-400 font-bold text-xs">${currSymbol}${sav.amount.toLocaleString()}</td>
+                    <td class="py-3 px-4 text-purple-600 dark:text-purple-400 font-bold text-xs">${currSymbol}${Number(sav.amount).toLocaleString()}</td>
                     <td class="py-3 px-3 text-right space-x-2">
                         <button type="button" onclick="editSavings(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
                         <button type="button" onclick="confirmDeleteSavings(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
@@ -669,11 +669,12 @@
     function updateDashboard() {
         const selectedMonth = document.getElementById('month-filter').value;
         
-        let filteredInc = selectedMonth ? incomes.filter(i => i.date.startsWith(selectedMonth)) : incomes;
-        let filteredSav = selectedMonth ? savings.filter(s => s.date.startsWith(selectedMonth)) : savings;
+        let filteredInc = selectedMonth ? incomes.filter(i => i.date && i.date.startsWith(selectedMonth)) : incomes;
+        let filteredSav = selectedMonth ? savings.filter(s => s.date && s.date.startsWith(selectedMonth)) : savings;
 
-        let totalIncome = filteredInc.reduce((sum, item) => sum + item.amount, 0);
-        let totalSavings = filteredSav.reduce((sum, item) => sum + item.amount, 0);
+        let totalIncome = filteredInc.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+        let totalSavings = filteredSav.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+        
         const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
 
         document.getElementById('total-income-display').innerText = currSymbol + totalIncome.toLocaleString();
@@ -681,7 +682,6 @@
     }
 
     function saveToLocalStorage() {
-        // छुट्टै की प्रयोग गरिएको ताकि transactions पेजसँग द्वन्द्व नहोस्
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_cashflow', JSON.stringify(savings));
     }
