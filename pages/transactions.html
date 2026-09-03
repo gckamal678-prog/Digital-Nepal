@@ -166,7 +166,7 @@
     </div>
 </div>
 
-<!-- Custom Toast Message (Browser 'says' Alert हटाउनको लागि) -->
+<!-- Custom Toast Message -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 <!-- Sticky / Permanent Footer Bar -->
@@ -183,7 +183,7 @@
             <span class="text-[10px]">Txns</span>
         </a>
         <!-- Saving -->
-        <a href="savings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+        <a href="cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
             <i class="fa-solid fa-piggy-bank text-base"></i>
             <span class="text-[10px] font-medium">Saving</span>
         </a>
@@ -199,7 +199,6 @@
         </a>
     </div>
 </footer>
-
 
 <!-- Modal Dialog -->
 <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
@@ -330,403 +329,405 @@
         });
     }
 
-let allTransactions = [];
-let modalCallback = null;
-let currentSelectedName = null;
+    let allTransactions = [];
+    let modalCallback = null;
+    let currentSelectedName = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    applySettings();
-    loadTransactionsFromStorage();
-    document.getElementById('date').valueAsDate = new Date();
-    renderView();
-});
-
-// Toast notification (Custom Message Box)
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    
-    let bgClass = "bg-slate-800 text-white";
-    let iconClass = "fa-circle-info text-indigo-400";
-
-    if (type === 'success') {
-        bgClass = "bg-emerald-900/90 text-emerald-100 border border-emerald-700";
-        iconClass = "fa-circle-check text-emerald-400";
-    } else if (type === 'error') {
-        bgClass = "bg-rose-900/90 text-rose-100 border border-rose-700";
-        iconClass = "fa-circle-xmark text-rose-400";
-    } else if (type === 'warning') {
-        bgClass = "bg-amber-900/90 text-amber-100 border border-amber-700";
-        iconClass = "fa-triangle-exclamation text-amber-400";
-    }
-
-    toast.className = `${bgClass} px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
-    toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.remove('translate-y-[-10px]', 'opacity-0');
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-[-10px]');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-function loadTransactionsFromStorage() {
-    const saved = localStorage.getItem('allTransactions');
-    if (saved) {
-        try { allTransactions = JSON.parse(saved); } catch (e) { allTransactions = []; }
-    }
-    updateOverviewStats();
-}
-
-function saveTransactionsToStorage() {
-    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-    updateOverviewStats();
-}
-
-// Overview / Dashboard को लागि Total Summary Calculate गर्ने र सेभ गर्ने
-function updateOverviewStats() {
-    let totalReceivable = 0;
-    let totalPayable = 0;
-    let totalExpense = 0;
-
-    allTransactions.forEach(tx => {
-        let amt = parseFloat(tx.total || tx.amount || 0);
-        if (tx.type === 'Receivable') {
-            totalReceivable += amt;
-        } else if (tx.type === 'Payable') {
-            totalPayable += amt;
-        } else if (tx.type === 'Expense') {
-            totalExpense += amt;
-        }
+    document.addEventListener("DOMContentLoaded", () => {
+        applySettings();
+        loadTransactionsFromStorage();
+        document.getElementById('date').valueAsDate = new Date();
+        renderView();
     });
 
-    const overviewStats = {
-        totalReceivable: totalReceivable.toFixed(2),
-        totalPayable: totalPayable.toFixed(2),
-        totalExpense: totalExpense.toFixed(2),
-        netBalance: (totalReceivable - totalPayable - totalExpense).toFixed(2),
-        lastUpdated: new Date().toISOString()
-    };
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        let bgClass = "bg-slate-800 text-white";
+        let iconClass = "fa-circle-info text-indigo-400";
 
-    localStorage.setItem('overview_stats', JSON.stringify(overviewStats));
-}
-
-function convertCurrency(source) {
-    const nprInput = document.getElementById('amount');
-    const inrInput = document.getElementById('amount-inr');
-    const conversionRate = 1.6;
-
-    if (source === 'npr') {
-        if (nprInput.value !== '') {
-            inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
-        } else {
-            inrInput.value = '';
+        if (type === 'success') {
+            bgClass = "bg-emerald-900/90 text-emerald-100 border border-emerald-700";
+            iconClass = "fa-circle-check text-emerald-400";
+        } else if (type === 'error') {
+            bgClass = "bg-rose-900/90 text-rose-100 border border-rose-700";
+            iconClass = "fa-circle-xmark text-rose-400";
+        } else if (type === 'warning') {
+            bgClass = "bg-amber-900/90 text-amber-100 border border-amber-700";
+            iconClass = "fa-triangle-exclamation text-amber-400";
         }
-    } else if (source === 'inr') {
-        if (inrInput.value !== '') {
-            nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
-        } else {
-            nprInput.value = '';
-        }
-    }
-    calculateTotal();
-}
 
-// मासिक ब्याज हिसाब नियम
-function calculateTotal() {
-    let amount = parseFloat(document.getElementById('amount').value) || 0;
-    let rate = parseFloat(document.getElementById('interest-rate').value) || 0;
-    let time = parseFloat(document.getElementById('time-period').value) || 0;
-    let unit = document.getElementById('time-unit').value;
+        toast.className = `${bgClass} px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
+        toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
 
-    let totalMonths = (unit === 'Years' || unit === 'वर्ष') ? (time * 12) : time;
+        container.appendChild(toast);
 
-    let interest = (amount * rate * totalMonths) / 100;
-    let total = amount + interest;
+        setTimeout(() => {
+            toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+        }, 10);
 
-    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-    document.getElementById('display-total-amount').value = currSymbol + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('total-amount').value = total.toFixed(2);
-}
-
-function saveTransaction(event) {
-    event.preventDefault();
-    const editIndex = document.getElementById('edit-index').value;
-    const date = document.getElementById('date').value;
-    const name = document.getElementById('name').value.trim();
-    const type = document.getElementById('type').value;
-    const amount = document.getElementById('amount').value;
-    const interestRate = document.getElementById('interest-rate').value || '0';
-    const timePeriod = (document.getElementById('time-period').value || '0') + ' ' + document.getElementById('time-unit').value;
-    const total = document.getElementById('total-amount').value || amount;
-
-    const transactionData = { date, name, type, amount, interestRate, timePeriod, total };
-
-    if (editIndex === "") {
-        allTransactions.push(transactionData);
-        showToast("ट्रान्जेक्सन थपियो!", "success");
-    } else {
-        allTransactions[editIndex] = transactionData;
-        showToast("ट्रान्जेक्सन अपडेट भयो!", "success");
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-[-10px]');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
-    allTransactions.sort((a, b) => a.name.localeCompare(b.name));
-    saveTransactionsToStorage();
-    renderView();
-    resetForm();
-}
+    function loadTransactionsFromStorage() {
+        const saved = localStorage.getItem('allTransactions');
+        if (saved) {
+            try { allTransactions = JSON.parse(saved); } catch (e) { allTransactions = []; }
+        }
+        updateOverviewStats();
+    }
 
-function renderView() {
-    if (currentSelectedName) {
-        renderLedgerTable(currentSelectedName);
-    } else {
+    function saveTransactionsToStorage() {
+        localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+        
+        // Overview पेजसँग सिङ्क गर्न 'transactions' key मा पनि राख्ने
+        const formattedTxns = allTransactions.map(item => ({
+            amount: parseFloat(item.total || item.amount || 0),
+            type: item.type.toLowerCase(),
+            date: item.date,
+            name: item.name
+        }));
+        localStorage.setItem('transactions', JSON.stringify(formattedTxns));
+
+        updateOverviewStats();
+    }
+
+    function updateOverviewStats() {
+        let totalReceivable = 0;
+        let totalPayable = 0;
+        let totalExpense = 0;
+
+        allTransactions.forEach(tx => {
+            let amt = parseFloat(tx.total || tx.amount || 0);
+            if (tx.type === 'Receivable') {
+                totalReceivable += amt;
+            } else if (tx.type === 'Payable') {
+                totalPayable += amt;
+            } else if (tx.type === 'Expense') {
+                totalExpense += amt;
+            }
+        });
+
+        const overviewStats = JSON.parse(localStorage.getItem('overview_stats') || '{}');
+        overviewStats.totalReceivable = totalReceivable.toFixed(2);
+        overviewStats.totalPayable = totalPayable.toFixed(2);
+        overviewStats.totalExpense = totalExpense.toFixed(2);
+        overviewStats.netBalance = (totalReceivable - totalPayable - totalExpense).toFixed(2);
+        overviewStats.lastUpdated = new Date().toISOString();
+        
+        localStorage.setItem('overview_stats', JSON.stringify(overviewStats));
+    }
+
+    function convertCurrency(source) {
+        const nprInput = document.getElementById('amount');
+        const inrInput = document.getElementById('amount-inr');
+        const conversionRate = 1.6;
+
+        if (source === 'npr') {
+            if (nprInput.value !== '') {
+                inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
+            } else {
+                inrInput.value = '';
+            }
+        } else if (source === 'inr') {
+            if (inrInput.value !== '') {
+                nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
+            } else {
+                nprInput.value = '';
+            }
+        }
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let amount = parseFloat(document.getElementById('amount').value) || 0;
+        let rate = parseFloat(document.getElementById('interest-rate').value) || 0;
+        let time = parseFloat(document.getElementById('time-period').value) || 0;
+        let unit = document.getElementById('time-unit').value;
+
+        let totalMonths = (unit === 'Years' || unit === 'वर्ष') ? (time * 12) : time;
+
+        let interest = (amount * rate * totalMonths) / 100;
+        let total = amount + interest;
+
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+        document.getElementById('display-total-amount').value = currSymbol + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('total-amount').value = total.toFixed(2);
+    }
+
+    function saveTransaction(event) {
+        event.preventDefault();
+        const editIndex = document.getElementById('edit-index').value;
+        const date = document.getElementById('date').value;
+        const name = document.getElementById('name').value.trim();
+        const type = document.getElementById('type').value;
+        const amount = document.getElementById('amount').value;
+        const interestRate = document.getElementById('interest-rate').value || '0';
+        const timePeriod = (document.getElementById('time-period').value || '0') + ' ' + document.getElementById('time-unit').value;
+        const total = document.getElementById('total-amount').value || amount;
+
+        const transactionData = { date, name, type, amount, interestRate, timePeriod, total };
+
+        if (editIndex === "") {
+            allTransactions.push(transactionData);
+            showToast("ट्रान्जेक्सन थपियो!", "success");
+        } else {
+            allTransactions[editIndex] = transactionData;
+            showToast("ट्रान्जेक्सन अपडेट भयो!", "success");
+        }
+
+        allTransactions.sort((a, b) => a.name.localeCompare(b.name));
+        saveTransactionsToStorage();
+        renderView();
+        resetForm();
+    }
+
+    function renderView() {
+        if (currentSelectedName) {
+            renderLedgerTable(currentSelectedName);
+        } else {
+            renderContactsTable();
+        }
+    }
+
+    function filterData() {
+        if (currentSelectedName) {
+            renderLedgerTable(currentSelectedName);
+        } else {
+            renderContactsTable();
+        }
+    }
+
+    function renderContactsTable() {
+        const tbody = document.getElementById('contacts-table-body');
+        const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
+        tbody.innerHTML = '';
+
+        document.getElementById('contacts-table').classList.remove('hidden');
+        document.getElementById('ledger-table').classList.add('hidden');
+        document.getElementById('back-to-contacts-btn').classList.add('hidden');
+        document.getElementById('table-main-title').innerText = t('parties_title');
+
+        const partiesMap = {};
+        allTransactions.forEach((tx) => {
+            if (!partiesMap[tx.name]) {
+                partiesMap[tx.name] = { name: tx.name, count: 0, netTotal: 0 };
+            }
+            partiesMap[tx.name].count += 1;
+            partiesMap[tx.name].netTotal += parseFloat(tx.total || tx.amount || 0);
+        });
+
+        let parties = Object.values(partiesMap);
+        parties.sort((a, b) => a.name.localeCompare(b.name));
+
+        const filteredParties = parties.filter(p => p.name.toLowerCase().includes(searchQuery));
+
+        if (filteredParties.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+            return;
+        }
+
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+        filteredParties.forEach((party) => {
+            tbody.innerHTML += `
+                <tr onclick="openLedger('${party.name}')" class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                    <td class="py-2 px-3 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-bold">
+                            ${party.name.charAt(0).toUpperCase()}
+                        </div>
+                        ${party.name}
+                    </td>
+                    <td class="py-2 px-3 text-right text-slate-600 dark:text-slate-300 font-medium">${party.count} <span data-i18n="th_total_entries">Entries</span></td>
+                    <td class="py-2 px-3 text-right font-extrabold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(party.netTotal).toLocaleString()}</td>
+                    <td class="py-2 px-3 text-right">
+                        <span class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold">${t('view_text')} <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function openLedger(name) {
+        currentSelectedName = name;
+        document.getElementById('search-transaction').value = '';
+        renderLedgerTable(name);
+    }
+
+    function showContactsView() {
+        currentSelectedName = null;
+        document.getElementById('search-transaction').value = '';
         renderContactsTable();
     }
-}
 
-function filterData() {
-    if (currentSelectedName) {
-        renderLedgerTable(currentSelectedName);
-    } else {
-        renderContactsTable();
-    }
-}
+    function renderLedgerTable(name) {
+        const tbody = document.getElementById('ledger-table-body');
+        const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
+        tbody.innerHTML = '';
 
-function renderContactsTable() {
-    const tbody = document.getElementById('contacts-table-body');
-    const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
-    tbody.innerHTML = '';
+        document.getElementById('contacts-table').classList.add('hidden');
+        document.getElementById('ledger-table').classList.remove('hidden');
+        document.getElementById('back-to-contacts-btn').classList.remove('hidden');
+        document.getElementById('table-main-title').innerText = `Ledger: ${name}`;
 
-    document.getElementById('contacts-table').classList.remove('hidden');
-    document.getElementById('ledger-table').classList.add('hidden');
-    document.getElementById('back-to-contacts-btn').classList.add('hidden');
-    document.getElementById('table-main-title').innerText = t('parties_title');
+        const personTransactions = allTransactions.map((tx, idx) => ({ ...tx, globalIndex: idx }))
+            .filter(tx => tx.name.toLowerCase() === name.toLowerCase());
 
-    const partiesMap = {};
-    allTransactions.forEach((tx) => {
-        if (!partiesMap[tx.name]) {
-            partiesMap[tx.name] = { name: tx.name, count: 0, netTotal: 0 };
-        }
-        partiesMap[tx.name].count += 1;
-        partiesMap[tx.name].netTotal += parseFloat(tx.total || tx.amount || 0);
-    });
+        const filtered = personTransactions.filter(tx => tx.type.toLowerCase().includes(searchQuery) || tx.date.includes(searchQuery));
 
-    let parties = Object.values(partiesMap);
-    parties.sort((a, b) => a.name.localeCompare(b.name));
-
-    const filteredParties = parties.filter(p => p.name.toLowerCase().includes(searchQuery));
-
-    if (filteredParties.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
-        return;
-    }
-
-    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-
-    filteredParties.forEach((party) => {
-        tbody.innerHTML += `
-            <tr onclick="openLedger('${party.name}')" class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
-                <td class="py-2 px-3 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-bold">
-                        ${party.name.charAt(0).toUpperCase()}
-                    </div>
-                    ${party.name}
-                </td>
-                <td class="py-2 px-3 text-right text-slate-600 dark:text-slate-300 font-medium">${party.count} <span data-i18n="th_total_entries">Entries</span></td>
-                <td class="py-2 px-3 text-right font-extrabold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(party.netTotal).toLocaleString()}</td>
-                <td class="py-2 px-3 text-right">
-                    <span class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold">${t('view_text')} <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
-                </td>
-            </tr>
-        `;
-    });
-}
-
-function openLedger(name) {
-    currentSelectedName = name;
-    document.getElementById('search-transaction').value = '';
-    renderLedgerTable(name);
-}
-
-function showContactsView() {
-    currentSelectedName = null;
-    document.getElementById('search-transaction').value = '';
-    renderContactsTable();
-}
-
-function renderLedgerTable(name) {
-    const tbody = document.getElementById('ledger-table-body');
-    const searchQuery = document.getElementById('search-transaction').value.toLowerCase();
-    tbody.innerHTML = '';
-
-    document.getElementById('contacts-table').classList.add('hidden');
-    document.getElementById('ledger-table').classList.remove('hidden');
-    document.getElementById('back-to-contacts-btn').classList.remove('hidden');
-    document.getElementById('table-main-title').innerText = `Ledger: ${name}`;
-
-    const personTransactions = allTransactions.map((tx, idx) => ({ ...tx, globalIndex: idx }))
-        .filter(tx => tx.name.toLowerCase() === name.toLowerCase());
-
-    const filtered = personTransactions.filter(tx => tx.type.toLowerCase().includes(searchQuery) || tx.date.includes(searchQuery));
-
-    if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
-        return;
-    }
-
-    const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-
-    filtered.forEach((tx) => {
-        let badgeClass = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20";
-        if (tx.type === "Receivable") {
-            badgeClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
-        } else if (tx.type === "Payable") {
-            badgeClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
-        } else if (tx.type === "Expense") {
-            badgeClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
+            return;
         }
 
-        tbody.innerHTML += `
-            <tr class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                <td class="py-2 px-3 text-slate-500 dark:text-slate-400 text-[11px]">${tx.date}</td>
-                <td class="py-2 px-3">
-                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${badgeClass}">${tx.type}</span>
-                </td>
-                <td class="py-2 px-3 text-right font-medium text-slate-900 dark:text-white">${currSymbol}${parseFloat(tx.amount).toLocaleString()}</td>
-                <td class="py-2 px-3 text-slate-600 dark:text-slate-300 text-[11px]">${tx.timePeriod}</td>
-                <td class="py-2 px-3 text-right font-bold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(tx.total).toLocaleString()}</td>
-                <td class="py-2 px-3 text-right whitespace-nowrap">
-                    <div class="inline-flex items-center gap-1">
-                        <button type="button" onclick="editTransaction(${tx.globalIndex})" class="bg-amber-500 hover:bg-amber-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('edit_text')}</button>
-                        <button type="button" onclick="confirmDelete(${tx.globalIndex})" class="bg-red-500 hover:bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('del_text')}</button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-}
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
 
-function editTransaction(idx) {
-    const tx = allTransactions[idx];
-    currentSelectedName = null;
-    document.getElementById('edit-index').value = idx;
-    document.getElementById('date').value = tx.date;
-    document.getElementById('name').value = tx.name;
-    document.getElementById('type').value = tx.type;
-    document.getElementById('amount').value = tx.amount;
-    document.getElementById('interest-rate').value = tx.interestRate || '';
-    convertCurrency('npr');
-    
-    const timeParts = (tx.timePeriod || '').split(' ');
-    document.getElementById('time-period').value = timeParts[0] || '';
-    if(timeParts[1]) document.getElementById('time-unit').value = timeParts[1];
+        filtered.forEach((tx) => {
+            let badgeClass = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20";
+            if (tx.type === "Receivable") {
+                badgeClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+            } else if (tx.type === "Payable") {
+                badgeClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+            } else if (tx.type === "Expense") {
+                badgeClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+            }
 
-    calculateTotal();
-    document.getElementById('btn-save').innerText = t('btn_update');
-    document.getElementById('btn-cancel-edit').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function confirmDelete(idx) {
-    showCustomModal(
-        t('delete_title'),
-        t('delete_msg'),
-        t('delete_btn'),
-        "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/25",
-        () => {
-            allTransactions.splice(idx, 1);
-            allTransactions.sort((a, b) => a.name.localeCompare(b.name));
-            saveTransactionsToStorage();
-            renderView();
-            showToast("रेकर्ड मेटाइयो!", "warning");
-        }
-    );
-}
-
-function showCustomModal(title, message, confirmText, confirmClass, callback) {
-    document.getElementById('modal-title').innerText = title;
-    document.getElementById('modal-message').innerText = message;
-    const confirmBtn = document.getElementById('modal-btn-confirm');
-    confirmBtn.innerText = confirmText;
-    confirmBtn.className = `font-medium px-3 py-1.5 rounded-xl text-xs transition ${confirmClass}`;
-    modalCallback = callback;
-
-    const modal = document.getElementById('custom-modal');
-    const box = document.getElementById('modal-content-box');
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        box.classList.remove('scale-95');
-        box.classList.add('scale-100');
-    }, 10);
-}
-
-function closeCustomModal(isConfirmed) {
-    const modal = document.getElementById('custom-modal');
-    const box = document.getElementById('modal-content-box');
-    modal.classList.add('opacity-0');
-    box.classList.remove('scale-100');
-    box.classList.add('scale-95');
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        if (isConfirmed && modalCallback) {
-            modalCallback();
-        }
-        modalCallback = null;
-    }, 300);
-}
-
-function resetForm() {
-    document.getElementById('transaction-form').reset();
-    document.getElementById('edit-index').value = "";
-    document.getElementById('display-total-amount').value = '';
-    document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('btn-save').innerText = t('btn_save');
-    document.getElementById('btn-cancel-edit').classList.add('hidden');
-}
-
-// Data CSV/Excel मा डाउनलोड गर्ने
-function exportToCSV() {
-    if (allTransactions.length === 0) {
-        showToast("Export गर्न कुनै ट्रान्जेक्सन छैन!", "warning");
-        return;
+            tbody.innerHTML += `
+                <tr class="border-b border-slate-200 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                    <td class="py-2 px-3 text-slate-500 dark:text-slate-400 text-[11px]">${tx.date}</td>
+                    <td class="py-2 px-3">
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${badgeClass}">${tx.type}</span>
+                    </td>
+                    <td class="py-2 px-3 text-right font-medium text-slate-900 dark:text-white">${currSymbol}${parseFloat(tx.amount).toLocaleString()}</td>
+                    <td class="py-2 px-3 text-slate-600 dark:text-slate-300 text-[11px]">${tx.timePeriod}</td>
+                    <td class="py-2 px-3 text-right font-bold text-indigo-600 dark:text-indigo-400">${currSymbol}${parseFloat(tx.total).toLocaleString()}</td>
+                    <td class="py-2 px-3 text-right whitespace-nowrap">
+                        <div class="inline-flex items-center gap-1">
+                            <button type="button" onclick="editTransaction(${tx.globalIndex})" class="bg-amber-500 hover:bg-amber-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('edit_text')}</button>
+                            <button type="button" onclick="confirmDelete(${tx.globalIndex})" class="bg-red-500 hover:bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-medium transition">${t('del_text')}</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
     }
-    let csv = 'Date,Name,Type,Principal,Interest Rate(%),Period,Total\n';
-    allTransactions.forEach(tx => {
-        csv += `"${tx.date}","${tx.name}","${tx.type}","${tx.amount}","${tx.interestRate || 0}","${tx.timePeriod}","${tx.total}"\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `Transactions_Backup_${new Date().toISOString().slice(0,10)}.csv`);
-    a.click();
-    showToast("CSV फाईल डाउनलोड भयो!", "success");
-}
 
-// ---------------- Firebase Sync functions ----------------
-function syncWithFirebase() {
-    showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
-    // Firebase Firestore / Realtime Database Push Logic
-    setTimeout(() => {
-        showToast("सफलतापूर्वक Firebase मा सेभ भयो!", "success");
-    }, 1000);
-}
+    function editTransaction(idx) {
+        const tx = allTransactions[idx];
+        currentSelectedName = null;
+        document.getElementById('edit-index').value = idx;
+        document.getElementById('date').value = tx.date;
+        document.getElementById('name').value = tx.name;
+        document.getElementById('type').value = tx.type;
+        document.getElementById('amount').value = tx.amount;
+        document.getElementById('interest-rate').value = tx.interestRate || '';
+        convertCurrency('npr');
+        
+        const timeParts = (tx.timePeriod || '').split(' ');
+        document.getElementById('time-period').value = timeParts[0] || '';
+        if(timeParts[1]) document.getElementById('time-unit').value = timeParts[1];
 
-function restoreFromFirebase() {
-    showToast("Firebase बाट डाटा तानिँदैछ...", "info");
-    // Firebase Fetch Logic
-    setTimeout(() => {
-        showToast("Firebase बाट डाटा Restore भयो!", "success");
-    }, 1000);
-}
+        calculateTotal();
+        document.getElementById('btn-save').innerText = t('btn_update');
+        document.getElementById('btn-cancel-edit').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function confirmDelete(idx) {
+        showCustomModal(
+            t('delete_title'),
+            t('delete_msg'),
+            t('delete_btn'),
+            "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/25",
+            () => {
+                allTransactions.splice(idx, 1);
+                allTransactions.sort((a, b) => a.name.localeCompare(b.name));
+                saveTransactionsToStorage();
+                renderView();
+                showToast("रेकर्ड मेटाइयो!", "warning");
+            }
+        );
+    }
+
+    function showCustomModal(title, message, confirmText, confirmClass, callback) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-message').innerText = message;
+        const confirmBtn = document.getElementById('modal-btn-confirm');
+        confirmBtn.innerText = confirmText;
+        confirmBtn.className = `font-medium px-3 py-1.5 rounded-xl text-xs transition ${confirmClass}`;
+        modalCallback = callback;
+
+        const modal = document.getElementById('custom-modal');
+        const box = document.getElementById('modal-content-box');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeCustomModal(isConfirmed) {
+        const modal = document.getElementById('custom-modal');
+        const box = document.getElementById('modal-content-box');
+        modal.classList.add('opacity-0');
+        box.classList.remove('scale-100');
+        box.classList.add('scale-95');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            if (isConfirmed && modalCallback) {
+                modalCallback();
+            }
+            modalCallback = null;
+        }, 300);
+    }
+
+    function resetForm() {
+        document.getElementById('transaction-form').reset();
+        document.getElementById('edit-index').value = "";
+        document.getElementById('display-total-amount').value = '';
+        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('btn-save').innerText = t('btn_save');
+        document.getElementById('btn-cancel-edit').classList.add('hidden');
+    }
+
+    function exportToCSV() {
+        if (allTransactions.length === 0) {
+            showToast("Export गर्न कुनै ट्रान्जेक्सन छैन!", "warning");
+            return;
+        }
+        let csv = 'Date,Name,Type,Principal,Interest Rate(%),Period,Total\n';
+        allTransactions.forEach(tx => {
+            csv += `"${tx.date}","${tx.name}","${tx.type}","${tx.amount}","${tx.interestRate || 0}","${tx.timePeriod}","${tx.total}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `Transactions_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+        a.click();
+        showToast("CSV फाईल डाउनलोड भयो!", "success");
+    }
+
+    function syncWithFirebase() {
+        showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
+        setTimeout(() => {
+            showToast("सफलतापूर्वक Firebase मा सेभ भयो!", "success");
+        }, 1000);
+    }
+
+    function restoreFromFirebase() {
+        showToast("Firebase बाट डाटा तानिँदैछ...", "info");
+        setTimeout(() => {
+            showToast("Firebase बाट डाटा Restore भयो!", "success");
+        }, 1000);
+    }
 </script>
 </body>
 </html>
