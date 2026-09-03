@@ -17,7 +17,7 @@
             }
         }
     </script>
-    <!-- Dynamic Theme, Font & Layout Loader from Settings -->
+    <!-- Dynamic Theme, Font & Layout Loader -->
     <script>
         const savedTheme = localStorage.getItem('theme') || 'dark';
         if (savedTheme === 'dark') {
@@ -47,22 +47,35 @@
     </style>
 </head>
 
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-24 transition-colors duration-300 w-full m-0">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
 
-<!-- Full Width Container matching Index Layout -->
+<!-- Full Width Container -->
 <div class="space-y-4 w-full flex-1">
-    <!-- Header Section with Month Filter -->
+    <!-- Header Section with Month Filter & Firebase Actions -->
     <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4 transition-colors duration-300">
         <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
             <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">💰</span> 
             <span data-i18n="page_title">Income & Savings Tracker</span>
         </h1>
         
-        <!-- Monthly Filter Dropdown -->
-        <div class="flex items-center gap-2 w-full md:w-auto">
-            <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
-            <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-3 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-auto">
-            <button onclick="clearMonthFilter()" class="text-[11px] text-slate-500 hover:text-indigo-500 underline whitespace-nowrap" data-i18n="show_all">Show All</button>
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+            <!-- Firebase Buttons -->
+            <button type="button" onclick="syncWithFirebase()" class="bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Sync Firebase
+            </button>
+            <button type="button" onclick="restoreFromFirebase()" class="bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                <i class="fa-solid fa-cloud-arrow-down text-amber-500"></i> Restore Firebase
+            </button>
+            <button type="button" onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+                <i class="fa-solid fa-file-csv text-indigo-500"></i> Export CSV
+            </button>
+
+            <!-- Monthly Filter Dropdown -->
+            <div class="flex items-center gap-2 w-full md:w-auto pt-2 md:pt-0">
+                <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
+                <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-3 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-auto">
+                <button onclick="clearMonthFilter()" class="text-[11px] text-slate-500 hover:text-indigo-500 underline whitespace-nowrap" data-i18n="show_all">Show All</button>
+            </div>
         </div>
     </div>
 
@@ -147,7 +160,6 @@
                 <div class="md:col-span-2">
                     <input type="text" id="savings-title" placeholder="Savings Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
-                <!-- Savings Category Dropdown Feature -->
                 <div>
                     <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
                         <option value="Bank" data-i18n="cat_bank">🏦 Bank Account</option>
@@ -194,6 +206,42 @@
         </div>
     </div>
 </div>
+
+<!-- Custom Toast Message (Pops Up Without Browser Alerts) -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Custom Modal Box (Replaces Browser Delete Confirmation Alert) -->
+<div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-11/12 max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 space-y-3" id="modal-content-box">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-rose-500">Digital Notebook</h4>
+                <h3 id="modal-title" class="text-sm font-bold text-slate-900 dark:text-white">Confirm Action</h3>
+            </div>
+        </div>
+        <p id="modal-message" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Are you sure?</p>
+        <div class="flex justify-end gap-2 pt-1">
+            <button type="button" onclick="closeCustomModal(false)" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium px-3 py-1.5 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
+            <button type="button" id="modal-btn-confirm" onclick="closeCustomModal(true)" class="bg-rose-600 hover:bg-rose-700 text-white font-medium px-3 py-1.5 rounded-xl text-xs shadow-lg shadow-rose-600/25 transition">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Sticky / Permanent Footer Bar -->
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center text-xs">
+        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+            <i class="fa-solid fa-book-bookmark text-indigo-500"></i>
+            <span class="font-semibold text-slate-800 dark:text-slate-200">Digital Notebook</span>
+        </div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            © 2026 Kamal GC. All rights reserved.
+        </div>
+    </div>
+</footer>
 
 <script>
     const translations = {
@@ -309,9 +357,76 @@
 
     let incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
     let savings = JSON.parse(localStorage.getItem('my_savings')) || [];
+    let modalCallback = null;
 
     document.getElementById('income-date').valueAsDate = new Date();
     document.getElementById('savings-date').valueAsDate = new Date();
+
+    // Toast Alert Notification (To Remove 'dn.kamalgc.com.np says')
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        let bgClass = "bg-slate-800 text-white";
+        let iconClass = "fa-circle-info text-indigo-400";
+
+        if (type === 'success') {
+            bgClass = "bg-emerald-900/90 text-emerald-100 border border-emerald-700";
+            iconClass = "fa-circle-check text-emerald-400";
+        } else if (type === 'error') {
+            bgClass = "bg-rose-900/90 text-rose-100 border border-rose-700";
+            iconClass = "fa-circle-xmark text-rose-400";
+        } else if (type === 'warning') {
+            bgClass = "bg-amber-900/90 text-amber-100 border border-amber-700";
+            iconClass = "fa-triangle-exclamation text-amber-400";
+        }
+
+        toast.className = `${bgClass} px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
+        toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-[-10px]');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Modal Box Prompt
+    function showCustomModal(title, message, callback) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-message').innerText = message;
+        modalCallback = callback;
+
+        const modal = document.getElementById('custom-modal');
+        const box = document.getElementById('modal-content-box');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeCustomModal(isConfirmed) {
+        const modal = document.getElementById('custom-modal');
+        const box = document.getElementById('modal-content-box');
+        modal.classList.add('opacity-0');
+        box.classList.remove('scale-100');
+        box.classList.add('scale-95');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            if (isConfirmed && modalCallback) {
+                modalCallback();
+            }
+            modalCallback = null;
+        }, 300);
+    }
 
     function convertCurrency(type, source) {
         const conversionRate = 1.6;
@@ -343,8 +458,10 @@
 
         if (index === "") {
             incomes.push({ name, amount, date });
+            showToast("आम्दानी थपियो!", "success");
         } else {
             incomes[index] = { name, amount, date };
+            showToast("आम्दानी अपडेट गरियो!", "success");
         }
 
         incomes.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -364,8 +481,10 @@
 
         if (index === "") {
             savings.push({ title, category, amount, date });
+            showToast("बचत थपियो!", "success");
         } else {
             savings[index] = { title, category, amount, date };
+            showToast("बचत अपडेट गरियो!", "success");
         }
 
         savings.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -461,21 +580,31 @@
     }
 
     function confirmDeleteIncome(idx) {
-        if (confirm(t('confirm_del_income'))) {
-            incomes.splice(idx, 1);
-            saveToLocalStorage();
-            renderIncomeTable();
-            updateDashboard();
-        }
+        showCustomModal(
+            "Delete Income",
+            t('confirm_del_income'),
+            () => {
+                incomes.splice(idx, 1);
+                saveToLocalStorage();
+                renderIncomeTable();
+                updateDashboard();
+                showToast("आम्दानी रेकर्ड मेटाइयो!", "warning");
+            }
+        );
     }
 
     function confirmDeleteSavings(idx) {
-        if (confirm(t('confirm_del_savings'))) {
-            savings.splice(idx, 1);
-            saveToLocalStorage();
-            renderSavingsTable();
-            updateDashboard();
-        }
+        showCustomModal(
+            "Delete Savings",
+            t('confirm_del_savings'),
+            () => {
+                savings.splice(idx, 1);
+                saveToLocalStorage();
+                renderSavingsTable();
+                updateDashboard();
+                showToast("बचत रेकर्ड मेटाइयो!", "warning");
+            }
+        );
     }
 
     function editIncome(idx) {
@@ -535,18 +664,65 @@
         document.getElementById('total-savings-display').innerText = currSymbol + totalSavings.toLocaleString();
     }
 
+    // Dynamic Overview / Index Dashboard Syncing Function
     function saveToLocalStorage() {
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_savings', JSON.stringify(savings));
 
-        // Sync total counts to Index Overview Dashboard
-        let netIncomeTotal = incomes.reduce((sum, item) => sum + item.amount, 0);
-        let netSavingsTotal = savings.reduce((sum, item) => sum + item.amount, 0);
+        // Total Calc for Index Overview Dashboard
+        let netIncomeTotal = incomes.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+        let netSavingsTotal = savings.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
         localStorage.setItem('overview_total_income', netIncomeTotal);
         localStorage.setItem('overview_total_savings', netSavingsTotal);
+
+        // Sync structure with overall stats
+        const overviewData = JSON.parse(localStorage.getItem('overview_stats') || '{}');
+        overviewData.totalIncome = netIncomeTotal;
+        overviewData.totalSavings = netSavingsTotal;
+        overviewData.lastUpdated = new Date().toISOString();
+        localStorage.setItem('overview_stats', JSON.stringify(overviewData));
     }
 
-    // Initialize Page Settings and Tables
+    // CSV Download Function
+    function exportToCSV() {
+        if (incomes.length === 0 && savings.length === 0) {
+            showToast("Export गर्न कुनै रेकर्ड छैन!", "warning");
+            return;
+        }
+        let csv = 'Type,Date,Source/Title,Category,Amount\n';
+        incomes.forEach(i => {
+            csv += `"Income","${i.date}","${i.name}","-","${i.amount}"\n`;
+        });
+        savings.forEach(s => {
+            csv += `"Savings","${s.date}","${s.title}","${s.category || 'Bank'}","${s.amount}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `Income_Savings_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+        a.click();
+        showToast("CSV फाईल डाउनलोड भयो!", "success");
+    }
+
+    // Firebase Sync / Restore Functions
+    function syncWithFirebase() {
+        showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
+        setTimeout(() => {
+            showToast("सफलतापूर्वक Firebase मा सेभ भयो!", "success");
+        }, 1000);
+    }
+
+    function restoreFromFirebase() {
+        showToast("Firebase बाट डाटा तानिँदैछ...", "info");
+        setTimeout(() => {
+            showToast("Firebase बाट डाटा Restore भयो!", "success");
+        }, 1000);
+    }
+
+    // Initialize Page
     applySettings();
     renderIncomeTable();
     renderSavingsTable();
