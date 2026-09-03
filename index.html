@@ -209,18 +209,18 @@
             <h3 class="text-xl font-extrabold text-amber-500 mt-1"><span id="curr-symbol-3">₹</span> <span id="this-month-expense">0</span></h3>
         </div>
 
-        <!-- CARD 4: TOTAL INCOME (सच्याइएको: सहि path दिइएको) -->
+        <!-- CARD 4: TOTAL INCOME (सच्याइएको: Details थिच्दा cashflow.html मा जाने बनाइएको) -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
                 <h3 class="text-xl font-extrabold text-emerald-400 mt-1"><span id="curr-symbol-4">₹</span> <span id="total-income">0</span></h3>
             </div>
-            <a href="pages/transactions.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+            <a href="pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                 Details ➔
             </a>
         </div>
 
-        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT (सच्याइएको: सहि path दिइएको) -->
+        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL SAVINGS & INVESTMENT</p>
@@ -468,7 +468,6 @@
             reader.readAsDataURL(file);
         }
 
-        // PIN सेभ गर्ने फंक्सन (सच्याइएको)
         function savePin() {
             const pin = document.getElementById('input-pin').value.trim();
             if (pin.length === 4 && !isNaN(pin)) {
@@ -480,7 +479,6 @@
             }
         }
 
-        // Biometric Toggle फंक्सन (सच्याइएको)
         function toggleBiometric(checkbox) {
             if (checkbox.checked) {
                 localStorage.setItem('biometric', 'true');
@@ -559,7 +557,13 @@
             renderPieChart();
         });
 
+        // अटोमेटिक रिफ्रेस गर्नको लागि (Storage परिवर्तन हुँदा वा ट्याबमा फर्किंदा)
         window.addEventListener('focus', () => {
+            calculateTotalsAndSync();
+            renderPieChart();
+        });
+
+        window.addEventListener('storage', () => {
             calculateTotalsAndSync();
             renderPieChart();
         });
