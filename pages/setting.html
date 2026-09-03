@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Settings - Digital Notebook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+
+        const savedFontSize = localStorage.getItem('font_size') || 'normal';
+        if (savedFontSize === 'small') {
+            document.documentElement.style.fontSize = '14px';
+        } else if (savedFontSize === 'extra') {
+            document.documentElement.style.fontSize = '20px';
+        } else {
+            document.documentElement.style.fontSize = '16px';
+        }
+
+        const savedFontFamily = localStorage.getItem('font_family') || 'Canva Sans';
+        document.write(`<style>body { font-family: '${savedFontFamily}', sans-serif; }</style>`);
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 4px; }
+        .more-text { display: none; }
+        .more-text.show { display: block; }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-24 transition-colors duration-300 w-full min-h-screen m-0">
+
+<div class="space-y-4 w-full flex-1 mt-1">
+    
+    <!-- 1. APPEARANCE & THEME SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-palette text-indigo-500"></i> <span data-i18n="appearance_title">Appearance & Theme</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="dark_light_mode">Dark / Light Mode</label>
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text">Dark Mode</span>
+                </button>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="language">Language</label>
+                <select id="language-select" onchange="changeLanguage(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <option value="en">English</option>
+                    <option value="np">नेपाली</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TYPOGRAPHY & LAYOUT STYLE SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-font text-indigo-500"></i> <span data-i18n="typography_title">Typography & Layout Style</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_size">Font Size</label>
+                <select id="font-size-select" onchange="changeFontSize(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <option value="small">Small</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="extra">Extra Large</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_family">Font Family</label>
+                <select id="font-family-select" onchange="changeFontFamily(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <option value="The Seasons">The Seasons</option>
+                    <option value="Canva Sans">Canva Sans</option>
+                    <option value="Wide Sports">Wide Sports</option>
+                    <option value="Anek Devanagari">Anek Devanagari</option>
+                    <option value="Mukta">Mukta</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Font Style</label>
+                <select id="font-style-select" onchange="changeFontStyle(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                    <option value="normal">Normal (नर्मल)</option>
+                    <option value="bold">Bold (बोल्ड)</option>
+                    <option value="italic">Italic (इटालिक)</option>
+                </select>
+            </div>
+        </div>
+        <div class="pt-2">
+            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Text Effects (पाठ प्रभाव)</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <button onclick="setTextEffect('shadow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Shadow (श्याडो)</button>
+                <button onclick="setTextEffect('outline')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Outline (आउटलाइन)</button>
+                <button onclick="setTextEffect('background')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Background (ब्याकग्राउन्ड)</button>
+                <button onclick="setTextEffect('hollow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Hollow (हलो)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CURRENCY SETTINGS SECTION (Security Removed) -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-coins text-indigo-500"></i> <span data-i18n="default_currency">Default Currency Format</span>
+        </h3>
+        <div>
+            <select id="currency-select" onchange="saveCurrency(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                <option value="NPR">NPR (Rs)</option>
+                <option value="INR">INR (₹)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 4. DATA MANAGEMENT & BACKUP SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-database text-indigo-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
+            </button>
+            <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-600/20">
+                <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
+                <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
+            </label>
+            <button onclick="masterReset()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-red-600/20">
+                <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. POLICY & ABOUT SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-3">ℹ️ Policy, Terms & About</h4>
+
+        <div id="content-np" class="space-y-3">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200">१. गोपनीयता नीति (Privacy Policy)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">हामी तपाईंको गोपनीयता र व्यक्तिगत डाटाको सुरक्षालाई उच्च प्राथमिकता दिन्छौं। एपमा प्रविष्ट गरिने सबै विवरणहरू...</p>
+                <div id="more-privacy-np" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p><strong>डाटाको स्थानीय भण्डारण:</strong> सबै व्यक्तिगत कारोबारका विवरणहरू, हिसाब-किताब र बिल/फोटोहरू पूर्ण रूपमा तपाईंको आफ्नै मोबाइलको लोकल स्टोरेजमा मात्र सुरक्षित रहन्छन्।</p>
+                    <p><strong>सर्भरमा सेयर नगरिने:</strong> हामीले कुनै पनि व्यक्तिगत वित्तीय डाटा सर्भरमा अपलोड वा सेयर गर्दैनौं।</p>
+                    <p><strong>तेस्रो पक्षको पहुँच:</strong> तेस्रो पक्षलाई डाटा बिक्री वा दुरुपयोग गरिँदैन।</p>
+                </div>
+                <button onclick="toggleText('privacy-np')" id="toggle-btn-privacy-np" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline">See More (थप हेर्नुहोस्)</button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200">२. नियम तथा सर्तहरू (Terms & Conditions)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">यो एप प्रयोग गर्नु अघि कृपया नियम तथा सर्तहरू ध्यानपूर्वक पढ्नुहोला। एप प्रयोग गर्नु भनेको...</p>
+                <div id="more-terms-np" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p><strong>प्रयोगको दायित्व:</strong> दैनिक व्यक्तिगत वा व्यावसायिक हिसाब-किताब सजिलो बनाउन तयार पारिएको डिजिटल नोटबुक हो।</p>
+                    <p><strong>डाटा सुरक्षा:</strong> मोबाइल हराएमा वा डाटा क्लिन भएमा डाटा गुम्ने जोखिम हुने हुँदा ब्याकअपको जिम्मा प्रयोगकर्ताको हो।</p>
+                </div>
+                <button onclick="toggleText('terms-np')" id="toggle-btn-terms-np" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline">See More (थप हेर्नुहोस्)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. FOOTER ABOUT SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 text-center transition-colors duration-300">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider" data-i18n="about_title">ABOUT DIGITAL NOTEBOOK</h4>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400" data-i18n="about_desc">Professional Offline Notebook & Transaction Studio built with Tailwind CSS.</p>
+        <div class="pt-2">
+            <button onclick="checkForUpdates()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow-lg shadow-indigo-600/25 transition">
+                <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[10px] font-normal opacity-80">(Check Update)</span>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const translations = {
+        en: {
+            appearance_title: "Appearance & Theme",
+            dark_light_mode: "Dark / Light Mode",
+            language: "Language",
+            typography_title: "Typography & Layout Style",
+            font_size: "Font Size",
+            font_family: "Font Family",
+            default_currency: "Default Currency Format",
+            data_management: "Data Management & Backup",
+            btn_backup: "Backup JSON",
+            btn_restore: "Restore JSON",
+            btn_reset: "Master Reset",
+            about_title: "ABOUT DIGITAL NOTEBOOK",
+            about_desc: "Professional Offline Notebook & Transaction Studio built with Tailwind CSS."
+        },
+        np: {
+            appearance_title: "रूप र थिम (Appearance & Theme)",
+            dark_light_mode: "डार्क / लाइट मोड",
+            language: "भाषा (Language)",
+            typography_title: "फन्ट र डिजाइन शैली",
+            font_size: "अक्षरको साइज",
+            font_family: "अक्षरको प्रकार (Font Family)",
+            default_currency: "पूर्वनिर्धारित मुद्रा",
+            data_management: "डाटा व्यवस्थापन र ब्याकअप",
+            btn_backup: "ब्याकअप JSON",
+            btn_restore: "रिस्टोर JSON",
+            btn_reset: "मास्टर रिसेट",
+            about_title: "डिजिटल नोटबुकको बारेमा",
+            about_desc: "टेलरविन्ड सीएसएसद्वारा निर्मित व्यावसायिक अफलाइन नोटबुक।"
+        }
+    };
+
+    function t(key) {
+        const lang = localStorage.getItem('language') || 'en';
+        return translations[lang][key] || translations['en'][key] || key;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSettingsToUI();
+        applySettings();
+    });
+
+    function loadSettingsToUI() {
+        const lang = localStorage.getItem('language') || 'en';
+        document.getElementById('language-select').value = lang;
+
+        const theme = localStorage.getItem('theme') || 'dark';
+        updateThemeButtonUI(theme);
+
+        const curr = localStorage.getItem('currency') || 'NPR';
+        document.getElementById('currency-select').value = curr;
+
+        const fSize = localStorage.getItem('font_size') || 'normal';
+        document.getElementById('font-size-select').value = fSize;
+
+        const fFamily = localStorage.getItem('font_family') || 'Canva Sans';
+        document.getElementById('font-family-select').value = fFamily;
+
+        const fStyle = localStorage.getItem('font_style') || 'normal';
+        document.getElementById('font-style-select').value = fStyle;
+        applyFontStyleToBody(fStyle);
+    }
+
+    function applySettings() {
+        const lang = localStorage.getItem('language') || 'en';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if(t(key)) el.innerText = t(key);
+        });
+    }
+
+    function toggleTheme() {
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        setTimeout(() => location.reload(), 150);
+    }
+
+    function updateThemeButtonUI(theme) {
+        const btnText = document.getElementById('theme-text');
+        const icon = document.getElementById('theme-icon');
+        if (theme === 'light') {
+            btnText.innerText = "Light Mode";
+            icon.className = "fa-solid fa-sun text-amber-500";
+        } else {
+            btnText.innerText = "Dark Mode";
+            icon.className = "fa-solid fa-moon text-indigo-400";
+        }
+    }
+
+    function changeLanguage(lang) {
+        localStorage.setItem('language', lang);
+        setTimeout(() => location.reload(), 150);
+    }
+
+    function changeFontSize(size) {
+        localStorage.setItem('font_size', size);
+        setTimeout(() => location.reload(), 150);
+    }
+
+    function changeFontFamily(family) {
+        localStorage.setItem('font_family', family);
+        setTimeout(() => location.reload(), 150);
+    }
+
+    function changeFontStyle(style) {
+        localStorage.setItem('font_style', style);
+        applyFontStyleToBody(style);
+    }
+
+    function applyFontStyleToBody(style) {
+        if(style === 'bold') {
+            document.body.style.fontWeight = '700';
+            document.body.style.fontStyle = 'normal';
+        } else if(style === 'italic') {
+            document.body.style.fontWeight = '400';
+            document.body.style.fontStyle = 'italic';
+        } else {
+            document.body.style.fontWeight = '400';
+            document.body.style.fontStyle = 'normal';
+        }
+    }
+
+    function setTextEffect(effect) {
+        const body = document.body;
+        body.style.textShadow = '';
+        body.style.backgroundColor = '';
+        body.style.webkitTextStroke = '';
+        body.style.color = '';
+
+        if(effect === 'shadow') {
+            body.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
+        } else if(effect === 'outline') {
+            body.style.webkitTextStroke = '0.5px currentColor';
+        } else if(effect === 'background') {
+            body.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+        } else if(effect === 'hollow') {
+            body.style.webkitTextStroke = '1px currentColor';
+            body.style.color = 'transparent';
+        }
+    }
+
+    function saveCurrency(curr) {
+        localStorage.setItem('currency', curr);
+    }
+
+    function backupData() {
+        const data = JSON.stringify(localStorage);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'digital_notebook_backup.json';
+        a.click();
+    }
+
+    function restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                for (let key in data) {
+                    localStorage.setItem(key, data[key]);
+                }
+                location.reload();
+            } catch (err) {
+                alert("Invalid JSON File");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function masterReset() {
+        const confirmation = prompt("Type 'RESET' to confirm Master Reset:");
+        if (confirmation === 'RESET' || confirmation === 'reset') {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    function toggleText(id) {
+        const textElement = document.getElementById('more-' + id);
+        const btnElement = document.getElementById('toggle-btn-' + id);
+        if (textElement.classList.contains('show')) {
+            textElement.classList.remove('show');
+            btnElement.innerText = "See More (थप हेर्नुहोस्)";
+        } else {
+            textElement.classList.add('show');
+            btnElement.innerText = "See Less (कम हेर्नुहोस्)";
+        }
+    }
+
+    function checkForUpdates() {
+        const statusText = document.getElementById('update-status-text');
+        statusText.innerText = "(Checking...)";
+        setTimeout(() => {
+            statusText.innerText = "(You are on v2.5 - Up to date!)";
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
