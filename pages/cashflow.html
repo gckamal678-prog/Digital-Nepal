@@ -207,10 +207,10 @@
     </div>
 </div>
 
-<!-- Custom Toast Message (Pops Up Without Browser Alerts) -->
+<!-- Custom Toast Message -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- Custom Modal Box (Replaces Browser Delete Confirmation Alert) -->
+<!-- Custom Modal Box -->
 <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-11/12 max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 space-y-3" id="modal-content-box">
         <div class="flex items-center gap-3">
@@ -244,7 +244,7 @@
             <span class="text-[10px] font-medium">Txns</span>
         </a>
         <!-- Saving (Active) -->
-        <a href="savings.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+        <a href="cashflow.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
             <i class="fa-solid fa-piggy-bank text-base"></i>
             <span class="text-[10px]">Saving</span>
         </a>
@@ -261,6 +261,7 @@
     </div>
 </footer>
 
+<script>
     const translations = {
         en: {
             page_title: "Income & Savings Tracker",
@@ -379,7 +380,6 @@
     document.getElementById('income-date').valueAsDate = new Date();
     document.getElementById('savings-date').valueAsDate = new Date();
 
-    // Toast Alert Notification (To Remove 'dn.kamalgc.com.np says')
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -413,7 +413,6 @@
         }, 3000);
     }
 
-    // Modal Box Prompt
     function showCustomModal(title, message, callback) {
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-message').innerText = message;
@@ -461,7 +460,7 @@
             if (source === 'npr' && nprInput.value !== '') {
                 inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
             } else if (source === 'inr' && inrInput.value !== '') {
-                nprInput.value = (parseFloat(nprInput.value) * conversionRate).toFixed(2);
+                nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
             }
         }
     }
@@ -681,19 +680,16 @@
         document.getElementById('total-savings-display').innerText = currSymbol + totalSavings.toLocaleString();
     }
 
-    // Dynamic Overview / Index Dashboard Syncing Function
     function saveToLocalStorage() {
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_savings', JSON.stringify(savings));
 
-        // Total Calc for Index Overview Dashboard
         let netIncomeTotal = incomes.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
         let netSavingsTotal = savings.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
         localStorage.setItem('overview_total_income', netIncomeTotal);
         localStorage.setItem('overview_total_savings', netSavingsTotal);
 
-        // Sync structure with overall stats
         const overviewData = JSON.parse(localStorage.getItem('overview_stats') || '{}');
         overviewData.totalIncome = netIncomeTotal;
         overviewData.totalSavings = netSavingsTotal;
@@ -701,7 +697,6 @@
         localStorage.setItem('overview_stats', JSON.stringify(overviewData));
     }
 
-    // CSV Download Function
     function exportToCSV() {
         if (incomes.length === 0 && savings.length === 0) {
             showToast("Export गर्न कुनै रेकर्ड छैन!", "warning");
@@ -724,7 +719,6 @@
         showToast("CSV फाईल डाउनलोड भयो!", "success");
     }
 
-    // Firebase Sync / Restore Functions
     function syncWithFirebase() {
         showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
         setTimeout(() => {
@@ -739,7 +733,6 @@
         }, 1000);
     }
 
-    // Initialize Page
     applySettings();
     renderIncomeTable();
     renderSavingsTable();
