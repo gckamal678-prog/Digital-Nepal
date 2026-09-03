@@ -38,12 +38,12 @@
         .more-text.show { display: block; }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-24 transition-colors duration-300 w-full min-h-screen m-0">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-32 transition-colors duration-300 w-full min-h-screen m-0 relative">
 
-<!-- Custom Toast Notification Container -->
-<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+<!-- Custom Toast Notification Container (डोमेन अलर्ट हटाउनका लागि) -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- Custom Master Reset Confirmation Modal (Domain Alert नआउनका लागि) -->
+<!-- Master Reset Confirmation Modal -->
 <div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
         <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<div class="space-y-4 w-full flex-1 mt-1">
+<div class="space-y-4 w-full flex-1 mt-1 max-w-4xl mx-auto">
     
     <!-- 1. APPEARANCE & THEME SECTION -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
@@ -141,7 +141,7 @@
         </div>
     </div>
 
-    <!-- 4. DATA MANAGEMENT & BACKUP SECTION (WITH FIREBASE BUTTONS) -->
+    <!-- 4. DATA MANAGEMENT & BACKUP SECTION (FIREBASE BUttons थप गरिएको) -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-database text-indigo-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
@@ -162,7 +162,7 @@
         </div>
 
         <!-- Cloud Firebase Sync Options -->
-        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
             <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2">Cloud Backup (Firebase Database)</label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
@@ -203,18 +203,22 @@
         </div>
     </div>
 
-    <!-- 6. FOOTER ABOUT SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 text-center transition-colors duration-300">
-        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider" data-i18n="about_title">ABOUT DIGITAL NOTEBOOK</h4>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400" data-i18n="about_desc">Professional Offline Notebook & Transaction Studio built with Tailwind CSS.</p>
-        <div class="pt-2">
-            <button onclick="checkForUpdates()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow-lg shadow-indigo-600/25 transition">
-                <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[10px] font-normal opacity-80">(Check Update)</span>
+</div>
+
+<!-- 6. ALWAYS VISIBLE FIXED FOOTER (कुनै पनि पानामा जाँदा सधैं देखिने गराइएको) -->
+<footer class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 z-40 text-center shadow-lg transition-colors duration-300">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-2">
+        <div class="text-left">
+            <h4 class="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider" data-i18n="about_title">ABOUT DIGITAL NOTEBOOK</h4>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400" data-i18n="about_desc">Professional Offline Notebook & Transaction Studio built with Tailwind CSS.</p>
+        </div>
+        <div>
+            <button onclick="checkForUpdates()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-xl text-xs shadow-md shadow-indigo-600/20 transition">
+                <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[9px] font-normal opacity-80">(Check Update)</span>
             </button>
         </div>
     </div>
-
-</div>
+</footer>
 
 <!-- Firebase Config & Sync JS Module Integration -->
 <script type="module">
@@ -233,7 +237,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Sync LocalStorage to Firebase
+    // Sync LocalStorage to Firebase Cloud
     document.getElementById('btn-cloud-backup').addEventListener('click', async () => {
         showToast("Cloud Backup सुरु हुँदैछ...");
         try {
@@ -249,7 +253,7 @@
         }
     });
 
-    // Restore Data from Firebase to LocalStorage
+    // Restore Data from Firebase Cloud to LocalStorage
     document.getElementById('btn-cloud-restore').addEventListener('click', async () => {
         showToast("Cloud बाट Restore गरिँदैछ...");
         try {
@@ -272,11 +276,11 @@
 </script>
 
 <script>
-    // Custom Toast Function (Standard alert replace गर्न)
+    // Custom Toast Function (Standard Alert र Domain popup हटाउनका लागि)
     function showToast(msg, type = "info") {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
-        toast.className = `p-3 rounded-xl text-xs font-semibold text-white shadow-lg transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 ${
+        toast.className = `p-3 rounded-xl text-xs font-semibold text-white shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 pointer-events-auto ${
             type === "error" ? "bg-red-600" : "bg-emerald-600"
         }`;
         toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> <span>${msg}</span>`;
@@ -470,7 +474,7 @@
         reader.readAsText(file);
     }
 
-    // Modal Control for Master Reset (Domain Popup हटाउनका लागि)
+    // Modal Control for Master Reset
     function openResetModal() {
         document.getElementById('reset-input').value = '';
         document.getElementById('reset-modal').classList.remove('hidden');
