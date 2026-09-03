@@ -8,26 +8,8 @@
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
-    <script>
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        if (savedTheme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
-
-        const savedFontSize = localStorage.getItem('font_size') || 'normal';
-        if (savedFontSize === 'small') {
-            document.documentElement.style.fontSize = '14px';
-        } else if (savedFontSize === 'extra') {
-            document.documentElement.style.fontSize = '20px';
-        } else {
-            document.documentElement.style.fontSize = '16px';
-        }
-
-        const savedFontFamily = localStorage.getItem('font_family') || 'Canva Sans';
-        document.write(`<style>body { font-family: '${savedFontFamily}', sans-serif; }</style>`);
-    </script>
+    <!-- Global Settings Bridge Load -->
+    <script src="global-settings.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -38,9 +20,9 @@
         .more-text.show { display: block; }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-32 transition-colors duration-300 w-full min-h-screen m-0 relative">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-36 transition-colors duration-300 w-full min-h-screen m-0 relative">
 
-<!-- Custom Toast Notification Container (डोमेन अलर्ट हटाउनका लागि) -->
+<!-- Custom Toast Notification Container -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 <!-- Master Reset Confirmation Modal -->
@@ -141,7 +123,7 @@
         </div>
     </div>
 
-    <!-- 4. DATA MANAGEMENT & BACKUP SECTION (FIREBASE BUttons थप गरिएको) -->
+    <!-- 4. DATA MANAGEMENT & BACKUP SECTION -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-database text-indigo-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
@@ -201,22 +183,44 @@
                 <button onclick="toggleText('terms-np')" id="toggle-btn-terms-np" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline">See More (थप हेर्नुहोस्)</button>
             </div>
         </div>
-    </div>
-
-</div>
-
-<!-- 6. ALWAYS VISIBLE FIXED FOOTER (कुनै पनि पानामा जाँदा सधैं देखिने गराइएको) -->
-<footer class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 z-40 text-center shadow-lg transition-colors duration-300">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-2">
-        <div class="text-left">
-            <h4 class="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wider" data-i18n="about_title">ABOUT DIGITAL NOTEBOOK</h4>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400" data-i18n="about_desc">Professional Offline Notebook & Transaction Studio built with Tailwind CSS.</p>
-        </div>
-        <div>
+        
+        <div class="pt-2 text-center border-t border-slate-100 dark:border-slate-800">
             <button onclick="checkForUpdates()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-xl text-xs shadow-md shadow-indigo-600/20 transition">
                 <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[9px] font-normal opacity-80">(Check Update)</span>
             </button>
         </div>
+    </div>
+
+</div>
+
+<!-- 6. BOTTOM NAVIGATION BAR WITH FOOTER LINKS -->
+<footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50 transition-colors duration-300">
+    <div class="max-w-md mx-auto flex justify-between items-center text-center">
+        <!-- Overview -->
+        <a href="index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-chart-column text-base"></i>
+            <span class="text-[10px] font-medium">Overview</span>
+        </a>
+        <!-- Txns -->
+        <a href="transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-money-bill-transfer text-base"></i>
+            <span class="text-[10px] font-medium">Txns</span>
+        </a>
+        <!-- Saving -->
+        <a href="savings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-piggy-bank text-base"></i>
+            <span class="text-[10px] font-medium">Saving</span>
+        </a>
+        <!-- Note Pad -->
+        <a href="notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <i class="fa-solid fa-note-sticky text-base"></i>
+            <span class="text-[10px] font-medium">Note Pad</span>
+        </a>
+        <!-- Setting (Active) -->
+        <a href="settings.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+            <i class="fa-solid fa-gear text-base"></i>
+            <span class="text-[10px]">Setting</span>
+        </a>
     </div>
 </footer>
 
@@ -276,7 +280,7 @@
 </script>
 
 <script>
-    // Custom Toast Function (Standard Alert र Domain popup हटाउनका लागि)
+    // Custom Toast Function
     function showToast(msg, type = "info") {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -308,9 +312,7 @@
             data_management: "Data Management & Backup",
             btn_backup: "Backup JSON",
             btn_restore: "Restore JSON",
-            btn_reset: "Master Reset",
-            about_title: "ABOUT DIGITAL NOTEBOOK",
-            about_desc: "Professional Offline Notebook & Transaction Studio built with Tailwind CSS."
+            btn_reset: "Master Reset"
         },
         np: {
             appearance_title: "रूप र थिम (Appearance & Theme)",
@@ -323,14 +325,12 @@
             data_management: "डाटा व्यवस्थापन र ब्याकअप",
             btn_backup: "ब्याकअप JSON",
             btn_restore: "रिस्टोर JSON",
-            btn_reset: "मास्टर रिसेट",
-            about_title: "डिजिटल नोटबुकको बारेमा",
-            about_desc: "टेलरविन्ड सीएसएसद्वारा निर्मित व्यावसायिक अफलाइन नोटबुक।"
+            btn_reset: "मास्टर रिसेट"
         }
     };
 
     function t(key) {
-        const lang = localStorage.getItem('language') || 'en';
+        const lang = GlobalSettings.get('language', 'en');
         return translations[lang][key] || translations['en'][key] || key;
     }
 
@@ -340,39 +340,38 @@
     });
 
     function loadSettingsToUI() {
-        const lang = localStorage.getItem('language') || 'en';
+        const lang = GlobalSettings.get('language', 'en');
         document.getElementById('language-select').value = lang;
 
-        const theme = localStorage.getItem('theme') || 'dark';
+        const theme = GlobalSettings.get('theme', 'dark');
         updateThemeButtonUI(theme);
 
-        const curr = localStorage.getItem('currency') || 'NPR';
+        const curr = GlobalSettings.get('currency', 'NPR');
         document.getElementById('currency-select').value = curr;
 
-        const fSize = localStorage.getItem('font_size') || 'normal';
+        const fSize = GlobalSettings.get('font_size', 'normal');
         document.getElementById('font-size-select').value = fSize;
 
-        const fFamily = localStorage.getItem('font_family') || 'Canva Sans';
+        const fFamily = GlobalSettings.get('font_family', 'Canva Sans');
         document.getElementById('font-family-select').value = fFamily;
 
-        const fStyle = localStorage.getItem('font_style') || 'normal';
+        const fStyle = GlobalSettings.get('font_style', 'normal');
         document.getElementById('font-style-select').value = fStyle;
-        applyFontStyleToBody(fStyle);
     }
 
     function applySettings() {
-        const lang = localStorage.getItem('language') || 'en';
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if(t(key)) el.innerText = t(key);
         });
     }
 
+    // UPDATED WITH GLOBALSETTINGS BRIDGE
     function toggleTheme() {
-        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let currentTheme = GlobalSettings.get('theme', 'dark');
         let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', newTheme);
-        setTimeout(() => location.reload(), 150);
+        GlobalSettings.set('theme', newTheme);
+        updateThemeButtonUI(newTheme);
     }
 
     function updateThemeButtonUI(theme) {
@@ -388,59 +387,29 @@
     }
 
     function changeLanguage(lang) {
-        localStorage.setItem('language', lang);
-        setTimeout(() => location.reload(), 150);
+        GlobalSettings.set('language', lang);
+        applySettings();
     }
 
     function changeFontSize(size) {
-        localStorage.setItem('font_size', size);
-        setTimeout(() => location.reload(), 150);
+        GlobalSettings.set('font_size', size);
     }
 
     function changeFontFamily(family) {
-        localStorage.setItem('font_family', family);
-        setTimeout(() => location.reload(), 150);
+        GlobalSettings.set('font_family', family);
     }
 
     function changeFontStyle(style) {
-        localStorage.setItem('font_style', style);
-        applyFontStyleToBody(style);
-    }
-
-    function applyFontStyleToBody(style) {
-        if(style === 'bold') {
-            document.body.style.fontWeight = '700';
-            document.body.style.fontStyle = 'normal';
-        } else if(style === 'italic') {
-            document.body.style.fontWeight = '400';
-            document.body.style.fontStyle = 'italic';
-        } else {
-            document.body.style.fontWeight = '400';
-            document.body.style.fontStyle = 'normal';
-        }
+        GlobalSettings.set('font_style', style);
     }
 
     function setTextEffect(effect) {
-        const body = document.body;
-        body.style.textShadow = '';
-        body.style.backgroundColor = '';
-        body.style.webkitTextStroke = '';
-        body.style.color = '';
-
-        if(effect === 'shadow') {
-            body.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
-        } else if(effect === 'outline') {
-            body.style.webkitTextStroke = '0.5px currentColor';
-        } else if(effect === 'background') {
-            body.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
-        } else if(effect === 'hollow') {
-            body.style.webkitTextStroke = '1px currentColor';
-            body.style.color = 'transparent';
-        }
+        GlobalSettings.set('text_effect', effect);
+        showToast("Text Effect Updated!");
     }
 
     function saveCurrency(curr) {
-        localStorage.setItem('currency', curr);
+        GlobalSettings.set('currency', curr);
         showToast("Currency Updated!");
     }
 
@@ -474,7 +443,6 @@
         reader.readAsText(file);
     }
 
-    // Modal Control for Master Reset
     function openResetModal() {
         document.getElementById('reset-input').value = '';
         document.getElementById('reset-modal').classList.remove('hidden');
