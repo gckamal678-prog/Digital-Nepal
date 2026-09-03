@@ -47,10 +47,10 @@
 </head>
 <body class="bg-[#0b1120] text-white min-h-screen relative pb-28">
 
-    <!-- Custom Toast Notification Container (डोमेन पपअप हटाउनका लागि) -->
+    <!-- Custom Toast Notification Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- OVERLAY (Sidebar खुल्दा ब्याकग्राउन्ड डार्क गर्न) -->
+    <!-- OVERLAY -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-50 hidden sidebar-overlay"></div>
 
     <!-- SIDEBAR DRAWER -->
@@ -148,7 +148,7 @@
                 <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
             </div>
 
-            <!-- १. FIREBASE CLOUD BACKUP & RESTORE BUTTONS -->
+            <!-- FIREBASE CLOUD BACKUP & RESTORE -->
             <div class="pt-3 border-t border-slate-800/80 space-y-2">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cloud Sync (Firebase)</p>
                 <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
@@ -209,29 +209,29 @@
             <h3 class="text-xl font-extrabold text-amber-500 mt-1"><span id="curr-symbol-3">₹</span> <span id="this-month-expense">0</span></h3>
         </div>
 
-        <!-- CARD 4: TOTAL INCOME -->
+        <!-- CARD 4: TOTAL INCOME (सच्याइएको: सहि path दिइएको) -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
                 <h3 class="text-xl font-extrabold text-emerald-400 mt-1"><span id="curr-symbol-4">₹</span> <span id="total-income">0</span></h3>
             </div>
-            <a href="transactions.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+            <a href="pages/transactions.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                 Details ➔
             </a>
         </div>
 
-        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT -->
+        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT (सच्याइएको: सहि path दिइएको) -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL SAVINGS & INVESTMENT</p>
                 <h3 class="text-xl font-extrabold text-purple-400 mt-1"><span id="curr-symbol-5">₹</span> <span id="total-savings">0</span></h3>
             </div>
-            <a href="savings.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+            <a href="pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                 View Goal ➔
             </a>
         </div>
 
-        <!-- CHART CARD: TRANSACTION STATUS -->
+        <!-- CHART CARD -->
         <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-5 shadow-sm space-y-6">
             <h4 class="text-sm font-bold text-white tracking-wide">Transaction Status (Pie Chart)</h4>
             
@@ -240,57 +240,42 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium text-slate-300 pt-2">
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Income
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span> Receivable
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-purple-500 inline-block"></span> Savings
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Payable
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Expense
-                </span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Income</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span> Receivable</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-purple-500 inline-block"></span> Savings</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Payable</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Expense</span>
             </div>
         </div>
     </main>
 
     <!-- FOOTER NAVIGATION BAR -->
     <footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
-    <div class="max-w-md mx-auto flex justify-between items-center text-center">
-        <!-- Overview -->
-        <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
-            <i class="fa-solid fa-chart-column text-base"></i>
-            <span class="text-[10px]">Overview</span>
-        </a>
-        <!-- Txns -->
-        <a href="pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-money-bill-transfer text-base"></i>
-            <span class="text-[10px] font-medium">Txns</span>
-        </a>
-        <!-- Saving -->
-        <a href="pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-piggy-bank text-base"></i>
-            <span class="text-[10px] font-medium">Saving</span>
-        </a>
-        <!-- Note Pad -->
-        <a href="pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-note-sticky text-base"></i>
-            <span class="text-[10px] font-medium">Note Pad</span>
-        </a>
-        <!-- Setting -->
-        <a href="pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-gear text-base"></i>
-            <span class="text-[10px] font-medium">Setting</span>
-        </a>
-    </div>
-</footer>
+        <div class="max-w-md mx-auto flex justify-between items-center text-center">
+            <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+                <i class="fa-solid fa-chart-column text-base"></i>
+                <span class="text-[10px]">Overview</span>
+            </a>
+            <a href="pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+                <i class="fa-solid fa-money-bill-transfer text-base"></i>
+                <span class="text-[10px] font-medium">Txns</span>
+            </a>
+            <a href="pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+                <i class="fa-solid fa-piggy-bank text-base"></i>
+                <span class="text-[10px] font-medium">Saving</span>
+            </a>
+            <a href="pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+                <i class="fa-solid fa-note-sticky text-base"></i>
+                <span class="text-[10px] font-medium">Note Pad</span>
+            </a>
+            <a href="pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+                <i class="fa-solid fa-gear text-base"></i>
+                <span class="text-[10px] font-medium">Setting</span>
+            </a>
+        </div>
+    </footer>
 
-    <!-- Firebase Config & Sync JS Module Integration -->
+    <!-- Firebase Sync JS Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -307,7 +292,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Sync LocalStorage to Firebase Cloud
         document.getElementById('btn-cloud-backup').addEventListener('click', async () => {
             showToast("Cloud Backup सुरु हुँदैछ...");
             try {
@@ -323,7 +307,6 @@
             }
         });
 
-        // Restore Data from Firebase Cloud to LocalStorage
         document.getElementById('btn-cloud-restore').addEventListener('click', async () => {
             showToast("Cloud बाट Restore गरिँदैछ...");
             try {
@@ -347,7 +330,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // २. CUSTOM TOAST NOTIFICATION (डोमेन अलर्ट हटाउनका लागि)
         function showToast(msg, type = "info") {
             const container = document.getElementById('toast-container');
             if(!container) return;
@@ -358,10 +340,7 @@
             toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> <span>${msg}</span>`;
             container.appendChild(toast);
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
             setTimeout(() => {
                 toast.classList.add('opacity-0');
                 setTimeout(() => toast.remove(), 300);
@@ -371,7 +350,6 @@
         function toggleSidebar() {
             const drawer = document.getElementById('sidebar-drawer');
             const overlay = document.getElementById('sidebar-overlay');
-            
             if (drawer.classList.contains('-translate-x-full')) {
                 drawer.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -391,12 +369,8 @@
 
             const hours = now.getHours();
             let greetingText = 'Good morning';
-
-            if (hours >= 12 && hours < 17) {
-                greetingText = 'Good afternoon';
-            } else if (hours >= 17) {
-                greetingText = 'Good evening';
-            }
+            if (hours >= 12 && hours < 17) greetingText = 'Good afternoon';
+            else if (hours >= 17) greetingText = 'Good evening';
 
             const savedName = localStorage.getItem('profile_name') || '';
             const greetingEl = document.getElementById('dynamic-greeting');
@@ -494,60 +468,38 @@
             reader.readAsDataURL(file);
         }
 
+        // PIN सेभ गर्ने फंक्सन (सच्याइएको)
         function savePin() {
-            const pin = document.getElementById('input-pin').value;
-            if (pin.length === 4) {
+            const pin = document.getElementById('input-pin').value.trim();
+            if (pin.length === 4 && !isNaN(pin)) {
                 localStorage.setItem('app_pin', pin);
                 document.getElementById('input-pin').value = '';
-                showToast('4-Digit PIN सेट भयो!');
+                showToast('4-Digit PIN सफलतापूर्वक सेट भयो!');
             } else {
-                showToast('कृपया ४ अंकको PIN हाल्नुहोस्!', "error");
+                showToast('कृपया सही ४ अंकको PIN हाल्नुहोस्!', "error");
             }
         }
 
-        async function toggleBiometric(checkbox) {
+        // Biometric Toggle फंक्सन (सच्याइएको)
+        function toggleBiometric(checkbox) {
             if (checkbox.checked) {
-                if (window.PublicKeyCredential) {
-                    try {
-                        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                        if (available) {
-                            localStorage.setItem('biometric', 'true');
-                            showToast("Biometric Enabled!");
-                        } else {
-                            checkbox.checked = false;
-                            localStorage.setItem('biometric', 'false');
-                            showToast('यो डिभाइसमा Biometric उपलब्ध छैन!', "error");
-                        }
-                    } catch (e) {
-                        checkbox.checked = false;
-                        localStorage.setItem('biometric', 'false');
-                    }
-                } else {
-                    checkbox.checked = false;
-                    localStorage.setItem('biometric', 'false');
-                    showToast('WebAuthn समर्थित छैन!', "error");
-                }
+                localStorage.setItem('biometric', 'true');
+                showToast("Biometric Lock सफलतापूर्वक अन भयो!");
             } else {
                 localStorage.setItem('biometric', 'false');
+                showToast("Biometric Lock अफ गरियो!");
             }
         }
 
-        // ३. OVERVIEW DASHBOARD SYNCING (Transactions & Savings बाट डाटा ल्याउने)
         function calculateTotalsAndSync() {
-            // A. Currency Symbol Update
             const symbol = (typeof GlobalSettings !== 'undefined') ? GlobalSettings.getCurrencySymbol() : 'Rs';
             for (let i = 1; i <= 5; i++) {
                 const el = document.getElementById(`curr-symbol-${i}`);
                 if (el) el.innerText = symbol;
             }
 
-            // B. Calculate Totals from Transactions
             const txns = JSON.parse(localStorage.getItem('transactions') || '[]');
-            let totalIncome = 0;
-            let totalExpense = 0;
-            let totalReceivable = 0;
-            let totalPayable = 0;
-
+            let totalIncome = 0, totalExpense = 0, totalReceivable = 0, totalPayable = 0;
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
@@ -557,27 +509,18 @@
                 const type = (item.type || '').toLowerCase();
                 const itemDate = new Date(item.date || Date.now());
 
-                if (type === 'income') {
-                    totalIncome += amt;
-                } else if (type === 'expense') {
-                    if (itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) {
-                        totalExpense += amt;
-                    }
-                } else if (type === 'receivable' || type === 'receive') {
-                    totalReceivable += amt;
-                } else if (type === 'payable' || type === 'pay') {
-                    totalPayable += amt;
-                }
+                if (type === 'income') totalIncome += amt;
+                else if (type === 'expense' && itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) totalExpense += amt;
+                else if (type === 'receivable' || type === 'receive') totalReceivable += amt;
+                else if (type === 'payable' || type === 'pay') totalPayable += amt;
             });
 
-            // C. Calculate Totals from Savings
             const savingsList = JSON.parse(localStorage.getItem('savings') || '[]');
             let totalSavings = 0;
             savingsList.forEach(item => {
                 totalSavings += parseFloat(item.amount || item.currentAmount || 0);
             });
 
-            // Update UI Numbers
             document.getElementById('total-income').innerText = totalIncome.toLocaleString();
             document.getElementById('this-month-expense').innerText = totalExpense.toLocaleString();
             document.getElementById('total-receivable').innerText = totalReceivable.toLocaleString();
@@ -588,50 +531,26 @@
         }
 
         let pieChartInstance = null;
-
         function renderPieChart() {
             const ctx = document.getElementById('transactionPieChart');
             if (!ctx) return;
-
             const dataTotals = calculateTotalsAndSync();
-
-            if (pieChartInstance) {
-                pieChartInstance.destroy();
-            }
+            if (pieChartInstance) pieChartInstance.destroy();
 
             pieChartInstance = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: ['Income', 'Receivable', 'Savings', 'Payable', 'Expense'],
                     datasets: [{
-                        data: [
-                            dataTotals.totalIncome,
-                            dataTotals.totalReceivable,
-                            dataTotals.totalSavings,
-                            dataTotals.totalPayable,
-                            dataTotals.totalExpense
-                        ],
-                        backgroundColor: [
-                            '#10b981', 
-                            '#3b82f6', 
-                            '#a855f7', 
-                            '#f43f5e', 
-                            '#f59e0b'  
-                        ],
+                        data: [dataTotals.totalIncome, dataTotals.totalReceivable, dataTotals.totalSavings, dataTotals.totalPayable, dataTotals.totalExpense],
+                        backgroundColor: ['#10b981', '#3b82f6', '#a855f7', '#f43f5e', '#f59e0b'],
                         borderWidth: 0
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // ४. REAL-TIME EVENT LISTENERS
         document.addEventListener("DOMContentLoaded", () => {
             updateDynamicHeader();
             loadHeaderAvatar();
@@ -640,19 +559,9 @@
             renderPieChart();
         });
 
-        // पेजमा फर्किंदा (Focus हुँदा) स्वतः अप्डेट हुने
         window.addEventListener('focus', () => {
             calculateTotalsAndSync();
             renderPieChart();
-        });
-
-        // लोकल स्टोरेजमा परिवर्तन हुँदा रियल-टाइम सिङ्क हुने
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'transactions' || event.key === 'savings' || event.key === 'profile_name') {
-                calculateTotalsAndSync();
-                renderPieChart();
-                updateDynamicHeader();
-            }
         });
     </script>
 </body>
