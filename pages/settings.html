@@ -20,7 +20,7 @@
         .more-text.show { display: block; }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-12 transition-colors duration-300 w-full min-h-screen m-0 relative">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-16 transition-colors duration-300 w-full min-h-screen m-0 relative">
 
 <!-- Custom Toast Notification Container -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -191,34 +191,34 @@
         </div>
     </div>
 
-    <!-- 6. FEEDBACK SECTION -->
+    <!-- 6. FEEDBACK & FOOTER SECTION -->
     <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <h2 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-comments text-indigo-500"></i> प्रतिक्रिया तथा सुझाव (Feedback)
-        </h2>
-        <p class="text-xs text-slate-600 dark:text-slate-400">
-            तपाईंलाई यो एप कस्तो लाग्यो? थप सुधारका लागि आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:
-        </p>
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">तपाईंलाई यो एप कस्तो लाग्यो? थप सुधारका लागि आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:</p>
 
         <form onsubmit="handleFeedback(event)" class="space-y-3">
             <div>
                 <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">तपाईंको नाम:</label>
-                <input type="text" id="fb-name" required placeholder="तपाईंको नाम लेख्नुहोस्" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                <input type="text" id="fb-name" required placeholder="तपाईंको नाम लेख्नुहोस्" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
                 <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">सुझाव वा प्रतिक्रिया:</label>
-                <textarea id="fb-msg" rows="3" required placeholder="तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्..." class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none"></textarea>
+                <textarea id="fb-msg" rows="3" required placeholder="तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्..." class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">
-                पठाउनुहोस्
-            </button>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">पठाउनुहोस्</button>
         </form>
-    </div>
 
-    <!-- FOOTER / COPYRIGHT SECTION -->
-    <div class="text-center text-xs text-slate-500 dark:text-slate-400 py-4 space-y-1">
-        <p>Visits: <a href="https://kamalgc.com.np" target="_blank" class="text-indigo-500 hover:underline">kamalgc.com.np</a> | <a href="https://info.kamalgc.com.np" target="_blank" class="text-indigo-500 hover:underline">info.kamalgc.com.np</a></p>
-        <p>©️ 2026 Digital Notebook. All Rights Reserved.</p>
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-center space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+            <p>Support: <a href="https://Support.kamalgc.com.np" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Support.kamalgc.com.np</a></p>
+            <div class="flex justify-center gap-3 font-medium">
+                <a href="https://kamalgc.com.np" target="_blank" class="hover:underline text-indigo-600 dark:text-indigo-400">kamalgc.com.np</a>
+                <span>•</span>
+                <a href="https://info.kamalgc.com.np" target="_blank" class="hover:underline text-indigo-600 dark:text-indigo-400">info.kamalgc.com.np</a>
+            </div>
+            <p class="pt-1 text-[10px] text-slate-400">©️ 2026 Digital Notebook. All Rights Reserved.</p>
+        </div>
     </div>
 
 </div>
@@ -226,7 +226,7 @@
 <!-- Firebase Config & Sync JS Module Integration -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
@@ -276,6 +276,32 @@
             showToast("Restore Error: " + error.message, "error");
         }
     });
+
+    // Real Feedback Handler Submission to Firebase Realtime Database
+    window.handleFeedback = async function(event) {
+        event.preventDefault();
+        const name = document.getElementById('fb-name').value.trim();
+        const message = document.getElementById('fb-msg').value.trim();
+
+        if(!name || !message) {
+            showToast("कृपया सबै फिल्डहरू भर्नुहोस्!", "error");
+            return;
+        }
+
+        try {
+            const feedbackRef = ref(db, 'feedbacks');
+            await push(feedbackRef, {
+                name: name,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+            showToast("तपाईँको प्रतिक्रिया सफलतापूर्वक पठाइयो!");
+            document.getElementById('fb-name').value = '';
+            document.getElementById('fb-msg').value = '';
+        } catch (error) {
+            showToast("पठाउन असफल भयो: " + error.message, "error");
+        }
+    }
 </script>
 
 <script>
@@ -480,21 +506,6 @@
         setTimeout(() => {
             statusText.innerText = "(You are on v2.5 - Up to date!)";
         }, 1000);
-    }
-
-    // Handle Feedback to support site
-    function handleFeedback(event) {
-        event.preventDefault();
-        const name = document.getElementById('fb-name').value;
-        const msg = document.getElementById('fb-msg').value;
-        
-        // Redirect to support portal with query params or handle submission
-        const supportUrl = `https://support.kamalgc.com.np/?name=${encodeURIComponent(name)}&message=${encodeURIComponent(msg)}`;
-        window.open(supportUrl, '_blank');
-        showToast("प्रतिक्रिया पठाउनका लागि रिडाइरेक्ट गरिँदैछ...");
-        
-        document.getElementById('fb-name').value = '';
-        document.getElementById('fb-msg').value = '';
     }
 </script>
 
