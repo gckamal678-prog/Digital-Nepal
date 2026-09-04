@@ -3,6 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NoteBook">
+<link rel="apple-touch-icon" href="N1024.png">
+<meta name="keywords" content="digital notebook, transaction manager, nepali finance app, income expense tracker, note taking app, kamal gc">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dn.kamalgc.com.np">
+<meta property="og:title" content="Digital NoteBook - Transactions & Notes">
+<meta property="og:description" content="Manage your daily transactions, receivables, payables, and personal notes securely in one place.">
+<meta property="og:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Digital NoteBook">
+<meta name="twitter:description" content="Digital notebook and transaction management application.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
+
 <meta name="description" content="Digital notebook and transaction management application.">
 <meta name="author" content="Kamal GC">
 <meta name="theme-color" content="#090d16">
@@ -601,8 +624,12 @@ tailwind.config = {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const dateString = now.toLocaleDateString('en-US', options).toUpperCase();
+        
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+
         const dateEl = document.getElementById('dynamic-date');
-        if (dateEl) dateEl.innerText = dateString;
+        if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
 
         const hours = now.getHours();
         let greetingText = 'Good morning';
@@ -618,6 +645,9 @@ tailwind.config = {
             greetingEl.innerText = savedName ? `${greetingText}, ${savedName}` : greetingText;
         }
     }
+
+    // Update time every second to keep it live next to the date
+    setInterval(updateDynamicHeader, 1000);
 
     function handleAvatarUpload(event) {
         const file = event.target.files[0];
@@ -667,7 +697,7 @@ tailwind.config = {
                     localStorage.setItem('biometric', 'false');
                 }
             } else {
-                checkbox.checked, checkbox.checked = false;
+                checkbox.checked = false;
                 localStorage.setItem('biometric', 'false');
                 showToast('Biometric is not supported.');
             }
