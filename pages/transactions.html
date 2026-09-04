@@ -35,7 +35,7 @@
     </style>
 </head>
 
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-12 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
 
 <div class="space-y-4 w-full flex-1">
     
@@ -168,37 +168,6 @@
 
 <!-- Custom Toast Message -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-<!-- Sticky / Permanent Footer Bar -->
-<footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
-    <div class="max-w-md mx-auto flex justify-between items-center text-center">
-        <!-- Overview -->
-        <a href="../index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-chart-column text-base"></i>
-            <span class="text-[10px] font-medium">Overview</span>
-        </a>
-        <!-- Txns (Active) -->
-        <a href="transactions.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
-            <i class="fa-solid fa-money-bill-transfer text-base"></i>
-            <span class="text-[10px]">Txns</span>
-        </a>
-        <!-- Saving -->
-        <a href="cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-piggy-bank text-base"></i>
-            <span class="text-[10px] font-medium">Saving</span>
-        </a>
-        <!-- Note Pad -->
-        <a href="notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-note-sticky text-base"></i>
-            <span class="text-[10px] font-medium">Note Pad</span>
-        </a>
-        <!-- Setting -->
-        <a href="settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-gear text-base"></i>
-            <span class="text-[10px] font-medium">Setting</span>
-        </a>
-    </div>
-</footer>
 
 <!-- Modal Dialog -->
 <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
@@ -384,7 +353,6 @@
     function saveTransactionsToStorage() {
         localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
         
-        // Overview पेजसँग सिङ्क गर्न 'transactions' key मा पनि राख्ने
         const formattedTxns = allTransactions.map(item => ({
             amount: parseFloat(item.total || item.amount || 0),
             type: item.type.toLowerCase(),
