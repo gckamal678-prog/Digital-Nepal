@@ -60,20 +60,20 @@
         
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
             <!-- Firebase Buttons -->
-            <button type="button" onclick="syncWithFirebase()" class="bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+            <button type="button" onclick="syncWithFirebase()" class="bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Sync Firebase
             </button>
-            <button type="button" onclick="restoreFromFirebase()" class="bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+            <button type="button" onclick="restoreFromFirebase()" class="bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-cloud-arrow-down text-amber-500"></i> Restore Firebase
             </button>
-            <button type="button" onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition font-medium">
+            <button type="button" onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-file-csv text-indigo-500"></i> Export CSV
             </button>
 
             <!-- Monthly Filter Dropdown -->
             <div class="flex items-center gap-2 w-full md:w-auto pt-2 md:pt-0">
                 <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
-                <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-3 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-auto">
+                <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-2.5 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
                 <button onclick="clearMonthFilter()" class="text-[11px] text-slate-500 hover:text-indigo-500 underline whitespace-nowrap" data-i18n="show_all">Show All</button>
             </div>
         </div>
@@ -98,33 +98,37 @@
                 <i class="fa-solid fa-circle-plus text-emerald-600"></i> <span data-i18n="add_income_title">Add Income</span>
             </h3>
             <div class="w-full md:w-56">
-                <input type="text" id="search-income" placeholder="Search income source..." data-i18n-placeholder="search_income_ph" oninput="renderIncomeTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="text" id="search-income" placeholder="Search income source..." data-i18n-placeholder="search_income_ph" oninput="renderIncomeTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
             </div>
         </div>
 
         <form id="income-form" class="space-y-3" onsubmit="saveIncome(event)">
             <input type="hidden" id="edit-income-index" value="">
             <div>
-                <input type="text" id="income-source-name" placeholder="Income Source Name" data-i18n-placeholder="source_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="text" id="income-source-name" placeholder="Income Source Name" data-i18n-placeholder="source_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="any" id="income-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('income', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
-                        <input type="number" step="any" id="income-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('income', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="number" step="any" id="income-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('income', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
+                        <input type="number" step="any" id="income-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('income', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
                     </div>
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
-                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
                 </div>
             </div>
 
             <div class="flex gap-2 pt-2">
-                <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
-                <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-emerald-600/20" data-i18n="btn_add_income">Add Income</button>
+                <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition">
+                    <span data-i18n="btn_cancel">Cancel</span>
+                </button>
+                <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-emerald-600/20" data-i18n="btn_add_income">
+                    Add Income
+                </button>
             </div>
         </form>
 
@@ -150,7 +154,7 @@
                 <i class="fa-solid fa-circle-plus text-purple-600"></i> <span data-i18n="add_savings_title">Add Cashflow</span>
             </h3>
             <div class="w-full md:w-56">
-                <input type="text" id="search-savings" placeholder="Search cashflow title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                <input type="text" id="search-savings" placeholder="Search cashflow title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
             </div>
         </div>
 
@@ -158,10 +162,10 @@
             <input type="hidden" id="edit-savings-index" value="">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="md:col-span-2">
-                    <input type="text" id="savings-title" placeholder="Cashflow Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" id="savings-title" placeholder="Cashflow Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
                 </div>
                 <div>
-                    <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                    <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
                         <option value="Bank" data-i18n="cat_bank">🏦 Bank Account</option>
                         <option value="Cash" data-i18n="cat_cash">💵 Cash / Wallet</option>
                         <option value="Investment" data-i18n="cat_investment">📈 Shares / Investment</option>
@@ -174,19 +178,23 @@
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="any" id="savings-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('savings', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
-                        <input type="number" step="any" id="savings-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('savings', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                        <input type="number" step="any" id="savings-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('savings', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
+                        <input type="number" step="any" id="savings-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('savings', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
                     </div>
                 </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
-                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
                 </div>
             </div>
 
             <div class="flex gap-2 pt-2">
-                <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
-                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">Add Cashflow</button>
+                <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition">
+                    <span data-i18n="btn_cancel">Cancel</span>
+                </button>
+                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">
+                    Add Cashflow
+                </button>
             </div>
         </form>
 
@@ -224,8 +232,12 @@
         </div>
         <p id="modal-message" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Are you sure?</p>
         <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeCustomModal(false)" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium px-3 py-1.5 rounded-xl text-xs transition" data-i18n="btn_cancel">Cancel</button>
-            <button type="button" id="modal-btn-confirm" onclick="closeCustomModal(true)" class="bg-rose-600 hover:bg-rose-700 text-white font-medium px-3 py-1.5 rounded-xl text-xs shadow-lg shadow-rose-600/25 transition">Delete</button>
+            <button type="button" onclick="closeCustomModal(false)" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium px-3 py-1.5 rounded-xl text-xs transition">
+                <span data-i18n="btn_cancel">Cancel</span>
+            </button>
+            <button type="button" id="modal-btn-confirm" onclick="closeCustomModal(true)" class="bg-rose-600 hover:bg-rose-700 text-white font-medium px-3 py-1.5 rounded-xl text-xs shadow-lg shadow-rose-600/25 transition">
+                <span data-i18n="delete_btn">Delete</span>
+            </button>
         </div>
     </div>
 </div>
@@ -234,27 +246,27 @@
 <footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
     <div class="max-w-md mx-auto flex justify-between items-center text-center">
         <!-- Overview -->
-        <a href="../index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+        <a href="./index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
             <i class="fa-solid fa-chart-column text-base"></i>
             <span class="text-[10px] font-medium">Overview</span>
         </a>
         <!-- Txns -->
-        <a href="transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+        <a href="./transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
             <i class="fa-solid fa-money-bill-transfer text-base"></i>
             <span class="text-[10px] font-medium">Txns</span>
         </a>
         <!-- Cashflow (Active) -->
-        <a href="cashflow.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+        <a href="./cashflow.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
             <i class="fa-solid fa-piggy-bank text-base"></i>
             <span class="text-[10px]">Cashflow</span>
         </a>
         <!-- Note Pad -->
-        <a href="notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+        <a href="./notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
             <i class="fa-solid fa-note-sticky text-base"></i>
             <span class="text-[10px] font-medium">Note Pad</span>
         </a>
         <!-- Setting -->
-        <a href="settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+        <a href="./settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
             <i class="fa-solid fa-gear text-base"></i>
             <span class="text-[10px] font-medium">Setting</span>
         </a>
@@ -684,6 +696,24 @@
     function saveToLocalStorage() {
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_cashflow', JSON.stringify(savings));
+        
+        // Dashboard सँग sync गर्न transactions array मा पनि income थप्ने
+        const existingTxns = JSON.parse(localStorage.getItem('transactions') || '[]');
+        
+        // सबै Income को लागि नयाँ array बनाउने
+        const formattedIncomes = incomes.map(inc => ({
+            type: 'income',
+            amount: inc.amount,
+            date: inc.date,
+            name: inc.name
+        }));
+        
+        // अन्य transaction types राख्ने (Receivable, Payable, Expense)
+        const otherTxns = existingTxns.filter(tx => tx.type !== 'income');
+        
+        // सबै merge गरेर save गर्ने
+        const allTxns = [...formattedIncomes, ...otherTxns];
+        localStorage.setItem('transactions', JSON.stringify(allTxns));
     }
 
     function exportToCSV() {
