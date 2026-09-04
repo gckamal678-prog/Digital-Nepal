@@ -20,7 +20,7 @@
         .more-text.show { display: block; }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-36 transition-colors duration-300 w-full min-h-screen m-0 relative">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-3 md:p-6 pb-12 transition-colors duration-300 w-full min-h-screen m-0 relative">
 
 <!-- Custom Toast Notification Container -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -191,38 +191,37 @@
         </div>
     </div>
 
-</div>
+    <!-- 6. FEEDBACK SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        <h2 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-comments text-indigo-500"></i> प्रतिक्रिया तथा सुझाव (Feedback)
+        </h2>
+        <p class="text-xs text-slate-600 dark:text-slate-400">
+            तपाईंलाई यो एप कस्तो लाग्यो? थप सुधारका लागि आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:
+        </p>
 
-<!-- 6. BOTTOM NAVIGATION BAR WITH FOOTER LINKS -->
-<footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
-    <div class="max-w-md mx-auto flex justify-between items-center text-center">
-        <!-- Overview -->
-        <a href="../index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-chart-column text-base"></i>
-            <span class="text-[10px] font-medium">Overview</span>
-        </a>
-        <!-- Txns -->
-        <a href="transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-money-bill-transfer text-base"></i>
-            <span class="text-[10px] font-medium">Txns</span>
-        </a>
-        <!-- Saving -->
-        <a href="savings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-piggy-bank text-base"></i>
-            <span class="text-[10px] font-medium">Saving</span>
-        </a>
-        <!-- Note Pad -->
-        <a href="notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-note-sticky text-base"></i>
-            <span class="text-[10px] font-medium">Note Pad</span>
-        </a>
-        <!-- Setting (Active) -->
-        <a href="settings.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
-            <i class="fa-solid fa-gear text-base"></i>
-            <span class="text-[10px]">Setting</span>
-        </a>
+        <form onsubmit="handleFeedback(event)" class="space-y-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">तपाईंको नाम:</label>
+                <input type="text" id="fb-name" required placeholder="तपाईंको नाम लेख्नुहोस्" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">सुझाव वा प्रतिक्रिया:</label>
+                <textarea id="fb-msg" rows="3" required placeholder="तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्..." class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">
+                पठाउनुहोस्
+            </button>
+        </form>
     </div>
-</footer>
+
+    <!-- FOOTER / COPYRIGHT SECTION -->
+    <div class="text-center text-xs text-slate-500 dark:text-slate-400 py-4 space-y-1">
+        <p>Visits: <a href="https://kamalgc.com.np" target="_blank" class="text-indigo-500 hover:underline">kamalgc.com.np</a> | <a href="https://info.kamalgc.com.np" target="_blank" class="text-indigo-500 hover:underline">info.kamalgc.com.np</a></p>
+        <p>©️ 2026 Digital Notebook. All Rights Reserved.</p>
+    </div>
+
+</div>
 
 <!-- Firebase Config & Sync JS Module Integration -->
 <script type="module">
@@ -366,7 +365,6 @@
         });
     }
 
-    // UPDATED WITH GLOBALSETTINGS BRIDGE
     function toggleTheme() {
         let currentTheme = GlobalSettings.get('theme', 'dark');
         let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -482,6 +480,21 @@
         setTimeout(() => {
             statusText.innerText = "(You are on v2.5 - Up to date!)";
         }, 1000);
+    }
+
+    // Handle Feedback to support site
+    function handleFeedback(event) {
+        event.preventDefault();
+        const name = document.getElementById('fb-name').value;
+        const msg = document.getElementById('fb-msg').value;
+        
+        // Redirect to support portal with query params or handle submission
+        const supportUrl = `https://support.kamalgc.com.np/?name=${encodeURIComponent(name)}&message=${encodeURIComponent(msg)}`;
+        window.open(supportUrl, '_blank');
+        showToast("प्रतिक्रिया पठाउनका लागि रिडाइरेक्ट गरिँदैछ...");
+        
+        document.getElementById('fb-name').value = '';
+        document.getElementById('fb-msg').value = '';
     }
 </script>
 
