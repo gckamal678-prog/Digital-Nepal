@@ -1,87 +1,125 @@
-// global-settings.js - Centralized Theme, Typography, Font Style, and Settings Bridge
-class GlobalSettingsManager {
-    constructor() {
-        this.init();
-    }
+// Global App Configuration & Settings Bridge
+const GlobalSettings = {
+    // Get setting value from localStorage with defaults
+    get(key, defaultValue = null) {
+        return localStorage.getItem(key) !== null ? localStorage.getItem(key) : defaultValue;
+    },
 
-    init() {
-        // Apply saved settings immediately on script load
-        this.applyAll();
-        
-        // Listen for storage changes across tabs/pages
-        window.addEventListener('storage', (e) => {
-            if (e.key && e.key.startsWith('app_')) {
-                this.applyAll();
-            }
-        });
-    }
-
-    get(key, defaultValue) {
-        const val = localStorage.getItem('app_' + key);
-        return val !== null ? val : defaultValue;
-    }
-
+    // Set setting value to localStorage
     set(key, value) {
-        localStorage.setItem('app_' + key, value);
-        this.applyAll();
-    }
+        localStorage.setItem(key, value);
+        this.applyToDocument();
+    },
 
-    applyAll() {
-        this.applyTheme();
-        this.applyTypography();
-    }
+    // Get active currency symbol
+    getCurrencySymbol() {
+        const curr = this.get('currency', 'NPR');
+        return curr === 'INR' ? '₹' : 'Rs';
+    },
 
-    applyTheme() {
+    // Format money/amount with current currency
+    formatAmount(amount) {
+        const symbol = this.getCurrencySymbol();
+        const num = parseFloat(amount || 0).toLocaleString();
+        return `${symbol} ${num}`;
+    },
+
+    // Apply global settings (Theme, Font, Language, Effects) to the current page instantly
+    applyToDocument() {
+        // 1. Theme (Dark / Light)
         const theme = this.get('theme', 'dark');
-        const htmlEl = document.documentElement;
-        if (theme === 'light') {
-            htmlEl.classList.remove('dark');
-            htmlEl.classList.add('light');
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
         } else {
-            htmlEl.classList.remove('light');
-            htmlEl.classList.add('dark');
+            document.documentElement.classList.remove('dark');
         }
-    }
 
-    applyTypography() {
+        // 2. Font Size (Matched with settings.html options: small, normal, extra)
         const fontSize = this.get('font_size', 'normal');
-        const fontFamily = this.get('font_family', 'Canva Sans');
-        const fontStyle = this.get('font_style', 'normal');
-        const textEffect = this.get('text_effect', 'normal');
-
-        // Apply styles to document body or root container
-        document.body.style.fontFamily = `'${fontFamily}', sans-serif`;
-        
-        // Font Size handling
-        let sizeClass = 'text-xs';
-        if (fontSize === 'small') sizeClass = 'text-[10px]';
-        if (fontSize === 'extra') sizeClass = 'text-sm';
-        
-        // Font Style handling (normal, bold, italic)
-        document.body.style.fontWeight = fontStyle === 'bold' ? '700' : '400';
-        document.body.style.fontStyle = fontStyle === 'italic' ? 'italic' : 'normal';
-
-        // Optional Text Effects custom CSS injection
-        let customStyleEl = document.getElementById('global-text-effects');
-        if (!customStyleEl) {
-            customStyleEl = document.createElement('style');
-            customStyleEl.id = 'global-text-effects';
-            document.head.appendChild(customStyleEl);
-        }
-
-        if (textEffect === 'shadow') {
-            customStyleEl.innerHTML = `body { text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }`;
-        } else if (textEffect === 'outline') {
-            customStyleEl.innerHTML = `body { -webkit-text-stroke: 0.5px rgba(99, 102, 241, 0.5); }`;
-        } else if (textEffect === 'background') {
-            customStyleEl.innerHTML = `body { background-image: radial-gradient(circle, rgba(99,102,241,0.05) 10%, transparent 10%); background-size: 16px 16px; }`;
-        } else if (textEffect === 'hollow') {
-            customStyleEl.innerHTML = `body { color: transparent; -webkit-text-stroke: 1px currentColor; }`;
+        if (fontSize === 'small') {
+            document.documentElement.style.fontSize = '14px';
+        } else if (fontSize === 'extra' || fontSize === 'large') {
+            document.documentElement.style.fontSize = '20px';
         } else {
-            customStyleEl.innerHTML = ``;
+            document.documentElement.style.fontSize = '16px';
         }
-    }
-}
 
-// Initialize Global Settings instance globally
-const GlobalSettings = new GlobalSettingsManager();
+        // Apply body-level styles once DOM is available
+        const applyBodyStyles = () => {
+            if (!document.body) return;
+
+            // 3. Font Family
+            const fontFamily = this.get('font_family', 'Canva Sans');
+            document.body.style.fontFamily = `'${fontFamily}', sans-serif`;
+
+            // 4. Font Style (Normal, Bold, Italic)
+            const fontStyle = this.get('font_style', 'normal');
+            if (fontStyle === 'bold') {
+                document.body.style.fontWeight = '700';
+                document.body.style.fontStyle = 'normal';
+            } else if (fontStyle === 'italic') {
+                document.body.style.fontWeight = '400';
+                document.body.style.fontStyle = 'italic';
+            } else {
+                document.body.style.fontWeight = '400';
+                document.body.style.fontStyle = 'normal';
+            }
+
+            // 5. Text Effects (Shadow, Outline, Background, Hollow)
+            const textEffect = this.get('text_effect', 'none');
+            document.body.style.textShadow = '';
+            document.body.style.backgroundColor = '';
+            document.body.style.webkitTextStroke = '';
+            document.body.style.color = '';
+
+            if (textEffect === 'shadow') {
+                document.body.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
+            } else if (textEffect === 'outline') {
+                document.body.style.webkitTextStroke = '0.5px currentColor';
+            } else if (textEffect === 'background') {
+                document.body.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+            } else if (textEffect === 'hollow') {
+                document.body.style.webkitTextStroke = '1px currentColor';
+                document.body.style.color = 'transparent';
+            }
+        };
+
+        if (document.body) {
+            applyBodyStyles();
+        } else {
+            document.addEventListener('DOMContentLoaded', applyBodyStyles);
+        }
+
+        // 6. Card Shape / Border Radius
+        const cardShape = this.get('card_shape', 'rounded-2xl');
+        window.currentCardShape = cardShape;
+    },
+
+    // Universal Translation Helper
+    translate(key, dictionary) {
+        const lang = this.get('language', 'en');
+        if (dictionary && dictionary[lang] && dictionary[lang][key]) {
+            return dictionary[lang][key];
+        }
+        if (dictionary && dictionary['en'] && dictionary['en'][key]) {
+            return dictionary['en'][key];
+        }
+        return key;
+    }
+};
+
+// Auto-apply settings as soon as the script is loaded
+GlobalSettings.applyToDocument();
+
+// Re-apply when DOM is fully loaded to ensure body styles attach correctly
+document.addEventListener('DOMContentLoaded', () => {
+    GlobalSettings.applyToDocument();
+});
+
+// Listen to storage changes across tabs/pages for real-time sync
+window.addEventListener('storage', (e) => {
+    GlobalSettings.applyToDocument();
+    if (typeof window.onSettingsChanged === 'function') {
+        window.onSettingsChanged(e);
+    }
+});
