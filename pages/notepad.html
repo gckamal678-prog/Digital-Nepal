@@ -45,10 +45,10 @@
     </style>
 </head>
 
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen relative">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-12 transition-colors duration-300 w-full m-0 min-h-screen relative">
 
 <!-- Full Width Container matching Index Layout -->
-<div class="space-y-3 w-full flex-1 mt-1 pb-20">
+<div class="space-y-3 w-full flex-1 mt-1">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-3 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4 transition-colors duration-300">
         <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -156,41 +156,10 @@
     </div>
 </div>
 
-<!-- Custom Clean Toast Notification (No External Domain Display) -->
-<div id="toast-notification" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-5 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold z-[90] transition-all duration-300 opacity-0 pointer-events-none border border-slate-700 dark:border-slate-200">
+<!-- Custom Clean Toast Notification -->
+<div id="toast-notification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-5 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold z-[90] transition-all duration-300 opacity-0 pointer-events-none border border-slate-700 dark:border-slate-200">
     <span id="toast-message">Notification message</span>
 </div>
-
-<!-- GLOBAL FIXED FOOTER NAVIGATION (ALWAYS VISIBLE) -->
-<footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
-    <div class="max-w-md mx-auto flex justify-between items-center text-center">
-        <!-- Overview -->
-        <a href="../index.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-chart-column text-base"></i>
-            <span class="text-[10px] font-medium">Overview</span>
-        </a>
-        <!-- Txns -->
-        <a href="transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-money-bill-transfer text-base"></i>
-            <span class="text-[10px] font-medium">Txns</span>
-        </a>
-        <!-- Saving -->
-        <a href="savings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-piggy-bank text-base"></i>
-            <span class="text-[10px] font-medium">Saving</span>
-        </a>
-        <!-- Note Pad (Active) -->
-        <a href="notepad.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
-            <i class="fa-solid fa-note-sticky text-base"></i>
-            <span class="text-[10px]">Note Pad</span>
-        </a>
-        <!-- Setting -->
-        <a href="settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-            <i class="fa-solid fa-gear text-base"></i>
-            <span class="text-[10px] font-medium">Setting</span>
-        </a>
-    </div>
-</footer>
 
 <script>
 const translations = {
@@ -249,7 +218,6 @@ function t(key) {
     return translations[lang] ? (translations[lang][key] || translations['en'][key] || key) : key;
 }
 
-// Clean Toast without domain names
 function showToast(message) {
     const toast = document.getElementById('toast-notification');
     document.getElementById('toast-message').innerText = message;
@@ -261,7 +229,6 @@ function showToast(message) {
     }, 2000);
 }
 
-// Custom Modal Alert to prevent browser alerts
 function showConfirm(message, onConfirm) {
     const modal = document.getElementById('confirm-modal');
     document.getElementById('confirm-modal-text').innerText = message;
@@ -293,7 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadNotes();
     renderNotes();
 
-    // Keyboard Shortcuts
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('note-modal');
         if (!modal.classList.contains('hidden')) {
@@ -522,7 +488,6 @@ function shareNote(id) {
     }
 }
 
-// Firebase Helper Functions
 function syncFirebase() {
     showToast("Syncing with Firebase...");
     setTimeout(() => {
