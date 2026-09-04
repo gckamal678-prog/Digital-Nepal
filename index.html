@@ -28,13 +28,14 @@ tailwind.config = {
         document.documentElement.classList.add('dark');
     }
 
+    // अक्षरको साइज सानो बनाइएको छ (13px)
     const savedFontSize = localStorage.getItem('font_size') || 'normal';
     if (savedFontSize === 'small') {
-        document.documentElement.style.fontSize = '14px';
+        document.documentElement.style.fontSize = '12px';
     } else if (savedFontSize === 'large') {
-        document.documentElement.style.fontSize = '18px';
+        document.documentElement.style.fontSize = '15px';
     } else {
-        document.documentElement.style.fontSize = '16px';
+        document.documentElement.style.fontSize = '13px';
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,7 +44,7 @@ tailwind.config = {
 <script src="global.js"></script>
 <style>
     /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
@@ -72,18 +73,18 @@ tailwind.config = {
     }
 </style>
 </head>
-<body id="main-body" class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-24 md:pb-6 transition-colors duration-300 w-full m-0">
+<body id="main-body" class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-20 md:pb-6 transition-colors duration-300 w-full m-0 text-xs">
 
 <div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700">
     <div class="text-center space-y-6">
         <div class="flex justify-center">
-            <div class="w-24 h-24 rounded-full bg-slate-900/80 border-2 border-indigo-500/40 p-2 shadow-2xl flex items-center justify-center backdrop-blur-md">
+            <div class="w-20 h-20 rounded-full bg-slate-900/80 border-2 border-indigo-500/40 p-2 shadow-2xl flex items-center justify-center backdrop-blur-md">
                 <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full">
             </div>
         </div>
         <div class="space-y-1">
-            <p class="text-indigo-400 text-xs font-semibold tracking-widest uppercase" data-i18n="welcome_text">Welcome</p>
-            <h1 class="text-2xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-sky-300 to-white animated-title" data-i18n="app_title">
+            <p class="text-indigo-400 text-[11px] font-semibold tracking-widest uppercase" data-i18n="welcome_text">Welcome</p>
+            <h1 class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-sky-300 to-white animated-title" data-i18n="app_title">
                 DIGITAL NOTEBOOK
             </h1>
         </div>
@@ -91,119 +92,116 @@ tailwind.config = {
 </div>
 
 <div id="pin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4" style="display: none;">
-    <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center space-y-4 border border-slate-200 dark:border-slate-800">
-        <div class="text-3xl">🔒</div>
-        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" data-i18n="pin_title">Enter Security PIN</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="pin_desc">Please enter your 4-digit PIN to open the app.</p>
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center space-y-3 border border-slate-200 dark:border-slate-800">
+        <div class="text-2xl">🔒</div>
+        <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100" data-i18n="pin_title">Enter Security PIN</h3>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400" data-i18n="pin_desc">Please enter your 4-digit PIN to open the app.</p>
         
-        <input type="password" id="login-pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white p-3.5 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+        <input type="password" id="login-pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
         
-        <button onclick="verifyLoginPin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-2xl text-sm transition shadow-lg shadow-indigo-600/20 active:scale-95" data-i18n="btn_login">Login</button>
+        <button onclick="verifyLoginPin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-xl text-xs transition shadow-lg shadow-indigo-600/20 active:scale-95" data-i18n="btn_login">Login</button>
     </div>
 </div>
 
 <div id="app-container" class="flex min-h-screen w-full">
-    <!-- ================= 2. SIDEBAR SECTION ================= -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-80 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+    <!-- ================= SIDEBAR SECTION ================= -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         
         <!-- साइडबारको माथिल्लो भाग -->
-        <div class="flex items-center justify-between px-4 py-4 border-b border-slate-800">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600 border border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
-                    <img src="N1024.png" alt="Digital NoteBook Logo" class="w-full h-full object-cover">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 border border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-300 to-red-500">
+                    <h1 class="text-xs font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-300 to-red-500">
                         Digital <span class="text-red-500">NoteBook</span>
                     </h1>
                 </div>
             </div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl focus:outline-none">
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-base focus:outline-none">
                 ✕
             </button>
         </div>
 
-        <!-- साइडबारको मुख्य कन्टेन्ट (एकाउन्ट डिटेल्स र मेनुहरू) -->
-        <div class="p-4 space-y-4 overflow-y-auto flex-1">
+        <!-- साइडबारको मुख्य कन्टेन्ट (Home लाई Overview बनाइएको र आकर्षक इमाजी राखिएको) -->
+        <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
             
-            <!-- नेभिगेसन मेनुहरू -->
-            <nav class="space-y-1.5 text-sm font-medium">
-                <a href="#" onclick="switchTab('dashboard'); toggleSidebar();" id="nav-dashboard" class="flex items-center gap-3 py-3 px-4 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition"><span>📊</span> <span data-i18n="nav_home">Home</span></a>
-                <a href="#" onclick="switchTab('transactions'); toggleSidebar();" id="nav-transactions" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>💸</span> <span data-i18n="nav_transactions">Transactions</span></a>
-                <a href="#" onclick="switchTab('cashflow'); toggleSidebar();" id="nav-cashflow" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>💵</span> <span data-i18n="nav_cash">Cash & Savings</span></a>
-                <a href="#" onclick="switchTab('notepad'); toggleSidebar();" id="nav-notepad" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📝</span> <span data-i18n="nav_notes">Note Pad</span></a>
-                <a href="#" onclick="switchTab('settings'); toggleSidebar();" id="nav-settings" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>⚙️</span> <span data-i18n="nav_settings">Settings</span></a>
+            <!-- नेभिगेसन मेनुहरू (अनावश्यक टेक्स्टहरू हटाइएको) -->
+            <nav class="space-y-1 font-medium">
+                <a href="#" onclick="switchTab('dashboard'); toggleSidebar();" id="nav-dashboard" class="flex items-center gap-2.5 py-2 px-3 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition"><span>🎯</span> <span data-i18n="nav_home">Overview</span></a>
+                <a href="#" onclick="switchTab('transactions'); toggleSidebar();" id="nav-transactions" class="flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>💳</span> <span data-i18n="nav_transactions">Transactions</span></a>
+                <a href="#" onclick="switchTab('cashflow'); toggleSidebar();" id="nav-cashflow" class="flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📈</span> <span data-i18n="nav_cash">Cash & Savings</span></a>
+                <a href="#" onclick="switchTab('notepad'); toggleSidebar();" id="nav-notepad" class="flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📓</span> <span data-i18n="nav_notes">Note Pad</span></a>
+                <a href="#" onclick="switchTab('settings'); toggleSidebar();" id="nav-settings" class="flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>⚙️</span> <span data-i18n="nav_settings">Settings</span></a>
             </nav>
 
             <!-- प्रोफाइल फोटो फेर्ने र नाम देखाउने कार्ड -->
-            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex items-center space-x-4">
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
                 <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
-                    <div class="w-14 h-14 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <div class="w-10 h-10 rounded-full bg-indigo-600 border border-indigo-500 flex items-center justify-center overflow-hidden shadow-sm">
                         <img id="sidebar-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
-                        <span id="sidebar-avatar-icon" class="text-white text-lg">📷</span>
-                    </div>
-                    <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span class="text-white text-xs">✏️</span>
+                        <span id="sidebar-avatar-icon" class="text-white text-xs">📷</span>
                     </div>
                 </div>
                 <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
 
                 <div>
-                    <h3 id="sidebar-profile-name" class="text-white font-bold text-lg">Guest User</h3>
-                    <p class="text-xs text-slate-400">Click icon to set photo</p>
+                    <h3 id="sidebar-profile-name" class="text-white font-bold text-xs">Guest User</h3>
+                    <p class="text-[9px] text-slate-400">Click icon to set photo</p>
                 </div>
             </div>
 
             <!-- नाम, ठेगाना, नम्बर र इमेल इनपुट फारम -->
-            <div class="space-y-3">
+            <div class="space-y-2">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Full Name</label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" 
-                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Address</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Address</label>
                     <input type="text" id="input-address" placeholder="Enter Address" 
-                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Mobile Number</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Mobile Number</label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" 
-                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Email Address</label>
                     <input type="email" id="input-email" placeholder="Enter Email Address" 
-                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-indigo-500">
                 </div>
 
-                <button onclick="saveUserDetails()" class="w-full mt-2 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg transition duration-200">
+                <button onclick="saveUserDetails()" class="w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-lg shadow-md transition duration-200 text-[11px]">
                     Save Details to Firebase
                 </button>
             </div>
 
             <!-- सुरक्षा सेटिङ्स -->
-            <div class="bg-slate-800/50 p-4 rounded-2xl shadow-sm space-y-4 border border-slate-700/60 mt-4">
-                <h3 class="text-xs font-bold text-white flex items-center gap-2">
+            <div class="bg-slate-800/50 p-2.5 rounded-xl shadow-sm space-y-2.5 border border-slate-700/60">
+                <h3 class="text-[10px] font-bold text-white flex items-center gap-1.5">
                     <i class="fa-solid fa-shield-halved text-indigo-400"></i> Security Settings
                 </h3>
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Security PIN (4-Digit)</label>
+                        <label class="block text-[9px] font-semibold text-slate-400 mb-0.5">Security PIN (4-Digit)</label>
                         <div class="flex gap-2">
-                            <input type="password" id="app-pin-input" maxlength="4" placeholder="New PIN" class="w-full border border-slate-700 bg-slate-800 text-white p-2.5 rounded-xl text-xs outline-none focus:border-indigo-500">
-                            <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-xs transition">Save</button>
+                            <input type="password" id="app-pin-input" maxlength="4" placeholder="New PIN" class="w-full border border-slate-700 bg-slate-800 text-white p-1.5 rounded-lg text-[11px] outline-none focus:border-indigo-500">
+                            <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-2.5 py-1.5 rounded-lg text-[10px] transition">Save</button>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between pt-1">
+                    <div class="flex items-center justify-between pt-0.5">
                         <div>
-                            <h4 class="text-xs font-bold text-white">Biometric / Fingerprint Lock</h4>
-                            <p class="text-[10px] text-slate-400">Unlock app using device biometrics</p>
+                            <h4 class="text-[10px] font-bold text-white">Biometric Lock</h4>
+                            <p class="text-[8px] text-slate-400">Unlock via biometrics</p>
                         </div>
-                        <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                        <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-3.5 h-3.5 accent-indigo-600 rounded cursor-pointer">
                     </div>
                 </div>
             </div>
@@ -212,96 +210,97 @@ tailwind.config = {
     </div>
 
     <div class="flex-1 flex flex-col w-full">
-        <!-- ================= 1. DASHBOARD HEADER & GREETING SECTION ================= -->
-        <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-slate-900/95 backdrop-blur border-b border-slate-800 shadow-lg">
-            <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-indigo-400 transition transform hover:scale-110">
+        <!-- ================= HEADER SECTION ================= -->
+        <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-2 bg-slate-900/95 backdrop-blur border-b border-slate-800 shadow-md">
+            <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-base focus:outline-none hover:text-indigo-400 transition">
                 ☰
             </button>
 
             <div class="text-center">
-                <h1 class="text-lg font-extrabold tracking-wide bg-gradient-to-r from-pink-500 via-purple-500 via-indigo-500 to-cyan-400 animate-rainbow bg-clip-text text-transparent">
+                <h1 class="text-sm font-extrabold tracking-wide bg-gradient-to-r from-pink-500 via-purple-500 via-indigo-500 to-cyan-400 animate-rainbow bg-clip-text text-transparent">
                     Digital <span class="text-red-500 animate-bounce inline-block">NoteBook</span>
                 </h1>
             </div>
 
             <div class="relative">
-                <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                <div id="header-avatar-container" class="w-7 h-7 rounded-full bg-indigo-600 border border-indigo-500 flex items-center justify-center overflow-hidden shadow-sm">
                     <img id="header-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
-                    <span id="header-avatar-icon" class="text-white text-sm">📷</span>
+                    <span id="header-avatar-icon" class="text-white text-[10px]">📷</span>
                 </div>
             </div>
         </header>
 
-        <main class="p-2 md:p-6 space-y-4 flex-1 w-full">
+        <main class="p-3 md:p-5 space-y-3 flex-1 w-full text-xs">
             
             <!-- मिति र अभिवादन सेक्सन -->
-            <section class="px-2 pt-2 pb-2 text-white">
-                <p id="dynamic-date" class="text-xs font-semibold tracking-wider text-slate-400 dark:text-slate-400 uppercase mb-1"></p>
-                <h2 id="dynamic-greeting" class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight"></h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Here is what is happening with your money today.</p>
+            <section class="px-1 py-0.5 text-white">
+                <p id="dynamic-date" class="text-[9px] font-semibold tracking-wider text-slate-400 uppercase mb-0.5"></p>
+                <h2 id="dynamic-greeting" class="text-base font-bold text-slate-800 dark:text-white tracking-tight"></h2>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Here is what is happening with your money today.</p>
             </section>
 
-            <div id="view-dashboard" class="tab-content space-y-4 w-full">
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_receivable">Total Receivable</p>
-                    <h3 id="lbl-receivable" class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rs 0</h3>
+            <div id="view-dashboard" class="tab-content space-y-2.5 w-full">
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-[9px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5" data-i18n="lbl_receivable">Total Receivable</p>
+                    <h3 id="lbl-receivable" class="text-lg font-extrabold text-blue-600 dark:text-blue-400">Rs 0</h3>
                 </div>
 
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_payable">Total Payable</p>
-                    <h3 id="lbl-payable" class="text-2xl font-extrabold text-rose-600 dark:text-rose-400">Rs 0</h3>
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-[9px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5" data-i18n="lbl_payable">Total Payable</p>
+                    <h3 id="lbl-payable" class="text-lg font-extrabold text-rose-600 dark:text-rose-400">Rs 0</h3>
                 </div>
 
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_expense">This Month's Expense</p>
-                    <h3 id="lbl-expense" class="text-2xl font-extrabold text-amber-600 dark:text-amber-400">Rs 0</h3>
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-[9px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5" data-i18n="lbl_expense">This Month's Expense</p>
+                    <h3 id="lbl-expense" class="text-lg font-extrabold text-amber-600 dark:text-amber-400">Rs 0</h3>
                 </div>
 
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_income">Total Income</p>
-                        <h3 id="lbl-income" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">Rs 0</h3>
+                        <p class="text-[9px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5" data-i18n="lbl_income">Total Income</p>
+                        <h3 id="lbl-income" class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">Rs 0</h3>
                     </div>
-                    <button onclick="switchTab('transactions')" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-xl transition" data-i18n="btn_details">Details ➔</button>
+                    <button onclick="switchTab('transactions')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold rounded-lg transition" data-i18n="btn_details">Details ➔</button>
                 </div>
 
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_savings">Total Savings & Investment</p>
-                        <h3 id="lbl-savings" class="text-2xl font-extrabold text-purple-600 dark:text-purple-400">Rs 0</h3>
+                        <p class="text-[9px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5" data-i18n="lbl_savings">Total Savings & Investment</p>
+                        <h3 id="lbl-savings" class="text-lg font-extrabold text-purple-600 dark:text-purple-400">Rs 0</h3>
                     </div>
-                    <button onclick="switchTab('cashflow')" class="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-purple-600 dark:text-purple-400 text-xs font-semibold rounded-xl transition" data-i18n="btn_goal">View Goal ➔</button>
+                    <button onclick="switchTab('cashflow')" class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-purple-600 dark:text-purple-400 text-[10px] font-semibold rounded-lg transition" data-i18n="btn_goal">View Goal ➔</button>
                 </div>
 
-                <div class="dashboard-card bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-                    <p class="text-sm font-bold text-slate-800 dark:text-white mb-4" data-i18n="chart_title">Transaction Status (Pie Chart)</p>
-                    <div class="w-full h-52 flex items-center justify-center">
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-[11px] font-bold text-slate-800 dark:text-white mb-2.5" data-i18n="chart_title">Transaction Status (Pie Chart)</p>
+                    <div class="w-full h-40 flex items-center justify-center">
                         <canvas id="dashboardChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <div id="view-other" class="tab-content hidden w-full h-full">
-                <iframe id="page-frame" src="" class="w-full min-h-[85vh] border-0 rounded-3xl"></iframe>
+                <iframe id="page-frame" src="" class="w-full min-h-[85vh] border-0 rounded-2xl"></iframe>
             </div>
 
         </main>
     </div>
 </div>
 
-<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex justify-around p-2.5 z-30 shadow-lg transition-colors duration-300">
-    <button onclick="switchTab('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] gap-0.5"><span class="text-base">📊</span> <span data-i18n="nav_home">Home</span></button>
-    <button onclick="switchTab('transactions')" id="mob-nav-transactions" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">💸</span> <span data-i18n="nav_txns">Txns</span></button>
-    <button onclick="switchTab('cashflow')" id="mob-nav-cashflow" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">💵</span> <span data-i18n="nav_cash">Cash</span></button>
-    <button onclick="switchTab('notepad')" id="mob-nav-notepad" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">📝</span> <span data-i18n="nav_notes">Notes</span></button>
-    <button onclick="switchTab('settings')" id="mob-nav-settings" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">⚙️</span> <span data-i18n="nav_settings">Settings</span></button>
+<!-- मोबाइल बोटम नेभिगेसन (फुटर) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex justify-around p-1.5 z-30 shadow-lg transition-colors duration-300">
+    <button onclick="switchTab('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[9px] gap-0.5"><span class="text-xs">🎯</span> <span data-i18n="nav_home">Overview</span></button>
+    <button onclick="switchTab('transactions')" id="mob-nav-transactions" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[9px] gap-0.5"><span class="text-xs">💳</span> <span data-i18n="nav_txns">Txns</span></button>
+    <button onclick="switchTab('cashflow')" id="mob-nav-cashflow" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[9px] gap-0.5"><span class="text-xs">📈</span> <span data-i18n="nav_cash">Cash</span></button>
+    <button onclick="switchTab('notepad')" id="mob-nav-notepad" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[9px] gap-0.5"><span class="text-xs">📓</span> <span data-i18n="nav_notes">Notes</span></button>
+    <button onclick="switchTab('settings')" id="mob-nav-settings" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[9px] gap-0.5"><span class="text-xs">⚡</span> <span data-i18n="nav_settings">Settings</span></button>
 </div>
 
-<div id="toast-notification" class="fixed bottom-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
+<div id="toast-notification" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-3 py-1.5 rounded-xl shadow-xl text-[10px] font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
     <span id="toast-message">Notification message</span>
 </div>
 
-<!-- ================= 4. FIREBASE & APP JAVASCRIPT ================= -->
+<!-- ================= FIREBASE & APP JAVASCRIPT ================= -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -415,7 +414,7 @@ tailwind.config = {
             pin_desc: "Please enter your 4-digit PIN to open the app.",
             btn_login: "Login",
             my_account: "My Account",
-            nav_home: "Home",
+            nav_home: "Overview",
             nav_transactions: "Transactions",
             nav_cash: "Cash & Savings",
             nav_notes: "Note Pad",
@@ -438,7 +437,7 @@ tailwind.config = {
             pin_desc: "एप खोल्न कृपया आफ्नो ४-अंकको पिन प्रविष्ट गर्नुहोस्।",
             btn_login: "लगइन",
             my_account: "मेरो खाता",
-            nav_home: "गृह",
+            nav_home: "Overview",
             nav_transactions: "ट्रान्जेक्सन",
             nav_cash: "नगद र बचत",
             nav_notes: "नोट प्याड",
@@ -483,7 +482,7 @@ tailwind.config = {
         const fontFamily = localStorage.getItem('font_family') || 'Poppins';
         document.body.style.fontFamily = fontFamily + ", sans-serif";
 
-        const cardShape = localStorage.getItem('card_shape') || 'rounded-3xl';
+        const cardShape = localStorage.getItem('card_shape') || 'rounded-2xl';
         document.querySelectorAll('.dashboard-card').forEach(card => {
             card.className = card.className.replace(/rounded-(none|2xl|3xl)/g, '');
             card.classList.add(cardShape);
@@ -548,8 +547,8 @@ tailwind.config = {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        boxWidth: 12,
-                        font: { family: 'Poppins', size: 11 },
+                        boxWidth: 10,
+                        font: { family: 'Poppins', size: 10 },
                         color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#334155'
                     }
                 }
@@ -691,15 +690,15 @@ tailwind.config = {
             const navEl = document.getElementById(`nav-${t}`);
             if(navEl) {
                 navEl.className = t === tabName 
-                    ? "flex items-center gap-3 py-3 px-4 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 transition"
-                    : "flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition";
+                    ? "flex items-center gap-2.5 py-2 px-3 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition"
+                    : "flex items-center gap-2.5 py-2 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition";
             }
             
             const mobNavEl = document.getElementById(`mob-nav-${t}`);
             if(mobNavEl) {
                 mobNavEl.className = t === tabName
-                    ? "flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] gap-0.5"
-                    : "flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5";
+                    ? "flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[9px] gap-0.5"
+                    : "flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[9px] gap-0.5";
             }
         });
     }
