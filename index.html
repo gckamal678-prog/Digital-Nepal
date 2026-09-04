@@ -1,595 +1,716 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital NoteBook - Overview</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' }
-    </script>
-
-    <!-- Global Settings Bridge Load -->
-    <script src="global.js"></script>
-
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- App Manifest & Meta Tags (PWA support) -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b1120">
-
-    <style>
-        body {
-            background-color: #0b1120;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Digital notebook and transaction management application.">
+<meta name="author" content="Kamal GC">
+<meta name="theme-color" content="#090d16">
+<title>Digital NoteBook</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Poppins', 'sans-serif'],
+            }
         }
-        .sidebar-overlay {
-            transition: opacity 0.3s ease-in-out;
-        }
-        .sidebar-drawer {
-            transition: transform 0.3s ease-in-out;
-        }
+    }
+}
+</script>
+<script>
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+    } else {
+        document.documentElement.classList.add('dark');
+    }
 
-        @keyframes headerFadeIn {
-            0% { opacity: 0; transform: translateY(-4px); }
-            100% { opacity: 1; transform: translateY(0); }
+    const savedFontSize = localStorage.getItem('font_size') || 'normal';
+    if (savedFontSize === 'small') {
+        document.documentElement.style.fontSize = '14px';
+    } else if (savedFontSize === 'large') {
+        document.documentElement.style.fontSize = '18px';
+    } else {
+        document.documentElement.style.fontSize = '16px';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="global.js"></script>
+<style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
+
+    @keyframes pulseGlow {
+        0%, 100% {
+            opacity: 1;
+            filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.4));
         }
-        .animate-header-title {
-            animation: headerFadeIn 0.8s ease-out forwards;
+        50% {
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.8));
         }
-    </style>
+    }
+    .animated-title {
+        animation: pulseGlow 3s infinite ease-in-out;
+    }
+    @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .animate-rainbow {
+        background-size: 200% auto;
+        animation: rainbow 4s linear infinite;
+    }
+</style>
 </head>
-<body class="bg-[#0b1120] text-white min-h-screen relative pb-28">
+<body id="main-body" class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-24 md:pb-6 transition-colors duration-300 w-full m-0">
 
-    <!-- Custom Toast Notification Container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+<div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700">
+    <div class="text-center space-y-6">
+        <div class="flex justify-center">
+            <div class="w-24 h-24 rounded-full bg-slate-900/80 border-2 border-indigo-500/40 p-2 shadow-2xl flex items-center justify-center backdrop-blur-md">
+                <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+        <div class="space-y-1">
+            <p class="text-indigo-400 text-xs font-semibold tracking-widest uppercase" data-i18n="welcome_text">Welcome</p>
+            <h1 class="text-2xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-sky-300 to-white animated-title" data-i18n="app_title">
+                DIGITAL NOTEBOOK
+            </h1>
+        </div>
+    </div>
+</div>
 
-    <!-- OVERLAY -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-50 hidden sidebar-overlay"></div>
-
-    <!-- SIDEBAR DRAWER -->
-    <aside id="sidebar-drawer" class="fixed top-0 left-0 w-80 h-full bg-[#0f172a] text-slate-200 p-5 overflow-y-auto space-y-6 shadow-2xl border-r border-slate-800 z-50 transform -translate-x-full sidebar-drawer">
+<div id="pin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center space-y-4 border border-slate-200 dark:border-slate-800">
+        <div class="text-3xl">🔒</div>
+        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" data-i18n="pin_title">Enter Security PIN</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="pin_desc">Please enter your 4-digit PIN to open the app.</p>
         
-        <!-- Sidebar Top Header -->
-        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-indigo-600/20 p-1 flex items-center justify-center border border-indigo-500/30 shadow-inner shrink-0 overflow-hidden">
-                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-indigo-400 font-bold text-lg\'>DN</span>'">
+        <input type="password" id="login-pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white p-3.5 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+        
+        <button onclick="verifyLoginPin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-2xl text-sm transition shadow-lg shadow-indigo-600/20 active:scale-95" data-i18n="btn_login">Login</button>
+    </div>
+</div>
+
+<div id="app-container" class="flex min-h-screen w-full">
+    <!-- ================= 2. SIDEBAR SECTION ================= -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-80 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+        
+        <!-- साइडबारको माथिल्लो भाग -->
+        <div class="flex items-center justify-between px-4 py-4 border-b border-slate-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 border border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <img src="N1024.png" alt="Digital NoteBook Logo" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h1 class="text-base font-bold text-white tracking-wide leading-tight">
-                        Digital <span class="text-indigo-400 block text-base font-medium">NoteBook</span>
+                    <h1 class="text-base font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-300 to-red-500">
+                        Digital <span class="text-red-500">NoteBook</span>
                     </h1>
                 </div>
             </div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl p-1">✕</button>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl focus:outline-none">
+                ✕
+            </button>
         </div>
 
-        <!-- MY WORKSPACE Section -->
-        <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">My Workspace</p>
-            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/30 group transition">
-                <div class="flex items-center gap-3">
-                    <span class="text-lg">📊</span>
-                    <span class="text-sm">Overview</span>
-                </div>
-                <span class="text-xs transition-transform group-hover:translate-x-1">❯</span>
-            </a>
-        </div>
-
-        <!-- PROFILE & ACCOUNT SETTINGS -->
-        <div class="space-y-4 pt-2">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Account Details</p>
+        <!-- साइडबारको मुख्य कन्टेन्ट (एकाउन्ट डिटेल्स र मेनुहरू) -->
+        <div class="p-4 space-y-4 overflow-y-auto flex-1">
             
-            <!-- Profile Avatar Upload -->
-            <div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-                <label for="sidebar-avatar-input" class="relative cursor-pointer group">
-                    <div class="w-14 h-14 rounded-full bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
-                        <img id="sidebar-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
-                        <span id="sidebar-avatar-icon" class="text-white text-xl">📷</span>
+            <!-- नेभिगेसन मेनुहरू -->
+            <nav class="space-y-1.5 text-sm font-medium">
+                <a href="#" onclick="switchTab('dashboard'); toggleSidebar();" id="nav-dashboard" class="flex items-center gap-3 py-3 px-4 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition"><span>📊</span> <span data-i18n="nav_home">Home</span></a>
+                <a href="#" onclick="switchTab('transactions'); toggleSidebar();" id="nav-transactions" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>💸</span> <span data-i18n="nav_transactions">Transactions</span></a>
+                <a href="#" onclick="switchTab('cashflow'); toggleSidebar();" id="nav-cashflow" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>💵</span> <span data-i18n="nav_cash">Cash & Savings</span></a>
+                <a href="#" onclick="switchTab('notepad'); toggleSidebar();" id="nav-notepad" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📝</span> <span data-i18n="nav_notes">Note Pad</span></a>
+                <a href="#" onclick="switchTab('settings'); toggleSidebar();" id="nav-settings" class="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>⚙️</span> <span data-i18n="nav_settings">Settings</span></a>
+            </nav>
+
+            <!-- प्रोफाइल फोटो फेर्ने र नाम देखाउने कार्ड -->
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex items-center space-x-4">
+                <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
+                    <div class="w-14 h-14 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                        <img id="sidebar-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                        <span id="sidebar-avatar-icon" class="text-white text-lg">📷</span>
                     </div>
-                    <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-[10px] font-bold text-white">Edit</div>
-                </label>
-                <input type="file" id="sidebar-avatar-input" accept="image/*" class="hidden" onchange="handleSidebarAvatarUpload(event)">
+                    <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-white text-xs">✏️</span>
+                    </div>
+                </div>
+                <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+
                 <div>
-                    <h4 id="sidebar-display-name" class="text-sm font-bold text-white">Guest User</h4>
-                    <p class="text-[10px] text-slate-400">Click icon to set photo</p>
+                    <h3 id="sidebar-profile-name" class="text-white font-bold text-lg">Guest User</h3>
+                    <p class="text-xs text-slate-400">Click icon to set photo</p>
                 </div>
             </div>
 
-            <!-- Dynamic Inputs -->
+            <!-- नाम, ठेगाना, नम्बर र इमेल इनपुट फारम -->
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Full Name</label>
-                    <input type="text" id="input-name" placeholder="Enter Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-                </div>
-                
-                <div>
-                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Address</label>
-                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
+                    <input type="text" id="input-full-name" placeholder="Enter Full Name" 
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Mobile Number</label>
-                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Address</label>
+                    <input type="text" id="input-address" placeholder="Enter Address" 
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Email Address</label>
-                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Mobile Number</label>
+                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" 
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
                 </div>
 
-                <button onclick="saveProfileDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl text-xs shadow-md transition">
-                    Save Details
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="input-email" placeholder="Enter Email Address" 
+                        class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <button onclick="saveUserDetails()" class="w-full mt-2 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg transition duration-200">
+                    Save Details to Firebase
                 </button>
             </div>
 
-            <!-- Security: PIN Setup -->
-            <div class="pt-2 border-t border-slate-800/80">
-                <label class="block text-[11px] font-medium text-slate-400 mb-1">Create Security PIN (4-Digit)</label>
-                <div class="flex gap-2">
-                    <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-                    <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">Save PIN</button>
+            <!-- सुरक्षा सेटिङ्स -->
+            <div class="bg-slate-800/50 p-4 rounded-2xl shadow-sm space-y-4 border border-slate-700/60 mt-4">
+                <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-indigo-400"></i> Security Settings
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Security PIN (4-Digit)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="app-pin-input" maxlength="4" placeholder="New PIN" class="w-full border border-slate-700 bg-slate-800 text-white p-2.5 rounded-xl text-xs outline-none focus:border-indigo-500">
+                            <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-xs transition">Save</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Biometric / Fingerprint Lock</h4>
+                            <p class="text-[10px] text-slate-400">Unlock app using device biometrics</p>
+                        </div>
+                        <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                    </div>
                 </div>
             </div>
 
-            <!-- Security: Biometric Lock -->
-            <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-800">
-                <div>
-                    <h5 class="text-xs font-bold text-white">Biometric Lock</h5>
-                    <p class="text-[10px] text-slate-400">Fingerprint / Face ID</p>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col w-full">
+        <!-- ================= 1. DASHBOARD HEADER & GREETING SECTION ================= -->
+        <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-slate-900/95 backdrop-blur border-b border-slate-800 shadow-lg">
+            <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-indigo-400 transition transform hover:scale-110">
+                ☰
+            </button>
+
+            <div class="text-center">
+                <h1 class="text-lg font-extrabold tracking-wide bg-gradient-to-r from-pink-500 via-purple-500 via-indigo-500 to-cyan-400 animate-rainbow bg-clip-text text-transparent">
+                    Digital <span class="text-red-500 animate-bounce inline-block">NoteBook</span>
+                </h1>
+            </div>
+
+            <div class="relative">
+                <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600 border-2 border-indigo-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <img id="header-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                    <span id="header-avatar-icon" class="text-white text-sm">📷</span>
                 </div>
-                <input type="checkbox" id="biometric-toggle" onchange="toggleBiometric(this)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
             </div>
+        </header>
 
-            <!-- FIREBASE CLOUD BACKUP & RESTORE -->
-            <div class="pt-3 border-t border-slate-800/80 space-y-2">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cloud Sync (Firebase)</p>
-                <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
-                </button>
-                <button id="btn-cloud-restore" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/20">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Restore from Cloud
-                </button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- LOCKED HEADER -->
-    <header class="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-[#0b1120]/95 backdrop-blur border-b border-slate-800/80 shadow-lg">
-        <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-indigo-400 transition transform hover:scale-110">
-            ☰
-        </button>
-
-        <div class="text-center">
-            <h1 class="text-base font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400 animate-header-title">
-                Digital NoteBook
-            </h1>
-        </div>
-
-        <div class="cursor-default pointer-events-none">
-            <div id="header-avatar-container" class="w-9 h-9 rounded-full bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center overflow-hidden shadow-md">
-                <img id="header-avatar-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
-                <span id="header-avatar-icon" class="text-white text-sm">👤</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN DASHBOARD CONTENT -->
-    <main class="bg-[#0b1120] text-white px-4 pt-4 space-y-4 max-w-4xl mx-auto">
-        
-        <!-- Dynamic Greeting & Date Section -->
-        <section class="pb-2">
-            <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
-            <h2 id="dynamic-greeting" class="text-2xl font-bold text-white tracking-tight">Good morning</h2>
-            <p class="text-xs text-slate-400 mt-1">Here is what is happening with your money today.</p>
-        </section>
-
-        <!-- CARD 1: TOTAL RECEIVABLE -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
-            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL RECEIVABLE</p>
-            <h3 class="text-xl font-extrabold text-blue-400 mt-1"><span id="curr-symbol-1">₹</span> <span id="total-receivable">0</span></h3>
-        </div>
-
-        <!-- CARD 2: TOTAL PAYABLE -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
-            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL PAYABLE</p>
-            <h3 class="text-xl font-extrabold text-rose-500 mt-1"><span id="curr-symbol-2">₹</span> <span id="total-payable">0</span></h3>
-        </div>
-
-        <!-- CARD 3: THIS MONTH'S EXPENSE -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 shadow-sm">
-            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">THIS MONTH'S EXPENSE</p>
-            <h3 class="text-xl font-extrabold text-amber-500 mt-1"><span id="curr-symbol-3">₹</span> <span id="this-month-expense">0</span></h3>
-        </div>
-
-        <!-- CARD 4: TOTAL INCOME -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
-                <h3 class="text-xl font-extrabold text-emerald-400 mt-1"><span id="curr-symbol-4">₹</span> <span id="total-income">0</span></h3>
-            </div>
-            <a href="./pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
-                Details ➔
-            </a>
-        </div>
-
-        <!-- CARD 5: TOTAL SAVINGS & INVESTMENT -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL SAVINGS & INVESTMENT</p>
-                <h3 class="text-xl font-extrabold text-purple-400 mt-1"><span id="curr-symbol-5">₹</span> <span id="total-savings">0</span></h3>
-            </div>
-            <a href="./pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
-                View Goal ➔
-            </a>
-        </div>
-
-        <!-- CHART CARD -->
-        <div class="bg-[#111827] border border-slate-800/60 rounded-2xl p-5 shadow-sm space-y-6">
-            <h4 class="text-sm font-bold text-white tracking-wide">Transaction Status (Pie Chart)</h4>
+        <main class="p-2 md:p-6 space-y-4 flex-1 w-full">
             
-            <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
-                <canvas id="transactionPieChart"></canvas>
+            <!-- मिति र अभिवादन सेक्सन -->
+            <section class="px-2 pt-2 pb-2 text-white">
+                <p id="dynamic-date" class="text-xs font-semibold tracking-wider text-slate-400 dark:text-slate-400 uppercase mb-1"></p>
+                <h2 id="dynamic-greeting" class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight"></h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Here is what is happening with your money today.</p>
+            </section>
+
+            <div id="view-dashboard" class="tab-content space-y-4 w-full">
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_receivable">Total Receivable</p>
+                    <h3 id="lbl-receivable" class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rs 0</h3>
+                </div>
+
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_payable">Total Payable</p>
+                    <h3 id="lbl-payable" class="text-2xl font-extrabold text-rose-600 dark:text-rose-400">Rs 0</h3>
+                </div>
+
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_expense">This Month's Expense</p>
+                    <h3 id="lbl-expense" class="text-2xl font-extrabold text-amber-600 dark:text-amber-400">Rs 0</h3>
+                </div>
+
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_income">Total Income</p>
+                        <h3 id="lbl-income" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">Rs 0</h3>
+                    </div>
+                    <button onclick="switchTab('transactions')" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-xl transition" data-i18n="btn_details">Details ➔</button>
+                </div>
+
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1" data-i18n="lbl_savings">Total Savings & Investment</p>
+                        <h3 id="lbl-savings" class="text-2xl font-extrabold text-purple-600 dark:text-purple-400">Rs 0</h3>
+                    </div>
+                    <button onclick="switchTab('cashflow')" class="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-purple-600 dark:text-purple-400 text-xs font-semibold rounded-xl transition" data-i18n="btn_goal">View Goal ➔</button>
+                </div>
+
+                <div class="dashboard-card bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                    <p class="text-sm font-bold text-slate-800 dark:text-white mb-4" data-i18n="chart_title">Transaction Status (Pie Chart)</p>
+                    <div class="w-full h-52 flex items-center justify-center">
+                        <canvas id="dashboardChart"></canvas>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium text-slate-300 pt-2">
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Income</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span> Receivable</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-purple-500 inline-block"></span> Savings</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Payable</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Expense</span>
+            <div id="view-other" class="tab-content hidden w-full h-full">
+                <iframe id="page-frame" src="" class="w-full min-h-[85vh] border-0 rounded-3xl"></iframe>
             </div>
-        </div>
-    </main>
 
-    <!-- FOOTER NAVIGATION BAR (Fixed with relative paths) -->
-    <footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="./index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
-                <i class="fa-solid fa-chart-column text-base"></i>
-                <span class="text-[10px]">Overview</span>
-            </a>
-            <a href="./pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-                <i class="fa-solid fa-money-bill-transfer text-base"></i>
-                <span class="text-[10px] font-medium">Txns</span>
-            </a>
-            <a href="./pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-                <i class="fa-solid fa-piggy-bank text-base"></i>
-                <span class="text-[10px] font-medium">Saving</span>
-            </a>
-            <a href="./pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-                <i class="fa-solid fa-note-sticky text-base"></i>
-                <span class="text-[10px] font-medium">Note Pad</span>
-            </a>
-            <a href="./pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
-                <i class="fa-solid fa-gear text-base"></i>
-                <span class="text-[10px] font-medium">Setting</span>
-            </a>
-        </div>
-    </footer>
+        </main>
+    </div>
+</div>
 
-    <!-- Firebase Sync JS Module -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex justify-around p-2.5 z-30 shadow-lg transition-colors duration-300">
+    <button onclick="switchTab('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] gap-0.5"><span class="text-base">📊</span> <span data-i18n="nav_home">Home</span></button>
+    <button onclick="switchTab('transactions')" id="mob-nav-transactions" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">💸</span> <span data-i18n="nav_txns">Txns</span></button>
+    <button onclick="switchTab('cashflow')" id="mob-nav-cashflow" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">💵</span> <span data-i18n="nav_cash">Cash</span></button>
+    <button onclick="switchTab('notepad')" id="mob-nav-notepad" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">📝</span> <span data-i18n="nav_notes">Notes</span></button>
+    <button onclick="switchTab('settings')" id="mob-nav-settings" class="flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5"><span class="text-base">⚙️</span> <span data-i18n="nav_settings">Settings</span></button>
+</div>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
-          authDomain: "digital-a2552.firebaseapp.com",
-          projectId: "digital-a2552",
-          storageBucket: "digital-a2552.firebasestorage.app",
-          messagingSenderId: "218135618179",
-          appId: "1:218135618179:web:821b76920d3e5669ac31b6"
-        };
+<div id="toast-notification" class="fixed bottom-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
+    <span id="toast-message">Notification message</span>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+<!-- ================= 4. FIREBASE & APP JAVASCRIPT ================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        document.getElementById('btn-cloud-backup').addEventListener('click', async () => {
-            showToast("Cloud Backup सुरु हुँदैछ...");
-            try {
-                const allData = {};
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    allData[key] = localStorage.getItem(key);
-                }
-                await set(ref(db, 'users/default_user'), allData);
-                showToast("सफलतापूर्वक Cloud मा Backup भयो!");
-            } catch (error) {
-                showToast("Cloud Backup Error: " + error.message, "error");
-            }
-        });
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+      authDomain: "digital-a2552.firebaseapp.com",
+      projectId: "digital-a2552",
+      storageBucket: "digital-a2552.firebasestorage.app",
+      messagingSenderId: "218135618179",
+      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    };
 
-        document.getElementById('btn-cloud-restore').addEventListener('click', async () => {
-            showToast("Cloud बाट Restore गरिँदैछ...");
-            try {
-                const dbRef = ref(db);
-                const snapshot = await get(child(dbRef, 'users/default_user'));
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    for (let key in data) {
-                        localStorage.setItem(key, data[key]);
-                    }
-                    showToast("सफलतापूर्वक Restore भयो! रिफ्रेश हुँदैछ...");
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    showToast("Cloud मा कुनै डाटा भेटिएन!", "error");
-                }
-            } catch (error) {
-                showToast("Restore Error: " + error.message, "error");
-            }
-        });
-    </script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const userId = "default_user";
 
-    <!-- JAVASCRIPT LOGIC & PIN PROTECTION -->
-    <script>
-        // एप खोल्नेबित्तिकै PIN कोड चेक गर्ने सिस्टम
-        (function checkAppPinLock() {
-            const savedPin = localStorage.getItem('app_pin');
-            if (savedPin) {
-                let attempts = 3;
-                let isAuthenticated = false;
-                while (attempts > 0) {
-                    let enteredPin = prompt(`सुरक्षा लक: कृपया आफ्नो ४-अंकको PIN हाल्नुहोस् (बाँकी प्रयास: ${attempts})`);
-                    if (enteredPin === savedPin) {
-                        isAuthenticated = true;
-                        break;
-                    } else {
-                        attempts--;
-                        if (attempts > 0) alert("गलत PIN! फेरि प्रयास गर्नुहोस्।");
-                    }
-                }
-                if (!isAuthenticated) {
-                    alert("धेरैपटक गलत PIN हाल्नुभयो! एप बन्द गरिँदैछ।");
-                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1120;color:white;font-family:sans-serif;'><h2>🔒 App Locked - Too many attempts</h2></div>";
-                    throw new Error("App Locked");
-                }
-            }
-        })();
+    window.saveUserDetails = async function() {
+        const name = document.getElementById('input-full-name').value;
+        const address = document.getElementById('input-address').value;
+        const mobile = document.getElementById('input-mobile').value;
+        const email = document.getElementById('input-email').value;
 
-        function showToast(msg, type = "info") {
-            const container = document.getElementById('toast-container');
-            if(!container) return;
-            const toast = document.createElement('div');
-            toast.className = `p-3 rounded-xl text-xs font-semibold text-white shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 pointer-events-auto ${
-                type === "error" ? "bg-red-600" : "bg-emerald-600"
-            }`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-
-            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function toggleSidebar() {
-            const drawer = document.getElementById('sidebar-drawer');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (drawer.classList.contains('-translate-x-full')) {
-                drawer.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                drawer.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        function updateDynamicHeader() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('en-US', options).toUpperCase();
-            
-            const dateEl = document.getElementById('dynamic-date');
-            if (dateEl) dateEl.innerText = dateString;
-
-            const hours = now.getHours();
-            let greetingText = 'Good morning';
-            if (hours >= 12 && hours < 17) greetingText = 'Good afternoon';
-            else if (hours >= 17) greetingText = 'Good evening';
-
-            const savedName = localStorage.getItem('profile_name') || '';
-            const greetingEl = document.getElementById('dynamic-greeting');
-            if (greetingEl) {
-                greetingEl.innerText = savedName.trim() !== '' ? `${greetingText}, ${savedName}` : greetingText;
-            }
-        }
-
-        function loadHeaderAvatar() {
-            const savedImage = localStorage.getItem('profile_avatar');
-            const headerImg = document.getElementById('header-avatar-img');
-            const headerIcon = document.getElementById('header-avatar-icon');
-            const sidebarImg = document.getElementById('sidebar-avatar-img');
-            const sidebarIcon = document.getElementById('sidebar-avatar-icon');
-
-            if (savedImage) {
-                if (headerImg && headerIcon) {
-                    headerImg.src = savedImage;
-                    headerImg.classList.remove('hidden');
-                    headerIcon.classList.add('hidden');
-                }
-                if (sidebarImg && sidebarIcon) {
-                    sidebarImg.src = savedImage;
-                    sidebarImg.classList.remove('hidden');
-                    sidebarIcon.classList.add('hidden');
-                }
-            }
-        }
-
-        function loadSidebarData() {
-            const savedName = localStorage.getItem('profile_name') || '';
-            const savedAddress = localStorage.getItem('profile_address') || '';
-            const savedMobile = localStorage.getItem('profile_mobile') || '';
-            const savedEmail = localStorage.getItem('profile_email') || '';
-
-            if (document.getElementById('input-name')) document.getElementById('input-name').value = savedName;
-            if (document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
-            if (document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
-            if (document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
-
-            if (document.getElementById('sidebar-display-name')) {
-                document.getElementById('sidebar-display-name').innerText = savedName || 'Guest User';
-            }
-
-            const biometricToggle = document.getElementById('biometric-toggle');
-            if (biometricToggle) {
-                biometricToggle.checked = localStorage.getItem('biometric') === 'true';
-            }
-        }
-
-        function saveProfileDetails() {
-            const name = document.getElementById('input-name').value.trim();
-            const address = document.getElementById('input-address').value.trim();
-            const mobile = document.getElementById('input-mobile').value.trim();
-            const email = document.getElementById('input-email').value.trim();
+        try {
+            await setDoc(doc(db, "users", userId), {
+                name: name,
+                address: address,
+                mobile: mobile,
+                email: email
+            }, { merge: true });
 
             localStorage.setItem('profile_name', name);
             localStorage.setItem('profile_address', address);
             localStorage.setItem('profile_mobile', mobile);
             localStorage.setItem('profile_email', email);
 
-            if (document.getElementById('sidebar-display-name')) {
-                document.getElementById('sidebar-display-name').innerText = name || 'Guest User';
+            loadStoredUserData();
+            updateDynamicHeader();
+            showToast('Details saved to Firebase successfully!');
+        } catch (e) {
+            console.error("Error writing document: ", e);
+            showToast('Failed to save details.');
+        }
+    };
+
+    window.loadStoredUserData = async function() {
+        try {
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+
+            let savedName = "", savedAddress = "", savedMobile = "", savedEmail = "";
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                savedName = data.name || "";
+                savedAddress = data.address || "";
+                savedMobile = data.mobile || "";
+                savedEmail = data.email || "";
+            } else {
+                savedName = localStorage.getItem('profile_name') || '';
+                savedAddress = localStorage.getItem('profile_address') || '';
+                savedMobile = localStorage.getItem('profile_mobile') || '';
+                savedEmail = localStorage.getItem('profile_email') || '';
             }
 
-            updateDynamicHeader();
-            showToast('विवरण सफलतापुर्वक सुरक्षित भयो!');
+            const nameEl = document.getElementById('sidebar-profile-name');
+            if (nameEl) nameEl.innerText = savedName ? savedName : 'Guest User';
+
+            if (document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
+            if (document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
+            if (document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+            if (document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
+
+            const savedImage = localStorage.getItem('profile_avatar');
+            const avatarImgs = [document.getElementById('sidebar-avatar-img'), document.getElementById('header-avatar-img')];
+            const avatarIcons = [document.getElementById('sidebar-avatar-icon'), document.getElementById('header-avatar-icon')];
+
+            if (savedImage) {
+                avatarImgs.forEach((img, index) => {
+                    if (img) {
+                        img.src = savedImage;
+                        img.classList.remove('hidden');
+                    }
+                    if (avatarIcons[index]) {
+                        avatarIcons[index].classList.add('hidden');
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error loading data: ", e);
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateDynamicHeader();
+        window.loadStoredUserData();
+        
+        const bioToggle = document.getElementById('biometric-toggle');
+        if(bioToggle) {
+            bioToggle.checked = localStorage.getItem('biometric') === 'true';
+        }
+    });
+</script>
+
+<script>
+    const translations = {
+        en: {
+            welcome_text: "Welcome",
+            app_title: "DIGITAL NOTEBOOK",
+            pin_title: "Enter Security PIN",
+            pin_desc: "Please enter your 4-digit PIN to open the app.",
+            btn_login: "Login",
+            my_account: "My Account",
+            nav_home: "Home",
+            nav_transactions: "Transactions",
+            nav_cash: "Cash & Savings",
+            nav_notes: "Note Pad",
+            nav_settings: "Settings",
+            nav_txns: "Txns",
+            lbl_receivable: "Total Receivable",
+            lbl_payable: "Total Payable",
+            lbl_expense: "This Month's Expense",
+            lbl_income: "Total Income",
+            lbl_savings: "Total Savings & Investment",
+            btn_details: "Details ➔",
+            btn_goal: "View Goal ➔",
+            chart_title: "Transaction Status (Pie Chart)",
+            incorrect_pin: "Incorrect PIN! Please enter the correct PIN."
+        },
+        np: {
+            welcome_text: "स्वागत छ",
+            app_title: "डिजिटल नोटबुक",
+            pin_title: "सुरक्षा पिन प्रविष्ट गर्नुहोस्",
+            pin_desc: "एप खोल्न कृपया आफ्नो ४-अंकको पिन प्रविष्ट गर्नुहोस्।",
+            btn_login: "लगइन",
+            my_account: "मेरो खाता",
+            nav_home: "गृह",
+            nav_transactions: "ट्रान्जेक्सन",
+            nav_cash: "नगद र बचत",
+            nav_notes: "नोट प्याड",
+            nav_settings: "सेटिङ्स",
+            nav_txns: "लेनदेन",
+            lbl_receivable: "कुल लिनुपर्ने (Receivable)",
+            lbl_payable: "कुल दिनुपर्ने (Payable)",
+            lbl_expense: "यस महिनाको खर्च",
+            lbl_income: "कुल आम्दानी",
+            lbl_savings: "कुल बचत तथा लगानी",
+            btn_details: "विवरण ➔",
+            btn_goal: "लक्ष्य हेर्नुहोस् ➔",
+            chart_title: "ट्रान्जेक्सन स्थिति (पाइ चार्ट)",
+            incorrect_pin: "गलत पिन! कृपया सही पिन प्रविष्ट गर्नुहोस्।"
+        }
+    };
+
+    function t(key) {
+        const lang = localStorage.getItem('language') || 'en';
+        return translations[lang][key] || translations['en'][key] || key;
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        document.getElementById('toast-message').innerText = message;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2000);
+    }
+
+    function applySettings() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
         }
 
-        function handleSidebarAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        const fontFamily = localStorage.getItem('font_family') || 'Poppins';
+        document.body.style.fontFamily = fontFamily + ", sans-serif";
 
+        const cardShape = localStorage.getItem('card_shape') || 'rounded-3xl';
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.className = card.className.replace(/rounded-(none|2xl|3xl)/g, '');
+            card.classList.add(cardShape);
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            el.innerText = t(key);
+        });
+    }
+
+    function loadDashboardData() {
+        const allTransactions = JSON.parse(localStorage.getItem('allTransactions')) || [];
+        let receivable = 0;
+        let payable = 0;
+        let expense = 0;
+
+        allTransactions.forEach(tx => {
+            const totalVal = parseFloat(tx.total) || parseFloat(tx.amount) || 0;
+            if (tx.type === 'Receivable') {
+                receivable += totalVal;
+            } else if (tx.type === 'Payable') {
+                payable += totalVal;
+            } else if (tx.type === 'Expense') {
+                expense += totalVal;
+            }
+        });
+
+        const incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
+        const savings = JSON.parse(localStorage.getItem('my_savings')) || [];
+
+        let income = incomes.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+        let totalSavings = savings.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
+
+        document.getElementById('lbl-receivable').innerText = `${currSymbol}${receivable.toLocaleString()}`;
+        document.getElementById('lbl-payable').innerText = `${currSymbol}${payable.toLocaleString()}`;
+        document.getElementById('lbl-expense').innerText = `${currSymbol}${expense.toLocaleString()}`;
+        document.getElementById('lbl-income').innerText = `${currSymbol}${income.toLocaleString()}`;
+        document.getElementById('lbl-savings').innerText = `${currSymbol}${totalSavings.toLocaleString()}`;
+
+        return { receivable, income, savings: totalSavings, expense, payable };
+    }
+
+    const initialData = loadDashboardData();
+    const ctx = document.getElementById('dashboardChart').getContext('2d');
+    const dashboardChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Income', 'Receivable', 'Savings', 'Payable', 'Expense'],
+            datasets: [{
+                data: [initialData.income, initialData.receivable, initialData.savings, initialData.payable, initialData.expense],
+                backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f43f5e', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        font: { family: 'Poppins', size: 11 },
+                        color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#334155'
+                    }
+                }
+            }
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        applySettings();
+        const savedPin = localStorage.getItem('app_pin');
+        if (savedPin) {
+            document.getElementById('pin-modal').style.display = 'flex';
+        } else {
+            document.getElementById('pin-modal').style.display = 'none';
+        }
+    });
+
+    function verifyLoginPin() {
+        const enteredPin = document.getElementById('login-pin-input').value;
+        const savedPin = localStorage.getItem('app_pin');
+
+        if (enteredPin === savedPin) {
+            document.getElementById('pin-modal').style.display = 'none';
+        } else {
+            showToast(t('incorrect_pin'));
+            document.getElementById('login-pin-input').value = '';
+        }
+    }
+
+    function updateDynamicHeader() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = now.toLocaleDateString('en-US', options).toUpperCase();
+        const dateEl = document.getElementById('dynamic-date');
+        if (dateEl) dateEl.innerText = dateString;
+
+        const hours = now.getHours();
+        let greetingText = 'Good morning';
+        if (hours >= 12 && hours < 17) {
+            greetingText = 'Good afternoon';
+        } else if (hours >= 17) {
+            greetingText = 'Good evening';
+        }
+
+        const savedName = localStorage.getItem('profile_name') || '';
+        const greetingEl = document.getElementById('dynamic-greeting');
+        if (greetingEl) {
+            greetingEl.innerText = savedName ? `${greetingText}, ${savedName}` : greetingText;
+        }
+    }
+
+    function handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 150;
-                    canvas.height = 150;
-                    ctx.drawImage(img, 0, 0, 150, 150);
-                    
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    try {
-                        localStorage.setItem('profile_avatar', compressedBase64);
-                        loadHeaderAvatar();
-                        showToast('फोटो अपडेट भयो!');
-                    } catch (err) {
-                        showToast("फोटो ठूलो भयो, सानो साइज छान्नुहोस्!", "error");
-                    }
-                };
+                const base64Image = e.target.result;
+                localStorage.setItem('profile_avatar', base64Image);
+                window.loadStoredUserData();
             };
             reader.readAsDataURL(file);
         }
+    }
 
-        function savePin() {
-            const pin = document.getElementById('input-pin').value.trim();
-            if (pin.length === 4 && !isNaN(pin)) {
-                localStorage.setItem('app_pin', pin);
-                document.getElementById('input-pin').value = '';
-                showToast('4-Digit PIN सफलतापूर्वक सेट भयो!');
-            } else {
-                showToast('कृपया सही ४ अंकको PIN हाल्नुहोस्!', "error");
-            }
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('-translate-x-full');
         }
+    }
 
-        function toggleBiometric(checkbox) {
-            if (checkbox.checked) {
-                localStorage.setItem('biometric', 'true');
-                showToast("Biometric Lock सफलतापूर्वक अन भयो!");
+    function savePin() {
+        const pin = document.getElementById('app-pin-input').value;
+        if (pin.length === 4) {
+            localStorage.setItem('app_pin', pin);
+            document.getElementById('app-pin-input').value = '';
+            showToast('PIN saved successfully!');
+        } else {
+            showToast('Please enter a 4-digit PIN.');
+        }
+    }
+
+    async function toggleBiometric(checkbox) {
+        if(checkbox.checked) {
+            if (window.PublicKeyCredential) {
+                try {
+                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                    if (available) {
+                        localStorage.setItem('biometric', 'true');
+                    } else {
+                        checkbox.checked = false;
+                        localStorage.setItem('biometric', 'false');
+                        showToast('Biometric authentication is not available.');
+                    }
+                } catch(e) {
+                    checkbox.checked = false;
+                    localStorage.setItem('biometric', 'false');
+                }
             } else {
+                checkbox.checked = false;
                 localStorage.setItem('biometric', 'false');
-                showToast("Biometric Lock अफ गरियो!");
+                showToast('Biometric is not supported.');
+            }
+        } else {
+            localStorage.setItem('biometric', 'false');
+        }
+    }
+
+    function switchTab(tabName) {
+        applySettings();
+
+        const dashView = document.getElementById('view-dashboard');
+        const otherView = document.getElementById('view-other');
+        const frame = document.getElementById('page-frame');
+
+        if (tabName === 'dashboard') {
+            dashView.classList.remove('hidden');
+            otherView.classList.add('hidden');
+            frame.src = ''; 
+            const updatedData = loadDashboardData();
+            dashboardChart.data.datasets[0].data = [updatedData.income, updatedData.receivable, updatedData.savings, updatedData.payable, updatedData.expense];
+            dashboardChart.update();
+        } else {
+            dashView.classList.add('hidden');
+            otherView.classList.remove('hidden');
+            
+            const pages = {
+                'transactions': 'pages/transactions.html',
+                'cashflow': 'pages/cashflow.html',
+                'notepad': 'pages/notepad.html',
+                'settings': 'pages/settings.html'
+            };
+            if(pages[tabName]) {
+                frame.src = pages[tabName];
             }
         }
 
-        function calculateTotalsAndSync() {
-            const symbol = (typeof GlobalSettings !== 'undefined') ? GlobalSettings.getCurrencySymbol() : 'Rs';
-            for (let i = 1; i <= 5; i++) {
-                const el = document.getElementById(`curr-symbol-${i}`);
-                if (el) el.innerText = symbol;
+        ['dashboard', 'transactions', 'cashflow', 'notepad', 'settings'].forEach(t => {
+            const navEl = document.getElementById(`nav-${t}`);
+            if(navEl) {
+                navEl.className = t === tabName 
+                    ? "flex items-center gap-3 py-3 px-4 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 transition"
+                    : "flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-slate-800 text-slate-300 transition";
             }
-
-            const txns = JSON.parse(localStorage.getItem('transactions') || '[]');
-            let totalIncome = 0, totalExpense = 0, totalReceivable = 0, totalPayable = 0;
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            txns.forEach(item => {
-                const amt = parseFloat(item.amount || item.amt || 0);
-                const type = (item.type || '').toLowerCase();
-                const itemDate = new Date(item.date || Date.now());
-
-                if (type === 'income') totalIncome += amt;
-                else if (type === 'expense' && itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) totalExpense += amt;
-                else if (type === 'receivable' || type === 'receive') totalReceivable += amt;
-                else if (type === 'payable' || type === 'pay') totalPayable += amt;
-            });
-
-            const savingsList = JSON.parse(localStorage.getItem('my_cashflow') || '[]');
-            let totalSavings = 0;
-            savingsList.forEach(item => {
-                totalSavings += parseFloat(item.amount || item.currentAmount || 0);
-            });
-
-            document.getElementById('total-income').innerText = totalIncome.toLocaleString();
-            document.getElementById('this-month-expense').innerText = totalExpense.toLocaleString();
-            document.getElementById('total-receivable').innerText = totalReceivable.toLocaleString();
-            document.getElementById('total-payable').innerText = totalPayable.toLocaleString();
-            document.getElementById('total-savings').innerText = totalSavings.toLocaleString();
-
-            return { totalIncome, totalReceivable, totalSavings, totalPayable, totalExpense };
-        }
-
-        let pieChartInstance = null;
-        function renderPieChart() {
-            const ctx = document.getElementById('transactionPieChart');
-            if (!ctx) return;
-            const dataTotals = calculateTotalsAndSync();
-            if (pieChartInstance) pieChartInstance.destroy();
-
-            pieChartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Income', 'Receivable', 'Savings', 'Payable', 'Expense'],
-                    datasets: [{
-                        data: [dataTotals.totalIncome, dataTotals.totalReceivable, dataTotals.totalSavings, dataTotals.totalPayable, dataTotals.totalExpense],
-                        backgroundColor: ['#10b981', '#3b82f6', '#a855f7', '#f43f5e', '#f59e0b'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            updateDynamicHeader();
-            loadHeaderAvatar();
-            loadSidebarData();
-            calculateTotalsAndSync();
-            renderPieChart();
+            
+            const mobNavEl = document.getElementById(`mob-nav-${t}`);
+            if(mobNavEl) {
+                mobNavEl.className = t === tabName
+                    ? "flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] gap-0.5"
+                    : "flex flex-col items-center text-slate-500 dark:text-slate-400 font-medium text-[11px] gap-0.5";
+            }
         });
+    }
 
-        window.addEventListener('focus', () => {
-            calculateTotalsAndSync();
-            renderPieChart();
-        });
-
-        window.addEventListener('storage', () => {
-            calculateTotalsAndSync();
-            renderPieChart();
-        });
-    </script>
+    window.addEventListener('DOMContentLoaded', () => {
+        updateDynamicHeader();
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.remove();
+        }, 700);
+    });
+</script>
 </body>
 </html>
