@@ -12,7 +12,7 @@
     </script>
 
     <!-- Global Settings Bridge Load -->
-    <script src="global-settings.js"></script>
+    <script src="global.js"></script>
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -60,7 +60,7 @@
         <div class="flex items-center justify-between pb-4 border-b border-slate-800">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-2xl bg-indigo-600/20 p-1 flex items-center justify-center border border-indigo-500/30 shadow-inner shrink-0 overflow-hidden">
-                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-indigo-400 font-bold text-lg\'>DN</span>';">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-indigo-400 font-bold text-lg\'>DN</span>'">
                 </div>
                 <div>
                     <h1 class="text-base font-bold text-white tracking-wide leading-tight">
@@ -74,7 +74,7 @@
         <!-- MY WORKSPACE Section -->
         <div>
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">My Workspace</p>
-            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/20 transition group shadow-sm">
+            <a href="index.html" class="w-full flex items-center justify-between px-4 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/30 group transition">
                 <div class="flex items-center gap-3">
                     <span class="text-lg">📊</span>
                     <span class="text-sm">Overview</span>
@@ -107,22 +107,22 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-[11px] font-medium text-slate-400 mb-1">Full Name</label>
-                    <input type="text" id="input-name" placeholder="Enter Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="input-name" placeholder="Enter Full Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                 </div>
                 
                 <div>
                     <label class="block text-[11px] font-medium text-slate-400 mb-1">Address</label>
-                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-medium text-slate-400 mb-1">Mobile Number</label>
-                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-medium text-slate-400 mb-1">Email Address</label>
-                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                 </div>
 
                 <button onclick="saveProfileDetails()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl text-xs shadow-md transition">
@@ -134,7 +134,7 @@
             <div class="pt-2 border-t border-slate-800/80">
                 <label class="block text-[11px] font-medium text-slate-400 mb-1">Create Security PIN (4-Digit)</label>
                 <div class="flex gap-2">
-                    <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="password" id="input-pin" maxlength="4" placeholder="••••" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                     <button onclick="savePin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">Save PIN</button>
                 </div>
             </div>
@@ -151,10 +151,10 @@
             <!-- FIREBASE CLOUD BACKUP & RESTORE -->
             <div class="pt-3 border-t border-slate-800/80 space-y-2">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cloud Sync (Firebase)</p>
-                <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
+                <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
                 </button>
-                <button id="btn-cloud-restore" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20">
+                <button id="btn-cloud-restore" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/20">
                     <i class="fa-solid fa-cloud-arrow-down"></i> Restore from Cloud
                 </button>
             </div>
@@ -215,7 +215,7 @@
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL INCOME</p>
                 <h3 class="text-xl font-extrabold text-emerald-400 mt-1"><span id="curr-symbol-4">₹</span> <span id="total-income">0</span></h3>
             </div>
-            <a href="pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+            <a href="./pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                 Details ➔
             </a>
         </div>
@@ -226,7 +226,7 @@
                 <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TOTAL SAVINGS & INVESTMENT</p>
                 <h3 class="text-xl font-extrabold text-purple-400 mt-1"><span id="curr-symbol-5">₹</span> <span id="total-savings">0</span></h3>
             </div>
-            <a href="pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+            <a href="./pages/cashflow.html" class="bg-slate-800/80 hover:bg-slate-700 text-purple-400 border border-purple-500/30 text-xs font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                 View Goal ➔
             </a>
         </div>
@@ -249,26 +249,26 @@
         </div>
     </main>
 
-    <!-- FOOTER NAVIGATION BAR (Corrected relative links to prevent 404 on subpages) -->
+    <!-- FOOTER NAVIGATION BAR (Fixed with relative paths) -->
     <footer class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-3 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
+            <a href="./index.html" class="flex flex-col items-center gap-1 text-indigo-400 font-bold transition w-1/5">
                 <i class="fa-solid fa-chart-column text-base"></i>
                 <span class="text-[10px]">Overview</span>
             </a>
-            <a href="pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <a href="./pages/transactions.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
                 <i class="fa-solid fa-money-bill-transfer text-base"></i>
                 <span class="text-[10px] font-medium">Txns</span>
             </a>
-            <a href="pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <a href="./pages/cashflow.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
                 <i class="fa-solid fa-piggy-bank text-base"></i>
                 <span class="text-[10px] font-medium">Saving</span>
             </a>
-            <a href="pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <a href="./pages/notepad.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
                 <i class="fa-solid fa-note-sticky text-base"></i>
                 <span class="text-[10px] font-medium">Note Pad</span>
             </a>
-            <a href="pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
+            <a href="./pages/settings.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition w-1/5">
                 <i class="fa-solid fa-gear text-base"></i>
                 <span class="text-[10px] font-medium">Setting</span>
             </a>
@@ -337,7 +337,7 @@
                 let attempts = 3;
                 let isAuthenticated = false;
                 while (attempts > 0) {
-                    let enteredPin = prompt(`सुरक्षा लक: कृपया आफ्नो ४-अंकको PIN हाल्नुहोस् (बाँकी प्रयास: ${attempts}):`);
+                    let enteredPin = prompt(`सुरक्षा लक: कृपया आफ्नो ४-अंकको PIN हाल्नुहोस् (बाँकी प्रयास: ${attempts})`);
                     if (enteredPin === savedPin) {
                         isAuthenticated = true;
                         break;
@@ -348,7 +348,7 @@
                 }
                 if (!isAuthenticated) {
                     alert("धेरैपटक गलत PIN हाल्नुभयो! एप बन्द गरिँदैछ।");
-                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1120;color:white;font-family:sans-serif;'><h2>🔒 App Locked for Security</h2></div>";
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1120;color:white;font-family:sans-serif;'><h2>🔒 App Locked - Too many attempts</h2></div>";
                     throw new Error("App Locked");
                 }
             }
@@ -537,7 +537,7 @@
                 else if (type === 'payable' || type === 'pay') totalPayable += amt;
             });
 
-            const savingsList = JSON.parse(localStorage.getItem('savings') || '[]');
+            const savingsList = JSON.parse(localStorage.getItem('my_cashflow') || '[]');
             let totalSavings = 0;
             savingsList.forEach(item => {
                 totalSavings += parseFloat(item.amount || item.currentAmount || 0);
