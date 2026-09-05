@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Income & Cashflow - Digital Notebook</title>
+    <title>Income, Cashflow & Party Ledger - Digital Notebook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,7 +17,6 @@
             }
         }
     </script>
-    <!-- Dynamic Theme, Font & Layout Loader -->
     <script>
         const savedTheme = localStorage.getItem('theme') || 'dark';
         if (savedTheme === 'dark') {
@@ -25,22 +24,11 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
-
-        const savedFontSize = localStorage.getItem('font_size') || 'normal';
-        if (savedFontSize === 'small') {
-            document.documentElement.style.fontSize = '14px';
-        } else if (savedFontSize === 'large') {
-            document.documentElement.style.fontSize = '18px';
-        } else {
-            document.documentElement.style.fontSize = '16px';
-        }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: var(--app-font, 'Poppins'), sans-serif; 
-        }
+        body { font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 4px; }
@@ -49,675 +37,753 @@
 
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
 
-<!-- Full Width Container -->
-<div class="space-y-4 w-full flex-1">
-    <!-- Header Section with Month Filter & Firebase Actions -->
-    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4 transition-colors duration-300">
-        <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
-            <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">💰</span> 
-            <span data-i18n="page_title">Income & Cashflow Tracker</span>
+<div class="space-y-4 w-full flex-1 max-w-5xl mx-auto">
+    <!-- Header Section (Padding কম गरिएको) -->
+    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-2.5 md:p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-3">
+        <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">📊</span> 
+            <span>Cashflow & Ledger</span>
         </h1>
         
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-            <!-- Firebase Buttons -->
-            <button type="button" onclick="syncWithFirebase()" class="bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Sync Firebase
-            </button>
-            <button type="button" onclick="restoreFromFirebase()" class="bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-cloud-arrow-down text-amber-500"></i> Restore Firebase
-            </button>
-            <button type="button" onclick="exportToCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-file-csv text-indigo-500"></i> Export CSV
-            </button>
-
-            <!-- Monthly Filter Dropdown -->
-            <div class="flex items-center gap-2 w-full md:w-auto pt-2 md:pt-0">
-                <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
-                <input type="month" id="month-filter" onchange="filterByMonth()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white px-2.5 py-1.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
-                <button onclick="clearMonthFilter()" class="text-[11px] text-slate-500 hover:text-indigo-500 underline whitespace-nowrap" data-i18n="show_all">Show All</button>
+            <!-- Date Range Filter & PDF Report -->
+            <div class="flex flex-row items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-xl text-xs">
+                <i class="fa-solid fa-calendar text-slate-400"></i>
+                <input type="date" id="filter-from-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
+                <span class="text-slate-400">-</span>
+                <input type="date" id="filter-to-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
+                <button onclick="clearDateFilter()" class="text-slate-400 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="exportFullPDF()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ml-2">
+                    <i class="fa-solid fa-file-pdf text-rose-500"></i> PDF
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Total Dashboard Summary Cards -->
-    <div class="grid grid-cols-2 gap-4">
-        <div id="card-income-box" class="bg-emerald-50 dark:bg-emerald-950/40 p-4 md:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 transition-colors duration-300">
-            <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider" data-i18n="total_income">Total Income</p>
-            <h2 id="total-income-display" class="text-xl md:text-2xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
+    <!-- Advanced Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50">
+            <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">Total Income</p>
+            <h2 id="summary-income" class="text-lg md:text-xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
         </div>
-        <div id="card-savings-box" class="bg-purple-50 dark:bg-purple-950/40 p-4 md:p-5 rounded-2xl border border-purple-200 dark:border-purple-900/50 transition-colors duration-300">
-            <p class="text-[11px] text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider" data-i18n="total_savings">Total Cashflow</p>
-            <h2 id="total-savings-display" class="text-xl md:text-2xl font-extrabold text-purple-800 dark:text-purple-200 mt-1">Rs 0</h2>
+        <div class="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50">
+            <p class="text-[11px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider">Total Cashflow</p>
+            <h2 id="summary-cashflow" class="text-lg md:text-xl font-extrabold text-amber-800 dark:text-amber-200 mt-1">Rs 0</h2>
+        </div>
+        <div class="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-2xl border border-rose-200 dark:border-rose-900/50">
+            <p class="text-[11px] text-rose-700 dark:text-rose-400 font-bold uppercase tracking-wider">Receivable (To Take)</p>
+            <h2 id="summary-receivable" class="text-lg md:text-xl font-extrabold text-rose-800 dark:text-rose-200 mt-1">Rs 0</h2>
+        </div>
+        <div class="bg-orange-50 dark:bg-orange-950/40 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/50">
+            <p class="text-[11px] text-orange-700 dark:text-orange-400 font-bold uppercase tracking-wider">Payable (To Give)</p>
+            <h2 id="summary-payable" class="text-lg md:text-xl font-extrabold text-orange-800 dark:text-orange-200 mt-1">Rs 0</h2>
         </div>
     </div>
 
-    <!-- 1. ADD INCOME SECTION -->
-    <div id="income-card-container" class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i class="fa-solid fa-circle-plus text-emerald-600"></i> <span data-i18n="add_income_title">Add Income</span>
-            </h3>
-            <div class="w-full md:w-56">
-                <input type="text" id="search-income" placeholder="Search income source..." data-i18n-placeholder="search_income_ph" oninput="renderIncomeTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
-            </div>
-        </div>
+    <!-- ACCORDION CARD 1: ADD TRANSACTION -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
+        <button onclick="toggleAccordion('section-transaction')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-right-left text-blue-500"></i> Add New Transaction</span>
+            <i id="icon-section-transaction" class="fa-solid fa-chevron-down transition-transform"></i>
+        </button>
+        <div id="content-section-transaction" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-3">
+                <input type="hidden" id="edit-txn-index" value="">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
+                        <input type="date" id="txn-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Name</label>
+                        <input type="text" id="txn-party" placeholder="Enter name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
 
-        <form id="income-form" class="space-y-3" onsubmit="saveIncome(event)">
-            <input type="hidden" id="edit-income-index" value="">
-            <div>
-                <input type="text" id="income-source-name" placeholder="Income Source Name" data-i18n-placeholder="source_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Type</label>
+                        <select id="txn-type" onchange="handleTypeChange()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="Receivable">Receivable (To Take)</option>
+                            <option value="Payable">Payable (To Give)</option>
+                            <option value="Expense">Expense (खर्च)</option>
+                        </select>
+                    </div>
+                    <div id="interest-fields-wrapper" class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Monthly Interest Rate (%)</label>
+                            <input type="number" step="any" id="txn-interest-rate" value="0" oninput="calculateTotalAmount()" placeholder="Monthly Rate (%)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Period (Months)</label>
+                            <input type="number" step="any" id="txn-period" value="0" oninput="calculateTotalAmount()" placeholder="Time in months" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Principal Amount (NPR / INR)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" step="any" id="txn-amount-npr" oninput="calculateTotalAmount()" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                            <input type="number" step="any" id="txn-amount-inr" oninput="calculateTotalAmount()" placeholder="INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount</label>
+                        <input type="text" id="txn-total-calc" readonly placeholder="Total calculation" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="any" id="income-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('income', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
-                        <input type="number" step="any" id="income-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('income', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Remarks / Note</label>
+                    <input type="text" id="txn-note" placeholder="Optional details..." class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" id="txn-cancel-btn" onclick="resetTxnForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" id="txn-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACCORDION CARD 2: PARTY ACCOUNTS & LEDGER -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
+        <button onclick="toggleAccordion('section-party')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-users text-purple-500"></i> Party Accounts & Ledger</span>
+            <i id="icon-section-party" class="fa-solid fa-chevron-down transition-transform"></i>
+        </button>
+        <div id="content-section-party" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <div class="flex justify-between items-center gap-2">
+                <input type="text" id="search-party" placeholder="Search party name..." oninput="renderPartyAccounts()" class="w-full md:w-64 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+            </div>
+            <div id="party-list-container" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- ACCORDION CARD 3: ADD INCOME -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
+        <button onclick="toggleAccordion('section-income')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-wallet text-emerald-500"></i> Add Income Source</span>
+            <i id="icon-section-income" class="fa-solid fa-chevron-down transition-transform"></i>
+        </button>
+        <div id="content-section-income" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <form id="income-form" onsubmit="saveIncome(event)" class="space-y-3">
+                <input type="hidden" id="edit-income-index" value="">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="md:col-span-2">
+                        <input type="text" id="income-source-name" placeholder="Income Source Name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    </div>
+                    <div>
+                        <input type="number" step="any" id="income-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
-                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500/50 transition">
+                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                 </div>
+                <div class="flex gap-2">
+                    <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition">Add Income</button>
+                </div>
+            </form>
+            <div class="flex justify-end pt-2">
+                <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print PDF</button>
             </div>
-
-            <div class="flex gap-2 pt-2">
-                <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition">
-                    <span data-i18n="btn_cancel">Cancel</span>
-                </button>
-                <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-emerald-600/20" data-i18n="btn_add_income">
-                    Add Income
-                </button>
-            </div>
-        </form>
-
-        <div class="overflow-x-auto pt-3">
-            <table class="w-full text-left text-xs whitespace-nowrap">
-                <thead class="text-slate-400 uppercase border-b border-slate-100 dark:border-slate-800 text-[11px]">
-                    <tr>
-                        <th class="py-3 px-3" data-i18n="th_date">Date</th>
-                        <th class="py-3 px-4" data-i18n="th_source">Source</th>
-                        <th class="py-3 px-4" data-i18n="th_amount">Amount</th>
-                        <th class="py-3 px-3 text-right" data-i18n="th_action">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="income-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60"></tbody>
-            </table>
+            <div id="income-list-container" class="space-y-2 pt-2"></div>
         </div>
     </div>
 
-    <!-- 2. ADD CASHFLOW / SAVINGS SECTION -->
-    <div id="savings-card-container" class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i class="fa-solid fa-circle-plus text-purple-600"></i> <span data-i18n="add_savings_title">Add Cashflow</span>
-            </h3>
-            <div class="w-full md:w-56">
-                <input type="text" id="search-savings" placeholder="Search cashflow title..." data-i18n-placeholder="search_savings_ph" oninput="renderSavingsTable()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
-            </div>
-        </div>
-
-        <form id="savings-form" class="space-y-3" onsubmit="saveSavings(event)">
-            <input type="hidden" id="edit-savings-index" value="">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="md:col-span-2">
-                    <input type="text" id="savings-title" placeholder="Cashflow Title" data-i18n-placeholder="savings_title_ph" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
-                </div>
-                <div>
-                    <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
-                        <option value="Bank" data-i18n="cat_bank">🏦 Bank Account</option>
-                        <option value="Cash" data-i18n="cat_cash">💵 Cash / Wallet</option>
-                        <option value="Investment" data-i18n="cat_investment">📈 Shares / Investment</option>
-                        <option value="Emergency" data-i18n="cat_emergency">🚨 Emergency Fund</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="amount_label">Amount (NPR / INR)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="any" id="savings-amount" placeholder="NPR (Rs)" required oninput="convertCurrency('savings', 'npr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
-                        <input type="number" step="any" id="savings-amount-inr" placeholder="INR (₹)" oninput="convertCurrency('savings', 'inr')" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
+    <!-- ACCORDION CARD 4: ADD CASHFLOW / SAVINGS -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
+        <button onclick="toggleAccordion('section-savings')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-piggy-bank text-amber-500"></i> Add Cashflow / Savings</span>
+            <i id="icon-section-savings" class="fa-solid fa-chevron-down transition-transform"></i>
+        </button>
+        <div id="content-section-savings" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <form id="savings-form" onsubmit="saveSavings(event)" class="space-y-3">
+                <input type="hidden" id="edit-savings-index" value="">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="md:col-span-2">
+                        <input type="text" id="savings-title" placeholder="Cashflow Title" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    </div>
+                    <div>
+                        <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                            <option value="Bank">🏦 Bank</option>
+                            <option value="Cash">💵 Cash</option>
+                            <option value="Investment">📈 Investment</option>
+                        </select>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5" data-i18n="date_label">Date</label>
-                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-purple-500/50 transition">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input type="number" step="any" id="savings-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                 </div>
+                <div class="flex gap-2">
+                    <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
+                    <button type="submit" id="savings-submit-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium p-2.5 rounded-xl text-xs transition">Add Cashflow</button>
+                </div>
+            </form>
+            <div class="flex justify-end pt-2">
+                <button onclick="printSavingsPDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print PDF</button>
             </div>
-
-            <div class="flex gap-2 pt-2">
-                <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 hover:bg-slate-600 text-white font-medium p-3 rounded-xl text-xs transition">
-                    <span data-i18n="btn_cancel">Cancel</span>
-                </button>
-                <button type="submit" id="savings-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-lg shadow-purple-600/20" data-i18n="btn_add_savings">
-                    Add Cashflow
-                </button>
-            </div>
-        </form>
-
-        <div class="overflow-x-auto pt-3">
-            <table class="w-full text-left text-xs whitespace-nowrap">
-                <thead class="text-slate-400 uppercase border-b border-slate-100 dark:border-slate-800 text-[11px]">
-                    <tr>
-                        <th class="py-3 px-3" data-i18n="th_date">Date</th>
-                        <th class="py-3 px-4" data-i18n="th_title">Title</th>
-                        <th class="py-3 px-3" data-i18n="th_category">Category</th>
-                        <th class="py-3 px-4" data-i18n="th_amount">Amount</th>
-                        <th class="py-3 px-3 text-right" data-i18n="th_action">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="savings-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60"></tbody>
-            </table>
+            <div id="savings-list-container" class="space-y-2 pt-2"></div>
         </div>
     </div>
 </div>
 
-<!-- Custom Toast Message -->
+<!-- Toast Notification -->
 <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- Custom Modal Box -->
-<div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-11/12 max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 space-y-3" id="modal-content-box">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div>
-                <h4 class="text-[10px] font-bold uppercase tracking-wider text-rose-500">Digital Notebook</h4>
-                <h3 id="modal-title" class="text-sm font-bold text-slate-900 dark:text-white">Confirm Action</h3>
-            </div>
+<!-- Party Ledger Modal -->
+<div id="ledger-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-3">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-full max-w-lg shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 id="modal-party-title" class="text-sm font-bold text-slate-900 dark:text-white">Party Ledger</h3>
+            <button onclick="closeLedgerModal()" class="text-slate-400 hover:text-rose-500 text-sm"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <p id="modal-message" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Are you sure?</p>
-        <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeCustomModal(false)" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium px-3 py-1.5 rounded-xl text-xs transition">
-                <span data-i18n="btn_cancel">Cancel</span>
-            </button>
-            <button type="button" id="modal-btn-confirm" onclick="closeCustomModal(true)" class="bg-rose-600 hover:bg-rose-700 text-white font-medium px-3 py-1.5 rounded-xl text-xs shadow-lg shadow-rose-600/25 transition">
-                <span data-i18n="delete_btn">Delete</span>
-            </button>
+        <div id="modal-ledger-content" class="space-y-2 text-xs"></div>
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
+            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-300">Settle / Payment</h4>
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" step="any" id="settle-amount" placeholder="Amount" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                <select id="settle-type" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    <option value="Paid">Payment Given (Paid)</option>
+                    <option value="Received">Payment Received</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="recordPartialSettle()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-xl text-xs font-semibold">Save Payment</button>
+                <button onclick="printPartyLedger()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print PDF</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const translations = {
-        en: {
-            page_title: "Income & Cashflow Tracker",
-            total_income: "Total Income",
-            total_savings: "Total Cashflow",
-            show_all: "Show All",
-            add_income_title: "Add Income",
-            add_savings_title: "Add Cashflow",
-            search_income_ph: "Search income source...",
-            search_savings_ph: "Search cashflow title...",
-            source_ph: "Income Source Name",
-            savings_title_ph: "Cashflow Title",
-            amount_label: "Amount (NPR / INR)",
-            date_label: "Date",
-            btn_cancel: "Cancel",
-            btn_add_income: "Add Income",
-            btn_update_income: "Update Income",
-            btn_add_savings: "Add Cashflow",
-            btn_update_savings: "Update Cashflow",
-            th_date: "Date",
-            th_source: "Source",
-            th_title: "Title",
-            th_category: "Category",
-            th_amount: "Amount",
-            th_action: "Action",
-            cat_bank: "🏦 Bank Account",
-            cat_cash: "💵 Cash / Wallet",
-            cat_investment: "📈 Shares / Investment",
-            cat_emergency: "🚨 Emergency Fund",
-            no_records: "No records found.",
-            edit: "Edit",
-            del: "Del",
-            confirm_del_income: "Are you sure you want to delete this income record?",
-            confirm_del_savings: "Are you sure you want to delete this cashflow record?"
-        },
-        np: {
-            page_title: "आय तथा नगद प्रवाह ट्र्याकर",
-            total_income: "कुल आम्दानी (Total Income)",
-            total_savings: "कुल नगद प्रवाह (Total Cashflow)",
-            show_all: "सबै हेर्नुहोस्",
-            add_income_title: "आम्दानी थप्नुहोस्",
-            add_savings_title: "नगद प्रवाह (Cashflow) थप्नुहोस्",
-            search_income_ph: "आम्दानी स्रोत खोज्नुहोस्...",
-            search_savings_ph: "नगद प्रवाह शीर्षक खोज्नुहोस्...",
-            source_ph: "आम्दानी स्रोतको नाम",
-            savings_title_ph: "नगद प्रवाहको शीर्षक",
-            amount_label: "रकम (NPR / INR)",
-            date_label: "मिति (Date)",
-            btn_cancel: "रद्द गर्नुहोस्",
-            btn_add_income: "आम्दानी थप्नुहोस्",
-            btn_add_savings: "नगद प्रवाह थप्नुहोस्",
-            btn_update_income: "आम्दानी अपडेट गर्नुहोस्",
-            btn_update_savings: "नगद प्रवाह अपडेट गर्नुहोस्",
-            th_date: "मिति",
-            th_source: "स्रोत",
-            th_title: "शीर्षक",
-            th_category: "प्रकार",
-            th_amount: "रकम",
-            th_action: "कार्य",
-            cat_bank: "🏦 बैंक खाता",
-            cat_cash: "💵 नगद / वालेट",
-            cat_investment: "📈 शेयर / लगानी",
-            cat_emergency: "🚨 आपतकालीन कोष",
-            no_records: "कुनै रेकर्ड फेला परेन।",
-            edit: "सच्याउने",
-            del: "मेटाउने",
-            confirm_del_income: "के तपाईं यो आम्दानी रेकर्ड मेटाउन चाहनुहुन्छ?",
-            confirm_del_savings: "के तपाईं यो नगद प्रवाह रेकर्ड मेटाउन चाहनुहुन्छ?"
-        }
-    };
-
-    function t(key) {
-        const lang = localStorage.getItem('language') || 'en';
-        return translations[lang][key] || translations['en'][key] || key;
-    }
-
-    function applySettings() {
-        const theme = localStorage.getItem('theme') || 'dark';
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        const fontFamily = localStorage.getItem('font_family') || 'Poppins';
-        document.body.style.fontFamily = fontFamily + ", sans-serif";
-
-        const cardShape = localStorage.getItem('card_shape') || 'rounded-2xl';
-        const incomeCard = document.getElementById('income-card-container');
-        const savingsCard = document.getElementById('savings-card-container');
-        const cardIncBox = document.getElementById('card-income-box');
-        const cardSavBox = document.getElementById('card-savings-box');
-
-        [incomeCard, savingsCard, cardIncBox, cardSavBox].forEach(el => {
-            if(el) {
-                el.className = el.className.replace(/rounded-(none|2xl|3xl)/g, '');
-                el.classList.add(cardShape);
-            }
-        });
-
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            el.innerText = t(key);
-        });
-
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            el.placeholder = t(key);
-        });
-    }
-
+    let transactions = JSON.parse(localStorage.getItem('my_transactions')) || [];
     let incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
     let savings = JSON.parse(localStorage.getItem('my_cashflow')) || [];
-    let modalCallback = null;
+    let activePartyName = null;
 
+    document.getElementById('txn-date').valueAsDate = new Date();
     document.getElementById('income-date').valueAsDate = new Date();
     document.getElementById('savings-date').valueAsDate = new Date();
 
-    function showToast(message, type = 'info') {
+    function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
-        
-        let bgClass = "bg-slate-800 text-white";
-        let iconClass = "fa-circle-info text-indigo-400";
-
-        if (type === 'success') {
-            bgClass = "bg-emerald-900/90 text-emerald-100 border border-emerald-700";
-            iconClass = "fa-circle-check text-emerald-400";
-        } else if (type === 'error') {
-            bgClass = "bg-rose-900/90 text-rose-100 border border-rose-700";
-            iconClass = "fa-circle-xmark text-rose-400";
-        } else if (type === 'warning') {
-            bgClass = "bg-amber-900/90 text-amber-100 border border-amber-700";
-            iconClass = "fa-triangle-exclamation text-amber-400";
-        }
-
-        toast.className = `${bgClass} px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
-        toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
-
+        toast.className = `bg-slate-900 text-white border border-slate-800 px-4 py-2.5 rounded-xl text-xs shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto`;
+        toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>${message}</span>`;
         container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.remove('translate-y-[-10px]', 'opacity-0');
-        }, 10);
-
+        setTimeout(() => toast.classList.remove('translate-y-[-10px]', 'opacity-0'), 10);
         setTimeout(() => {
             toast.classList.add('opacity-0', 'translate-y-[-10px]');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
 
-    function showCustomModal(title, message, callback) {
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-message').innerText = message;
-        modalCallback = callback;
-
-        const modal = document.getElementById('custom-modal');
-        const box = document.getElementById('modal-content-box');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            box.classList.remove('scale-95');
-            box.classList.add('scale-100');
-        }, 10);
+    function toggleAccordion(sectionId) {
+        const content = document.getElementById(`content-${sectionId}`);
+        const icon = document.getElementById(`icon-${sectionId}`);
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
     }
 
-    function closeCustomModal(isConfirmed) {
-        const modal = document.getElementById('custom-modal');
-        const box = document.getElementById('modal-content-box');
-        modal.classList.add('opacity-0');
-        box.classList.remove('scale-100');
-        box.classList.add('scale-95');
+    function handleTypeChange() {
+        const type = document.getElementById('txn-type').value;
+        const interestWrapper = document.getElementById('interest-fields-wrapper');
+        if (type === 'Expense') {
+            interestWrapper.style.display = 'none';
+        } else {
+            interestWrapper.style.display = 'grid';
+        }
+        calculateTotalAmount();
+    }
+
+    function calculateTotalAmount() {
+        const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
+        const principal = npr + inr; 
+        const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
+        const period = parseFloat(document.getElementById('txn-period').value) || 0;
+
+        const type = document.getElementById('txn-type').value;
+        let total = principal;
+        if (type !== 'Expense' && rate > 0 && period > 0) {
+            const interest = (principal * rate * period) / 100;
+            total = principal + interest;
+        }
+
+        document.getElementById('txn-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
+    }
+
+    function saveTransaction(e) {
+        e.preventDefault();
+        const date = document.getElementById('txn-date').value;
+        const party = document.getElementById('txn-party').value.trim();
+        const type = document.getElementById('txn-type').value;
+        const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
+        const principal = npr + inr;
+        const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
+        const period = parseFloat(document.getElementById('txn-period').value) || 0;
         
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            if (isConfirmed && modalCallback) {
-                modalCallback();
-            }
-            modalCallback = null;
-        }, 300);
-    }
-
-    function convertCurrency(type, source) {
-        const conversionRate = 1.6;
-        if (type === 'income') {
-            const nprInput = document.getElementById('income-amount');
-            const inrInput = document.getElementById('income-amount-inr');
-            if (source === 'npr' && nprInput.value !== '') {
-                inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
-            } else if (source === 'inr' && inrInput.value !== '') {
-                nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
-            }
-        } else if (type === 'savings') {
-            const nprInput = document.getElementById('savings-amount');
-            const inrInput = document.getElementById('savings-amount-inr');
-            if (source === 'npr' && nprInput.value !== '') {
-                inrInput.value = (parseFloat(nprInput.value) / conversionRate).toFixed(2);
-            } else if (source === 'inr' && inrInput.value !== '') {
-                nprInput.value = (parseFloat(inrInput.value) * conversionRate).toFixed(2);
-            }
+        let totalAmount = principal;
+        if (type !== 'Expense' && rate > 0 && period > 0) {
+            totalAmount = principal + (principal * rate * period) / 100;
         }
-    }
 
-    function saveIncome(event) {
-        event.preventDefault();
-        const index = document.getElementById('edit-income-index').value;
-        const name = document.getElementById('income-source-name').value;
-        const amount = parseFloat(document.getElementById('income-amount').value);
-        const date = document.getElementById('income-date').value;
+        const note = document.getElementById('txn-note').value;
+        const index = document.getElementById('edit-txn-index').value;
 
-        if (index === "") {
-            incomes.push({ name, amount, date });
-            showToast("आम्दानी थपियो!", "success");
+        const txnData = { date, party, type, npr, inr, principal, rate, period, amount: totalAmount, note };
+
+        if(index === "") {
+            transactions.push(txnData);
+            showToast("Transaction saved successfully!");
         } else {
-            incomes[index] = { name, amount, date };
-            showToast("आम्दानी अपडेट गरियो!", "success");
+            transactions[index] = txnData;
+            showToast("Transaction updated successfully!");
         }
 
-        incomes.sort((a, b) => new Date(b.date) - new Date(a.date));
-        saveToLocalStorage();
-        resetIncomeForm();
-        renderIncomeTable();
-        updateDashboard();
+        saveData();
+        resetTxnForm();
+        refreshAll();
+        if(activePartyName) renderModalLedgerContent();
     }
 
-    function saveSavings(event) {
-        event.preventDefault();
-        const index = document.getElementById('edit-savings-index').value;
-        const title = document.getElementById('savings-title').value;
-        const category = document.getElementById('savings-category').value;
-        const amount = parseFloat(document.getElementById('savings-amount').value);
-        const date = document.getElementById('savings-date').value;
-
-        if (index === "") {
-            savings.push({ title, category, amount, date });
-            showToast("नगद प्रवाह थपियो!", "success");
-        } else {
-            savings[index] = { title, category, amount, date };
-            showToast("नगद प्रवाह अपडेट गरियो!", "success");
-        }
-
-        savings.sort((a, b) => new Date(b.date) - new Date(a.date));
-        saveToLocalStorage();
-        resetSavingsForm();
-        renderSavingsTable();
-        updateDashboard();
-    }
-
-    function filterByMonth() {
-        renderIncomeTable();
-        renderSavingsTable();
-        updateDashboard();
-    }
-
-    function clearMonthFilter() {
-        document.getElementById('month-filter').value = '';
-        renderIncomeTable();
-        renderSavingsTable();
-        updateDashboard();
-    }
-
-    function renderIncomeTable() {
-        const tbody = document.getElementById('income-table-body');
-        const searchQuery = document.getElementById('search-income').value.toLowerCase();
-        const selectedMonth = document.getElementById('month-filter').value;
-        tbody.innerHTML = '';
-
-        const filteredIncomes = incomes.filter(inc => {
-            const matchesSearch = inc.name.toLowerCase().includes(searchQuery);
-            const matchesMonth = selectedMonth ? (inc.date && inc.date.startsWith(selectedMonth)) : true;
-            return matchesSearch && matchesMonth;
-        });
-
-        if (filteredIncomes.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
-            return;
-        }
-
-        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-
-        filteredIncomes.forEach((inc) => {
-            const idx = incomes.indexOf(inc);
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                    <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${inc.date}</td>
-                    <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${inc.name}</td>
-                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold text-xs">${currSymbol}${Number(inc.amount).toLocaleString()}</td>
-                    <td class="py-3 px-3 text-right space-x-2">
-                        <button type="button" onclick="editIncome(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
-                        <button type="button" onclick="confirmDeleteIncome(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    function renderSavingsTable() {
-        const tbody = document.getElementById('savings-table-body');
-        const searchQuery = document.getElementById('search-savings').value.toLowerCase();
-        const selectedMonth = document.getElementById('month-filter').value;
-        tbody.innerHTML = '';
-
-        const filteredSavings = savings.filter(sav => {
-            const matchesSearch = sav.title.toLowerCase().includes(searchQuery);
-            const matchesMonth = selectedMonth ? (sav.date && sav.date.startsWith(selectedMonth)) : true;
-            return matchesSearch && matchesMonth;
-        });
-
-        if (filteredSavings.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400 text-xs">${t('no_records')}</td></tr>`;
-            return;
-        }
-
-        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-
-        filteredSavings.forEach((sav) => {
-            const idx = savings.indexOf(sav);
-            const catBadge = sav.category || 'Bank';
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                    <td class="py-3 px-3 text-slate-600 dark:text-slate-400 text-xs">${sav.date}</td>
-                    <td class="py-3 px-4 font-semibold text-slate-900 dark:text-white text-xs">${sav.title}</td>
-                    <td class="py-3 px-3"><span class="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-lg text-[10px] font-semibold">${catBadge}</span></td>
-                    <td class="py-3 px-4 text-purple-600 dark:text-purple-400 font-bold text-xs">${currSymbol}${Number(sav.amount).toLocaleString()}</td>
-                    <td class="py-3 px-3 text-right space-x-2">
-                        <button type="button" onclick="editSavings(${idx})" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-[11px]">${t('edit')}</button>
-                        <button type="button" onclick="confirmDeleteSavings(${idx})" class="text-rose-600 dark:text-rose-400 hover:underline font-medium text-[11px]">${t('del')}</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    function confirmDeleteIncome(idx) {
-        showCustomModal(
-            "Delete Income",
-            t('confirm_del_income'),
-            () => {
-                incomes.splice(idx, 1);
-                saveToLocalStorage();
-                renderIncomeTable();
-                updateDashboard();
-                showToast("आम्दानी रेकर्ड मेटाइयो!", "warning");
-            }
-        );
-    }
-
-    function confirmDeleteSavings(idx) {
-        showCustomModal(
-            "Delete Cashflow",
-            t('confirm_del_savings'),
-            () => {
-                savings.splice(idx, 1);
-                saveToLocalStorage();
-                renderSavingsTable();
-                updateDashboard();
-                showToast("नगद प्रवाह रेकर्ड मेटाइयो!", "warning");
-            }
-        );
-    }
-
-    function editIncome(idx) {
-        const inc = incomes[idx];
-        document.getElementById('edit-income-index').value = idx;
-        document.getElementById('income-source-name').value = inc.name;
-        document.getElementById('income-amount').value = inc.amount;
-        convertCurrency('income', 'npr');
-        document.getElementById('income-date').value = inc.date;
-        document.getElementById('income-submit-btn').innerText = t('btn_update_income');
-        document.getElementById('income-cancel-btn').classList.remove('hidden');
+    function editTransaction(index) {
+        const t = transactions[index];
+        document.getElementById('edit-txn-index').value = index;
+        document.getElementById('txn-date').value = t.date;
+        document.getElementById('txn-party').value = t.party;
+        document.getElementById('txn-type').value = t.type;
+        document.getElementById('txn-amount-npr').value = t.npr || t.amount;
+        document.getElementById('txn-amount-inr').value = t.inr || 0;
+        document.getElementById('txn-interest-rate').value = t.rate || 0;
+        document.getElementById('txn-period').value = t.period || 0;
+        document.getElementById('txn-note').value = t.note || '';
+        
+        handleTypeChange();
+        calculateTotalAmount();
+        
+        document.getElementById('txn-submit-btn').innerText = "Update Transaction";
+        document.getElementById('txn-cancel-btn').classList.remove('hidden');
+        
+        const content = document.getElementById('content-section-transaction');
+        if(content.classList.contains('hidden')) toggleAccordion('section-transaction');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function editSavings(idx) {
-        const sav = savings[idx];
-        document.getElementById('edit-savings-index').value = idx;
-        document.getElementById('savings-title').value = sav.title;
-        document.getElementById('savings-category').value = sav.category || 'Bank';
-        document.getElementById('savings-amount').value = sav.amount;
-        convertCurrency('savings', 'npr');
-        document.getElementById('savings-date').value = sav.date;
-        document.getElementById('savings-submit-btn').innerText = t('btn_update_savings');
-        document.getElementById('savings-cancel-btn').classList.add('hidden');
-        window.scrollTo({ top: 300, behavior: 'smooth' });
+    function deleteTransaction(index) {
+        if(confirm("Are you sure you want to delete this transaction?")) {
+            transactions.splice(index, 1);
+            saveData();
+            refreshAll();
+            if(activePartyName) renderModalLedgerContent();
+            showToast("Transaction deleted successfully!");
+        }
+    }
+
+    function saveIncome(e) {
+        e.preventDefault();
+        const name = document.getElementById('income-source-name').value;
+        const amount = parseFloat(document.getElementById('income-amount').value);
+        const date = document.getElementById('income-date').value;
+        const index = document.getElementById('edit-income-index').value;
+
+        if(index === "") {
+            incomes.push({ name, amount, date });
+            showToast("Income added successfully!");
+        } else {
+            incomes[index] = { name, amount, date };
+            showToast("Income updated successfully!");
+        }
+
+        saveData();
+        resetIncomeForm();
+        refreshAll();
+    }
+
+    function editIncome(index) {
+        const i = incomes[index];
+        document.getElementById('edit-income-index').value = index;
+        document.getElementById('income-source-name').value = i.name;
+        document.getElementById('income-amount').value = i.amount;
+        document.getElementById('income-date').value = i.date;
+        document.getElementById('income-submit-btn').innerText = "Update Income";
+        document.getElementById('income-cancel-btn').classList.remove('hidden');
     }
 
     function resetIncomeForm() {
         document.getElementById('income-form').reset();
         document.getElementById('edit-income-index').value = "";
-        document.getElementById('income-amount-inr').value = "";
         document.getElementById('income-date').valueAsDate = new Date();
-        document.getElementById('income-submit-btn').innerText = t('btn_add_income');
+        document.getElementById('income-submit-btn').innerText = "Add Income";
         document.getElementById('income-cancel-btn').classList.add('hidden');
+    }
+
+    function deleteIncome(index) {
+        if(confirm("Are you sure you want to delete this income?")) {
+            incomes.splice(index, 1);
+            saveData();
+            refreshAll();
+            showToast("Income deleted successfully!");
+        }
+    }
+
+    function saveSavings(e) {
+        e.preventDefault();
+        const title = document.getElementById('savings-title').value;
+        const category = document.getElementById('savings-category').value;
+        const amount = parseFloat(document.getElementById('savings-amount').value);
+        const date = document.getElementById('savings-date').value;
+        const index = document.getElementById('edit-savings-index').value;
+
+        if(index === "") {
+            savings.push({ title, category, amount, date });
+            showToast("Cashflow added successfully!");
+        } else {
+            savings[index] = { title, category, amount, date };
+            showToast("Cashflow updated successfully!");
+        }
+
+        saveData();
+        resetSavingsForm();
+        refreshAll();
+    }
+
+    function editSavings(index) {
+        const s = savings[index];
+        document.getElementById('edit-savings-index').value = index;
+        document.getElementById('savings-title').value = s.title;
+        document.getElementById('savings-category').value = s.category;
+        document.getElementById('savings-amount').value = s.amount;
+        document.getElementById('savings-date').value = s.date;
+        document.getElementById('savings-submit-btn').innerText = "Update Cashflow";
+        document.getElementById('savings-cancel-btn').classList.remove('hidden');
     }
 
     function resetSavingsForm() {
         document.getElementById('savings-form').reset();
         document.getElementById('edit-savings-index').value = "";
-        document.getElementById('savings-amount-inr').value = "";
         document.getElementById('savings-date').valueAsDate = new Date();
-        document.getElementById('savings-submit-btn').innerText = t('btn_add_savings');
+        document.getElementById('savings-submit-btn').innerText = "Add Cashflow";
         document.getElementById('savings-cancel-btn').classList.add('hidden');
     }
 
-    function updateDashboard() {
-        const selectedMonth = document.getElementById('month-filter').value;
-        
-        let filteredInc = selectedMonth ? incomes.filter(i => i.date && i.date.startsWith(selectedMonth)) : incomes;
-        let filteredSav = selectedMonth ? savings.filter(s => s.date && s.date.startsWith(selectedMonth)) : savings;
-
-        let totalIncome = filteredInc.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-        let totalSavings = filteredSav.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-        
-        const currSymbol = (localStorage.getItem('currency') === 'INR') ? '₹ ' : 'Rs ';
-
-        document.getElementById('total-income-display').innerText = currSymbol + totalIncome.toLocaleString();
-        document.getElementById('total-savings-display').innerText = currSymbol + totalSavings.toLocaleString();
+    function deleteSavings(index) {
+        if(confirm("Are you sure you want to delete this cashflow?")) {
+            savings.splice(index, 1);
+            saveData();
+            refreshAll();
+            showToast("Cashflow deleted successfully!");
+        }
     }
 
-    function saveToLocalStorage() {
+    function saveData() {
+        localStorage.setItem('my_transactions', JSON.stringify(transactions));
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_cashflow', JSON.stringify(savings));
-        
-        const existingTxns = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const formattedIncomes = incomes.map(inc => ({
-            type: 'income',
-            amount: inc.amount,
-            date: inc.date,
-            name: inc.name
-        }));
-        const otherTxns = existingTxns.filter(tx => tx.type !== 'income');
-        const allTxns = [...formattedIncomes, ...otherTxns];
-        localStorage.setItem('transactions', JSON.stringify(allTxns));
     }
 
-    function exportToCSV() {
-        if (incomes.length === 0 && savings.length === 0) {
-            showToast("Export गर्न कुनै रेकर्ड छैन!", "warning");
+    function resetTxnForm() {
+        document.getElementById('transaction-form').reset();
+        document.getElementById('edit-txn-index').value = "";
+        document.getElementById('txn-date').valueAsDate = new Date();
+        document.getElementById('txn-total-calc').value = "";
+        document.getElementById('txn-submit-btn').innerText = "Save Transaction";
+        document.getElementById('txn-cancel-btn').classList.add('hidden');
+        handleTypeChange();
+    }
+
+    function applyGlobalFilters() {
+        refreshAll();
+    }
+
+    function clearDateFilter() {
+        document.getElementById('filter-from-date').value = '';
+        document.getElementById('filter-to-date').value = '';
+        refreshAll();
+    }
+
+    function getDateFilteredData(data) {
+        const fromDate = document.getElementById('filter-from-date').value;
+        const toDate = document.getElementById('filter-to-date').value;
+        return data.filter(item => {
+            if (fromDate && item.date < fromDate) return false;
+            if (toDate && item.date > toDate) return false;
+            return true;
+        });
+    }
+
+    function refreshAll() {
+        renderPartyAccounts();
+        renderIncomeList();
+        renderSavingsList();
+        updateSummaryCards();
+    }
+
+    function updateSummaryCards() {
+        const filteredTxns = getDateFilteredData(transactions);
+        const filteredIncomes = getDateFilteredData(incomes);
+        const filteredSavings = getDateFilteredData(savings);
+
+        let receivable = 0;
+        let payable = 0;
+
+        filteredTxns.forEach(t => {
+            if(t.type === 'Receivable') receivable += t.amount;
+            else if(t.type === 'Payable' || t.type === 'Expense') payable += t.amount;
+        });
+
+        let totalIncome = filteredIncomes.reduce((sum, i) => sum + i.amount, 0);
+        let totalCashflow = filteredSavings.reduce((sum, s) => sum + s.amount, 0);
+
+        document.getElementById('summary-income').innerText = 'Rs ' + totalIncome.toLocaleString();
+        document.getElementById('summary-cashflow').innerText = 'Rs ' + totalCashflow.toLocaleString();
+        document.getElementById('summary-receivable').innerText = 'Rs ' + receivable.toLocaleString();
+        document.getElementById('summary-payable').innerText = 'Rs ' + payable.toLocaleString();
+    }
+
+    function renderPartyAccounts() {
+        const container = document.getElementById('party-list-container');
+        const searchQuery = document.getElementById('search-party').value.toLowerCase();
+        container.innerHTML = '';
+
+        const partyMap = {};
+        transactions.forEach((t, index) => {
+            if(!partyMap[t.party]) partyMap[t.party] = { receivable: 0, payable: 0 };
+            if(t.type === 'Receivable') partyMap[t.party].receivable += t.amount;
+            else partyMap[t.party].payable += t.amount;
+        });
+
+        let parties = Object.keys(partyMap).sort();
+        if(searchQuery) {
+            parties = parties.filter(p => p.toLowerCase().includes(searchQuery));
+        }
+
+        if(parties.length === 0) {
+            container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No party records found.</p>`;
             return;
         }
-        let csv = 'Type,Date,Source/Title,Category,Amount\n';
-        incomes.forEach(i => {
-            csv += `"Income","${i.date}","${i.name}","-","${i.amount}"\n`;
+
+        parties.forEach(party => {
+            const data = partyMap[party];
+            const net = data.receivable - data.payable;
+            const netText = net >= 0 ? `To Take: Rs ${net.toLocaleString()}` : `To Give: Rs ${Math.abs(net).toLocaleString()}`;
+            const badgeColor = net >= 0 ? 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40' : 'text-rose-500 bg-rose-50 dark:bg-rose-950/40';
+
+            container.innerHTML += `
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl gap-2">
+                    <div>
+                        <h4 class="font-bold text-xs text-slate-900 dark:text-white">${party}</h4>
+                        <p class="text-[11px] font-semibold mt-0.5 px-2 py-0.5 rounded inline-block ${badgeColor}">${netText}</p>
+                    </div>
+                    <button onclick="openLedgerModal('${party}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">View Ledger / Settle</button>
+                </div>
+            `;
         });
-        savings.forEach(s => {
-            csv += `"Cashflow","${s.date}","${s.title}","${s.category || 'Bank'}","${s.amount}"\n`;
-        });
+    }
+
+    function openLedgerModal(party) {
+        activePartyName = party;
+        document.getElementById('modal-party-title').innerText = `Ledger: ${party}`;
+        renderModalLedgerContent();
+        const modal = document.getElementById('ledger-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeLedgerModal() {
+        const modal = document.getElementById('ledger-modal');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+        activePartyName = null;
+    }
+
+    function renderModalLedgerContent() {
+        const content = document.getElementById('modal-ledger-content');
+        content.innerHTML = '';
         
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('href', url);
-        a.setAttribute('download', `Income_Cashflow_Backup_${new Date().toISOString().slice(0,10)}.csv`);
-        a.click();
-        showToast("CSV फाईल डाउनलोड भयो!", "success");
+        const partyTxns = [];
+        transactions.forEach((t, idx) => {
+            if(t.party === activePartyName) {
+                partyTxns.push({ ...t, originalIndex: idx });
+            }
+        });
+
+        if(partyTxns.length === 0) {
+            content.innerHTML = `<p class="text-slate-400">No transactions recorded.</p>`;
+            return;
+        }
+
+        partyTxns.forEach((t) => {
+            const isRec = t.type === 'Receivable';
+            content.innerHTML += `
+                <div class="flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl">
+                    <div>
+                        <p class="font-semibold text-slate-900 dark:text-white">${t.date} - ${t.note || t.type}</p>
+                        <p class="text-[10px] text-slate-400">${t.type} ${t.rate ? `(Rate: ${t.rate}%, Period: ${t.period}m)` : ''}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold ${isRec ? 'text-emerald-500' : 'text-rose-500'}">Rs ${t.amount.toLocaleString()}</span>
+                        <button onclick="editTransaction(${t.originalIndex}); closeLedgerModal();" class="text-blue-500 hover:text-blue-700 p-1"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteTransaction(${t.originalIndex})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                </div>
+            `;
+        });
     }
 
-    function syncWithFirebase() {
-        showToast("Firebase Cloud सँग Sync हुँदैछ...", "info");
-        setTimeout(() => {
-            showToast("सफलतापूर्वक Firebase मा सेभ भयो!", "success");
-        }, 1000);
+    function recordPartialSettle() {
+        const amount = parseFloat(document.getElementById('settle-amount').value);
+        const type = document.getElementById('settle-type').value;
+        if(!amount || amount <= 0) {
+            showToast("Please enter a valid amount", "error");
+            return;
+        }
+
+        const txnType = type === 'Paid' ? 'Payable' : 'Receivable';
+        const noteText = type === 'Paid' ? 'Payment Given (Paid)' : 'Payment Received';
+        
+        transactions.push({
+            party: activePartyName,
+            type: txnType,
+            amount: amount,
+            date: new Date().toISOString().slice(0, 10),
+            note: noteText,
+            npr: amount, inr: 0, rate: 0, period: 0
+        });
+
+        saveData();
+        document.getElementById('settle-amount').value = '';
+        renderModalLedgerContent();
+        refreshAll();
+        showToast("Payment recorded successfully!");
     }
 
-    function restoreFromFirebase() {
-        showToast("Firebase बाट डाटा तानिँदैछ...", "info");
-        setTimeout(() => {
-            showToast("Firebase बाट डाटा Restore भयो!", "success");
-        }, 1000);
+    function printPartyLedger() {
+        const printWindow = window.open('', '_blank');
+        const partyTxns = transactions.filter(t => t.party === activePartyName);
+        let html = `<html><head><title>Ledger - ${activePartyName}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f4f4f4;}</style></head><body>`;
+        html += `<h2>Party Statement: ${activePartyName}</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
+        html += `<table><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount (Rs)</th></tr>`;
+        partyTxns.forEach(t => {
+            html += `<tr><td>${t.date}</td><td>${t.type}</td><td>${t.note || '-'}</td><td>${t.amount}</td></tr>`;
+        });
+        html += `</table></body></html>`;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
     }
 
-    applySettings();
-    renderIncomeTable();
-    renderSavingsTable();
-    updateDashboard();
+    function printIncomePDF() {
+        const printWindow = window.open('', '_blank');
+        const filtered = getDateFilteredData(incomes);
+        let html = `<html><head><title>Income Sources</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f4f4f4;}</style></head><body>`;
+        html += `<h2>Income Sources Report</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
+        html += `<table><tr><th>Date</th><th>Source Name</th><th>Amount (Rs)</th></tr>`;
+        filtered.forEach(i => {
+            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.amount}</td></tr>`;
+        });
+        html += `</table></body></html>`;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function printSavingsPDF() {
+        const printWindow = window.open('', '_blank');
+        const filtered = getDateFilteredData(savings);
+        let html = `<html><head><title>Cashflow & Savings</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f4f4f4;}</style></head><body>`;
+        html += `<h2>Cashflow & Savings Report</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
+        html += `<table><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount (Rs)</th></tr>`;
+        filtered.forEach(s => {
+            html += `<tr><td>${s.date}</td><td>${s.title}</td><td>${s.category}</td><td>${s.amount}</td></tr>`;
+        });
+        html += `</table></body></html>`;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function exportFullPDF() {
+        const printWindow = window.open('', '_blank');
+        const filteredTxns = getDateFilteredData(transactions);
+        const filteredIncomes = getDateFilteredData(incomes);
+        const filteredSavings = getDateFilteredData(savings);
+
+        let html = `<html><head><title>Complete Financial Report</title><style>body{font-family:sans-serif;padding:20px;}h3{margin-top:25px;}table{width:100%;border-collapse:collapse;margin-top:10px;margin-bottom:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:12px;}th{background:#f4f4f4;}</style></head><body>`;
+        html += `<h2>Complete Financial Report</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
+        
+        html += `<h3>Transactions / Ledgers</h3><table><tr><th>Date</th><th>Party</th><th>Type</th><th>Note</th><th>Amount (Rs)</th></tr>`;
+        filteredTxns.forEach(t => {
+            html += `<tr><td>${t.date}</td><td>${t.party}</td><td>${t.type}</td><td>${t.note || '-'}</td><td>${t.amount}</td></tr>`;
+        });
+        html += `</table>`;
+
+        html += `<h3>Incomes</h3><table><tr><th>Date</th><th>Source Name</th><th>Amount (Rs)</th></tr>`;
+        filteredIncomes.forEach(i => {
+            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.amount}</td></tr>`;
+        });
+        html += `</table>`;
+
+        html += `<h3>Cashflow / Savings</h3><table><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount (Rs)</th></tr>`;
+        filteredSavings.forEach(s => {
+            html += `<tr><td>${s.date}</td><td>${s.title}</td><td>${s.category}</td><td>${s.amount}</td></tr>`;
+        });
+        html += `</table>`;
+
+        html += `</body></html>`;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function renderIncomeList() {
+        const container = document.getElementById('income-list-container');
+        container.innerHTML = '';
+        const filtered = incomes.map((item, idx) => ({ ...item, originalIndex: idx }));
+        const dateFiltered = getDateFilteredData(filtered);
+        
+        dateFiltered.forEach(i => {
+            container.innerHTML += `
+                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
+                    <div><span class="font-semibold">${i.name}</span> <span class="text-[10px] text-slate-400">(${i.date})</span></div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-emerald-500">Rs ${i.amount.toLocaleString()}</span>
+                        <button onclick="editIncome(${i.originalIndex})" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteIncome(${i.originalIndex})" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderSavingsList() {
+        const container = document.getElementById('savings-list-container');
+        container.innerHTML = '';
+        const filtered = savings.map((item, idx) => ({ ...item, originalIndex: idx }));
+        const dateFiltered = getDateFilteredData(filtered);
+
+        dateFiltered.forEach(s => {
+            container.innerHTML += `
+                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
+                    <div><span class="font-semibold">${s.title}</span> <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-600 rounded">${s.category}</span> <span class="text-[10px] text-slate-400">(${s.date})</span></div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-amber-500">Rs ${s.amount.toLocaleString()}</span>
+                        <button onclick="editSavings(${s.originalIndex})" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteSavings(${s.originalIndex})" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    refreshAll();
 </script>
 
 </body>
