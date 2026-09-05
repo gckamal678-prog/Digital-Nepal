@@ -8,16 +8,32 @@
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
-    <!-- Global Settings Bridge Load -->
-    <script src="global-settings.js"></script>
+    <!-- Global Settings Script Integration -->
+    <script src="../global.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 4px; }
         .more-text { display: none; }
         .more-text.show { display: block; }
+
+        /* Custom Text Effects CSS */
+        .text-effect-shadow { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); }
+        .text-effect-outline { 
+            -webkit-text-stroke: 1px currentColor;
+            color: transparent;
+        }
+        .text-effect-background { background-color: rgba(99, 102, 241, 0.15); padding: 2px 6px; border-radius: 4px; }
+        .text-effect-hollow {
+            color: transparent;
+            -webkit-text-stroke: 1px #6366f1;
+        }
+        /* Mobile touch fix for flickering */
+        a, button {
+            touch-action: manipulation;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-6 transition-colors duration-300 w-full m-0 min-h-screen relative">
@@ -29,31 +45,31 @@
 <div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
         <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation"></i> Master Reset Confirm
+            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_modal_title">Master Reset Confirm</span>
         </h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400">
+        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_modal_desc">
             तपाईंको सम्पूर्ण Note, Income, Expense, र Dashboard डाटा मेटिनेछ। पुष्टि गर्न तल <b>RESET</b> टाइप गर्नुहोस्:
         </p>
         <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
         <div class="flex gap-2 justify-end">
-            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700">Cancel</button>
-            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700">Reset System</button>
+            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700" data-i18n="btn_cancel">Cancel</button>
+            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700" data-i18n="btn_reset_system">Reset System</button>
         </div>
     </div>
 </div>
 
-<div class="space-y-3 w-full flex-1 mt-1 pb-6 max-w-4xl mx-auto">
+<div class="space-y-3 w-full flex-1 mt-1 pb-6">
     
     <!-- 1. APPEARANCE & THEME SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-palette text-indigo-500"></i> <span data-i18n="appearance_title">Appearance & Theme</span>
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
             <div>
                 <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="dark_light_mode">Dark / Light Mode</label>
                 <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text">Dark Mode</span>
+                    <i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text" data-i18n="dark_mode_text">Dark Mode</span>
                 </button>
             </div>
             <div>
@@ -67,70 +83,57 @@
     </div>
 
     <!-- 2. TYPOGRAPHY & LAYOUT STYLE SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-font text-indigo-500"></i> <span data-i18n="typography_title">Typography & Layout Style</span>
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
             <div>
                 <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_size">Font Size</label>
                 <select id="font-size-select" onchange="changeFontSize(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                    <option value="small">Small</option>
-                    <option value="normal" selected>Normal</option>
-                    <option value="extra">Extra Large</option>
+                    <option value="15">15px</option>
+                    <option value="20">20px</option>
+                    <option value="30">30px</option>
+                    <option value="35">35px</option>
                 </select>
             </div>
             <div>
                 <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_family">Font Family</label>
                 <select id="font-family-select" onchange="changeFontFamily(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                    <option value="The Seasons">The Seasons</option>
-                    <option value="Canva Sans">Canva Sans</option>
-                    <option value="Wide Sports">Wide Sports</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Inter">Inter</option>
+                    <option value="Roboto">Roboto</option>
                     <option value="Anek Devanagari">Anek Devanagari</option>
                     <option value="Mukta">Mukta</option>
                 </select>
             </div>
             <div>
-                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Font Style</label>
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_style">Font Style</label>
                 <select id="font-style-select" onchange="changeFontStyle(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                    <option value="normal">Normal (नर्मल)</option>
-                    <option value="bold">Bold (बोल्ड)</option>
-                    <option value="italic">Italic (इटालिक)</option>
+                    <option value="normal" data-i18n="style_normal">Normal</option>
+                    <option value="bold" data-i18n="style_bold">Bold</option>
+                    <option value="italic" data-i18n="style_italic">Italic</option>
                 </select>
             </div>
         </div>
-        <div class="pt-2">
-            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Text Effects (पाठ प्रभाव)</label>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <button onclick="setTextEffect('shadow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Shadow (श्याडो)</button>
-                <button onclick="setTextEffect('outline')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Outline (आउटलाइन)</button>
-                <button onclick="setTextEffect('background')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Background (ब्याकग्राउन्ड)</button>
-                <button onclick="setTextEffect('hollow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition">Hollow (हलो)</button>
+        <div class="pt-2 w-full">
+            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="text_effects">Text Effects</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
+                <button onclick="setTextEffect('shadow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition" data-i18n="effect_shadow">Shadow</button>
+                <button onclick="setTextEffect('outline')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition" data-i18n="effect_outline">Outline</button>
+                <button onclick="setTextEffect('background')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition" data-i18n="effect_background">Background</button>
+                <button onclick="setTextEffect('hollow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-indigo-50 dark:hover:bg-slate-700 transition" data-i18n="effect_hollow">Hollow</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. CURRENCY SETTINGS SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <i class="fa-solid fa-coins text-indigo-500"></i> <span data-i18n="default_currency">Default Currency Format</span>
-        </h3>
-        <div>
-            <select id="currency-select" onchange="saveCurrency(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                <option value="NPR">NPR (Rs)</option>
-                <option value="INR">INR (₹)</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- 4. DATA MANAGEMENT & BACKUP SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <!-- 3. DATA MANAGEMENT & BACKUP SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-database text-indigo-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
         </h3>
         
-        <!-- Local JSON Options -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 w-full">
             <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
                 <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
             </button>
@@ -143,169 +146,147 @@
             </button>
         </div>
 
-        <!-- Cloud Firebase Sync Options -->
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
-            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2">Cloud Backup (Firebase Database)</label>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <button id="btn-cloud-backup" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 w-full">
+            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2" data-i18n="cloud_backup_title">Cloud Backup (Firebase Database)</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+                <button onclick="triggerCloudBackup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="btn_sync_cloud">Sync to Cloud</span>
                 </button>
-                <button id="btn-cloud-restore" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Restore from Cloud
+                <button onclick="triggerCloudRestore()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> <span data-i18n="btn_restore_cloud">Restore from Cloud</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 5. POLICY & ABOUT SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-3">ℹ️ Policy, Terms & About</h4>
+    <!-- 4. POLICY & ABOUT SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-3" data-i18n="policy_section_title">ℹ️ Policy, Terms & About</h4>
 
-        <div id="content-np" class="space-y-3">
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200">१. गोपनीयता नीति (Privacy Policy)</h5>
-                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">हामी तपाईंको गोपनीयता र व्यक्तिगत डाटाको सुरक्षालाई उच्च प्राथमिकता दिन्छौं। एपमा प्रविष्ट गरिने सबै विवरणहरू...</p>
-                <div id="more-privacy-np" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
-                    <p><strong>डाटाको स्थानीय भण्डारण:</strong> सबै व्यक्तिगत कारोबारका विवरणहरू, हिसाब-किताब र बिल/फोटोहरू पूर्ण रूपमा तपाईंको आफ्नै मोबाइलको लोकल स्टोरेजमा मात्र सुरक्षित रहन्छन्।</p>
-                    <p><strong>सर्भरमा सेयर नगरिने:</strong> हामीले कुनै पनि व्यक्तिगत वित्तीय डाटा सर्भरमा अपलोड वा सेयर गर्दैनौं।</p>
-                    <p><strong>तेस्रो पक्षको पहुँच:</strong> तेस्रो पक्षलाई डाटा बिक्री वा दुरुपयोग गरिँदैन।</p>
+        <div class="space-y-3 w-full">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 w-full">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200" data-i18n="policy_1_title">१. गोपनीयता नीति र डाटा भण्डारण (Privacy Policy & Data Storage)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1" data-i18n="policy_1_desc">तपाईँका हिसाब-किताब, कारोबार र बिलहरू फायरबेस (Firebase) को क्लाउड सर्भरमा सुरक्षित रूपमा भण्डारण हुन्छन्।</p>
+                <div id="more-privacy" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p data-i18n="policy_1_more_en"><strong>English:</strong> Your financial records, transactions, and bills are securely stored in the cloud using Firebase, ensuring your data is backed up.</p>
+                    <p data-i18n="policy_1_more_np"><strong>नेपाली:</strong> यसले डाटाको ब्याकअप भइरहन्छ र मोबाइल परिवर्तन गरे पनि डाटा सुरक्षित रहन्छ।</p>
                 </div>
-                <button onclick="toggleText('privacy-np')" id="toggle-btn-privacy-np" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline">See More (थप हेर्नुहोस्)</button>
+                <button onclick="toggleText('privacy')" id="toggle-btn-privacy" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline" data-i18n="see_more_btn">See More (थप हेर्नुहोस्)</button>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200">२. नियम तथा सर्तहरू (Terms & Conditions)</h5>
-                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">यो एप प्रयोग गर्नु अघि कृपया नियम तथा सर्तहरू ध्यानपूर्वक पढ्नुहोला। एप प्रयोग गर्नु भनेको...</p>
-                <div id="more-terms-np" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
-                    <p><strong>प्रयोगको दायित्व:</strong> दैनिक व्यक्तिगत वा व्यावसायिक हिसाब-किताब सजिलो बनाउन तयार पारिएको डिजिटल नोटबुक हो।</p>
-                    <p><strong>डाटा सुरक्षा:</strong> मोबाइल हराएमा वा डाटा क्लिन भएमा डाटा गुम्ने जोखिम हुने हुँदा ब्याकअपको जिम्मा प्रयोगकर्ताको हो।</p>
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 w-full">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200" data-i18n="policy_2_title">२. तेस्रो पक्षको पहुँच (Third-Party Access)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1" data-i18n="policy_2_desc">हामी तपाईँको व्यक्तिगत वित्तीय डाटा कुनै पनि अनाधिकृत तेस्रो पक्षलाई बिक्री वा हस्तान्तरण गर्दैनौं।</p>
+                <div id="more-thirdparty" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p data-i18n="policy_2_more_en"><strong>English:</strong> We do not sell, trade, or transfer your personal financial data to any unauthorized third parties.</p>
+                    <p data-i18n="policy_2_more_np"><strong>नेपाली:</strong> हामी तपाईंको व्यक्तिगत वित्तीय विवरण कुनै पनि अनाधिकृत तेस्रो पक्षलाई बिक्री वा हस्तान्तरण गर्दैनौं।</p>
                 </div>
-                <button onclick="toggleText('terms-np')" id="toggle-btn-terms-np" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline">See More (थप हेर्नुहोस्)</button>
+                <button onclick="toggleText('thirdparty')" id="toggle-btn-thirdparty" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline" data-i18n="see_more_btn">See More (थप हेर्नुहोस्)</button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 w-full">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200" data-i18n="policy_3_title">३. सुरक्षा र लगइन (Security & Authentication)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1" data-i18n="policy_3_desc">प्रयोगकर्ताले सुरक्षित रूपमा लगइन गर्न सक्छन्, तर आफ्नो लगइन विवरण गोप्य राख्ने जिम्मेवारी प्रयोगकर्ताको हुन्छ।</p>
+                <div id="more-security" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p data-i18n="policy_3_more_en"><strong>English:</strong> Users can securely log in using their credentials, but users are responsible for keeping their login details confidential.</p>
+                    <p data-i18n="policy_3_more_np"><strong>नेपाली:</strong> प्रयोगकर्ताले सुरक्षित रूपमा लगइन गर्न सक्छन्, तर आफ्नो लगइन विवरण गोप्य राख्ने जिम्मेवारी पूर्ण रूपमा प्रयोगकर्ताको हुन्छ।</p>
+                </div>
+                <button onclick="toggleText('security')" id="toggle-btn-security" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline" data-i18n="see_more_btn">See More (थप हेर्नुहोस्)</button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 w-full">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200" data-i18n="policy_4_title">४. इन्टरनेट र सिंक (Internet & Sync)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1" data-i18n="policy_4_desc">फायरबेस सर्भरमा डाटा वास्तविक समयमा सिंक र अपडेट गर्नका लागि इन्टरनेट जडानको आवश्यकता पर्दछ।</p>
+                <div id="more-internet" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p data-i18n="policy_4_more_en"><strong>English:</strong> The app may require an internet connection to sync and update your data in real-time with the Firebase server.</p>
+                    <p data-i18n="policy_4_more_np"><strong>नेपाली:</strong> फायरबेस सर्भरमा डाटा वास्तविक समयमा सिंक र अपडेट गर्नका लागि सक्रिय इन्टरनेट जडानको आवश्यकता पर्दछ।</p>
+                </div>
+                <button onclick="toggleText('internet')" id="toggle-btn-internet" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline" data-i18n="see_more_btn">See More (थप हेर्नुहोस्)</button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 w-full">
+                <h5 class="font-bold text-xs text-slate-800 dark:text-slate-200" data-i18n="policy_5_title">५. डाटा मेटाउने अधिकार (Data Deletion Rights)</h5>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1" data-i18n="policy_5_desc">प्रयोगकर्तासँग फायरबेस सर्भरमा रहेको आफ्नो खाता र डाटा जुनसुकै बेला मेटाउन अनुरोध गर्ने अधिकार हुन्छ।</p>
+                <div id="more-deletion" class="more-text text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-2">
+                    <p data-i18n="policy_5_more_en"><strong>English:</strong> Users have the right to request the deletion of their account and all associated data stored on the Firebase server at any time.</p>
+                    <p data-i18n="policy_5_more_np"><strong>नेपाली:</strong> प्रयोगकर्तासँग फायरबेस सर्भरमा सुरक्षित रहेका आफ्नो खाता र सम्पूर्ण डाटा जुनसुकै बेला मेटाउने अधिकार हुन्छ।</p>
+                </div>
+                <button onclick="toggleText('deletion')" id="toggle-btn-deletion" class="text-indigo-600 dark:text-indigo-400 font-bold text-xs mt-2.5 block hover:underline" data-i18n="see_more_btn">See More (थप हेर्नुहोस्)</button>
             </div>
         </div>
         
-        <div class="pt-2 text-center border-t border-slate-100 dark:border-slate-800">
+        <div class="pt-2 text-center border-t border-slate-100 dark:border-slate-800 w-full">
             <button onclick="checkForUpdates()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-xl text-xs shadow-md shadow-indigo-600/20 transition">
-                <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[9px] font-normal opacity-80">(Check Update)</span>
+                <i class="fa-solid fa-rotate"></i> Version 2.5 <span id="update-status-text" class="text-[9px] font-normal opacity-80" data-i18n="check_update_text">(Check Update)</span>
             </button>
         </div>
     </div>
 
-    <!-- 6. FEEDBACK & FOOTER SECTION -->
-    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <!-- 5. FEEDBACK & FOOTER SECTION -->
+    <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <i class="fa-solid fa-comments text-indigo-500"></i> प्रतिक्रिया तथा सुझाव (Feedback)
+            <i class="fa-solid fa-comments text-indigo-500"></i> <span data-i18n="feedback_title">प्रतिक्रिया तथा सुझाव (Feedback & Suggestions)</span>
         </h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400">तपाईंलाई यो एप कस्तो लाग्यो? थप सुधारका लागि आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:</p>
+        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="feedback_desc">
+            तपाईंलाई यो एप कस्तो लाग्यो? आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:<br>
+            <span class="italic text-[11px] text-slate-500 dark:text-slate-500" data-i18n="feedback_desc_sub">How do you like this app? You can send your advice and suggestions here:</span>
+        </p>
 
-        <form onsubmit="handleFeedback(event)" class="space-y-3">
-            <div>
-                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">तपाईंको नाम:</label>
-                <input type="text" id="fb-name" required placeholder="तपाईंको नाम लेख्नुहोस्" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+        <form id="feedback-form" onsubmit="handleFeedback(event)" class="space-y-3 w-full">
+            <div class="w-full">
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_your_name">
+                    तपाईंको नाम / Your Name:
+                </label>
+                <input type="text" id="fb-name" required placeholder="तपाईंको नाम लेख्नुहोस् (Enter your name)" data-i18n-placeholder="placeholder_your_name" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
-            <div>
-                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">सुझाव वा प्रतिक्रिया:</label>
-                <textarea id="fb-msg" rows="3" required placeholder="तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्..." class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            <div class="w-full">
+                <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="label_feedback_msg">
+                    सुझाव वा प्रतिक्रिया / Message or Feedback:
+                </label>
+                <textarea id="fb-msg" rows="3" required placeholder="तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्... (Write your feedback here...)" data-i18n-placeholder="placeholder_feedback_msg" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">पठाउनुहोस्</button>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/20" data-i18n="btn_submit_feedback">
+                पठाउनुहोस् (Submit)
+            </button>
         </form>
 
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-center space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-            <p>Support: <a href="https://Support.kamalgc.com.np" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Support.kamalgc.com.np</a></p>
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-center space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400 w-full">
             <div class="flex justify-center gap-3 font-medium">
                 <a href="https://kamalgc.com.np" target="_blank" class="hover:underline text-indigo-600 dark:text-indigo-400">kamalgc.com.np</a>
                 <span>•</span>
                 <a href="https://info.kamalgc.com.np" target="_blank" class="hover:underline text-indigo-600 dark:text-indigo-400">info.kamalgc.com.np</a>
             </div>
-            <p class="pt-1 text-[10px] text-slate-400">©️ 2026 Digital Notebook. All Rights Reserved.</p>
+            <p class="pt-1 text-[10px] text-slate-400" data-i18n="footer_rights">©️ 2026 Digital Notebook. All Rights Reserved.</p>
         </div>
     </div>
 
 </div>
 
-<!-- Firebase Config & Sync JS Module Integration -->
+<!-- Firebase Sync & App Scripts Integration Module -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { backupToCloud, restoreFromCloud } from '../firebase-sync.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
-      authDomain: "digital-a2552.firebaseapp.com",
-      projectId: "digital-a2552",
-      storageBucket: "digital-a2552.firebasestorage.app",
-      messagingSenderId: "218135618179",
-      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    const userId = "default_user";
+
+    window.triggerCloudBackup = async function() {
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "क्लाउड ब्याकअप सुरु हुँदैछ..." : "Starting Cloud Backup...");
+        const res = await backupToCloud(userId);
+        showToast(res.message, res.success ? "info" : "error");
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Sync LocalStorage to Firebase Cloud
-    document.getElementById('btn-cloud-backup').addEventListener('click', async () => {
-        showToast("Cloud Backup सुरु हुँदैछ...");
-        try {
-            const allData = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                allData[key] = localStorage.getItem(key);
-            }
-            await set(ref(db, 'users/default_user'), allData);
-            showToast("सफलतापूर्वक Cloud मा Backup भयो!");
-        } catch (error) {
-            showToast("Cloud Backup Error: " + error.message, "error");
+    window.triggerCloudRestore = async function() {
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "क्लाउडबाट रिस्टोर गरिँदैछ..." : "Restoring from Cloud...");
+        const res = await restoreFromCloud(userId);
+        showToast(res.message, res.success ? "info" : "error");
+        if(res.success) {
+            setTimeout(() => location.reload(), 1000);
         }
-    });
-
-    // Restore Data from Firebase Cloud to LocalStorage
-    document.getElementById('btn-cloud-restore').addEventListener('click', async () => {
-        showToast("Cloud बाट Restore गरिँदैछ...");
-        try {
-            const dbRef = ref(db);
-            const snapshot = await get(child(dbRef, 'users/default_user'));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                for (let key in data) {
-                    localStorage.setItem(key, data[key]);
-                }
-                showToast("सफलतापूर्वक Restore भयो! रिफ्रेश हुँदैछ...");
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                showToast("Cloud मा कुनै डाटा भेटिएन!", "error");
-            }
-        } catch (error) {
-            showToast("Restore Error: " + error.message, "error");
-        }
-    });
-
-    // Real Feedback Handler Submission to Firebase Realtime Database
-    window.handleFeedback = async function(event) {
-        event.preventDefault();
-        const name = document.getElementById('fb-name').value.trim();
-        const message = document.getElementById('fb-msg').value.trim();
-
-        if(!name || !message) {
-            showToast("कृपया सबै फिल्डहरू भर्नुहोस्!", "error");
-            return;
-        }
-
-        try {
-            const feedbackRef = ref(db, 'feedbacks');
-            await push(feedbackRef, {
-                name: name,
-                message: message,
-                timestamp: new Date().toISOString()
-            });
-            showToast("तपाईँको प्रतिक्रिया सफलतापूर्वक पठाइयो!");
-            document.getElementById('fb-name').value = '';
-            document.getElementById('fb-msg').value = '';
-        } catch (error) {
-            showToast("पठाउन असफल भयो: " + error.message, "error");
-        }
-    }
+    };
 </script>
 
 <script>
-    // Custom Toast Function
     function showToast(msg, type = "info") {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -322,7 +303,7 @@
         setTimeout(() => {
             toast.classList.add('opacity-0');
             setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        }, 1000);
     }
 
     const translations = {
@@ -333,11 +314,61 @@
             typography_title: "Typography & Layout Style",
             font_size: "Font Size",
             font_family: "Font Family",
-            default_currency: "Default Currency Format",
+            font_style: "Font Style",
+            style_normal: "Normal",
+            style_bold: "Bold",
+            style_italic: "Italic",
+            text_effects: "Text Effects",
+            effect_shadow: "Shadow",
+            effect_outline: "Outline",
+            effect_background: "Background",
+            effect_hollow: "Hollow",
             data_management: "Data Management & Backup",
             btn_backup: "Backup JSON",
             btn_restore: "Restore JSON",
-            btn_reset: "Master Reset"
+            btn_reset: "Master Reset",
+            cloud_backup_title: "Cloud Backup (Firebase Database)",
+            btn_sync_cloud: "Sync to Cloud",
+            btn_restore_cloud: "Restore from Cloud",
+            policy_section_title: "ℹ️ Policy, Terms & About",
+            policy_1_title: "1. Privacy Policy & Data Storage",
+            policy_1_desc: "Your financial records, transactions, and bills are securely stored in the cloud using Firebase.",
+            policy_1_more_en: "<strong>English:</strong> Your financial records, transactions, and bills are securely stored in the cloud using Firebase, ensuring your data is backed up.",
+            policy_1_more_np: "<strong>Nepali:</strong> This ensures your data is backed up and remains safe even if you change your mobile device.",
+            policy_2_title: "2. Third-Party Access",
+            policy_2_desc: "We do not sell, trade, or transfer your personal financial data to any unauthorized third parties.",
+            policy_2_more_en: "<strong>English:</strong> We do not sell, trade, or transfer your personal financial data to any unauthorized third parties.",
+            policy_2_more_np: "<strong>Nepali:</strong> We do not sell or transfer your personal financial details to any unauthorized third party.",
+            policy_3_title: "3. Security & Authentication",
+            policy_3_desc: "Users can securely log in, but users are responsible for keeping their login credentials confidential.",
+            policy_3_more_en: "<strong>English:</strong> Users can securely log in using their credentials, but users are responsible for keeping their login details confidential.",
+            policy_3_more_np: "<strong>Nepali:</strong> Users can log in securely, but maintaining the confidentiality of login details is entirely the user's responsibility.",
+            policy_4_title: "4. Internet & Sync",
+            policy_4_desc: "An internet connection is required to sync and update your data in real-time on the Firebase server.",
+            policy_4_more_en: "<strong>English:</strong> The app may require an internet connection to sync and update your data in real-time with the Firebase server.",
+            policy_4_more_np: "<strong>Nepali:</strong> An active internet connection is required to sync and update data in real-time on the Firebase server.",
+            policy_5_title: "5. Data Deletion Rights",
+            policy_5_desc: "Users have the right to request the deletion of their account and data stored on the Firebase server at any time.",
+            policy_5_more_en: "<strong>English:</strong> Users have the right to request the deletion of their account and all associated data stored on the Firebase server at any time.",
+            policy_5_more_np: "<strong>Nepali:</strong> Users have the right to request the deletion of their account and all data stored on the Firebase server at any time.",
+            see_more_btn: "See More",
+            see_less_btn: "See Less",
+            check_update_text: "(Check Update)",
+            feedback_title: "Feedback & Suggestions",
+            feedback_desc: "How do you like this app? You can send your advice and suggestions here:",
+            feedback_desc_sub: "How do you like this app? You can send your advice and suggestions here:",
+            label_your_name: "Your Name:",
+            label_feedback_msg: "Message or Feedback:",
+            placeholder_your_name: "Enter your name",
+            placeholder_feedback_msg: "Write your feedback here...",
+            btn_submit_feedback: "Submit",
+            footer_rights: "©️ 2026 Digital Notebook. All Rights Reserved.",
+            reset_modal_title: "Master Reset Confirm",
+            reset_modal_desc: "All your Note, Income, Expense, and Dashboard data will be erased. Type <b>RESET</b> below to confirm:",
+            btn_cancel: "Cancel",
+            btn_reset_system: "Reset System",
+            dark_mode_text: "Dark Mode",
+            light_mode_text: "Light Mode"
         },
         np: {
             appearance_title: "रूप र थिम (Appearance & Theme)",
@@ -346,95 +377,208 @@
             typography_title: "फन्ट र डिजाइन शैली",
             font_size: "अक्षरको साइज",
             font_family: "अक्षरको प्रकार (Font Family)",
-            default_currency: "पूर्वनिर्धारित मुद्रा",
+            font_style: "फन्ट शैली",
+            style_normal: "सामान्य",
+            style_bold: "मोट्टा (Bold)",
+            style_italic: "छड्के (Italic)",
+            text_effects: "टेक्स्ट इफेक्ट्स",
+            effect_shadow: "छाया (Shadow)",
+            effect_outline: "आउटलाइन",
+            effect_background: "ब्याकग्राउन्ड",
+            effect_hollow: "खोक्रो (Hollow)",
             data_management: "डाटा व्यवस्थापन र ब्याकअप",
             btn_backup: "ब्याकअप JSON",
             btn_restore: "रिस्टोर JSON",
-            btn_reset: "मास्टर रिसेट"
+            btn_reset: "मास्टर रिसेट",
+            cloud_backup_title: "क्लाउड ब्याकअप (फायरबेस डाटाबेस)",
+            btn_sync_cloud: "क्लाउडमा सिंक गर्नुहोस्",
+            btn_restore_cloud: "क्लाउडबाट रिस्टोर गर्नुहोस्",
+            policy_section_title: "ℹ️ गोपनीयता, सर्तहरू तथा बारेमा",
+            policy_1_title: "१. गोपनीयता नीति र डाटा भण्डारण (Privacy Policy & Data Storage)",
+            policy_1_desc: "तपाईँका हिसाब-किताब, कारोबार र बिलहरू फायरबेस (Firebase) को क्लाउड सर्भरमा सुरक्षित रूपमा भण्डारण हुन्छन्।",
+            policy_1_more_en: "<strong>English:</strong> Your financial records, transactions, and bills are securely stored in the cloud using Firebase, ensuring your data is backed up.",
+            policy_1_more_np: "<strong>नेपाली:</strong> यसले डाटाको ब्याकअप भइरहन्छ र मोबाइल परिवर्तन गरे पनि डाटा सुरक्षित रहन्छ।",
+            policy_2_title: "२. तेस्रो पक्षको पहुँच (Third-Party Access)",
+            policy_2_desc: "हामी तपाईँको व्यक्तिगत वित्तीय डाटा कुनै पनि अनाधिकृत तेस्रो पक्षलाई बिक्री वा हस्तान्तरण गर्दैनौं।",
+            policy_2_more_en: "<strong>English:</strong> We do not sell, trade, or transfer your personal financial data to any unauthorized third parties.",
+            policy_2_more_np: "<strong>नेपाली:</strong> हामी तपाईंको व्यक्तिगत वित्तीय विवरण कुनै पनि अनाधिकृत तेस्रो पक्षलाई बिक्री वा हस्तान्तरण गर्दैनौं।",
+            policy_3_title: "३. सुरक्षा र लगइन (Security & Authentication)",
+            policy_3_desc: "प्रयोगकर्ताले सुरक्षित रूपमा लगइन गर्न सक्छन्, तर आफ्नो लगइन विवरण गोप्य राख्ने जिम्मेवारी प्रयोगकर्ताको हुन्छ।",
+            policy_3_more_en: "<strong>English:</strong> Users can securely log in using their credentials, but users are responsible for keeping their login details confidential.",
+            policy_3_more_np: "<strong>नेपाली:</strong> प्रयोगकर्ताले सुरक्षित रूपमा लगइन गर्न सक्छन्, तर आफ्नो लगइन विवरण गोप्य राख्ने जिम्मेवारी पूर्ण रूपमा प्रयोगकर्ताको हुन्छ।",
+            policy_4_title: "४. इन्टरनेट र सिंक (Internet & Sync)",
+            policy_4_desc: "फायरबेस सर्भरमा डाटा वास्तविक समयमा सिंक र अपडेट गर्नका लागि इन्टरनेट जडानको आवश्यकता पर्दछ।",
+            policy_4_more_en: "<strong>English:</strong> The app may require an internet connection to sync and update your data in real-time with the Firebase server.",
+            policy_4_more_np: "<strong>नेपाली:</strong> फायरबेस सर्भरमा डाटा वास्तविक समयमा सिंक र अपडेट गर्नका लागि सक्रिय इन्टरनेट जडानको आवश्यकता पर्दछ।",
+            policy_5_title: "५. डाटा मेटाउने अधिकार (Data Deletion Rights)",
+            policy_5_desc: "प्रयोगकर्तासँग फायरबेस सर्भरमा रहेको आफ्नो खाता र डाटा जुनसुकै बेला मेटाउन अनुरोध गर्ने अधिकार हुन्छ।",
+            policy_5_more_en: "<strong>English:</strong> Users have the right to request the deletion of their account and all associated data stored on the Firebase server at any time.",
+            policy_5_more_np: "<strong>नेपाली:</strong> प्रयोगकर्तासँग फायरबेस सर्भरमा सुरक्षित रहेका आफ्नो खाता र सम्पूर्ण डाटा जुनसुकै बेला मेटाउने अधिकार हुन्छ।",
+            see_more_btn: "थप हेर्नुहोस्",
+            see_less_btn: "कम हेर्नुहोस्",
+            check_update_text: "(अपडेट जाँच गर्नुहोस्)",
+            feedback_title: "प्रतिक्रिया तथा सुझाव (Feedback & Suggestions)",
+            feedback_desc: "तपाईंलाई यो एप कस्तो लाग्यो? आफ्ना सल्लाह तथा सुझावहरू यहाँ पठाउन सक्नुहुन्छ:",
+            feedback_desc_sub: "How do you like this app? You can send your advice and suggestions here:",
+            label_your_name: "तपाईंको नाम / Your Name:",
+            label_feedback_msg: "सुझाव वा प्रतिक्रिया / Message or Feedback:",
+            placeholder_your_name: "तपाईंको नाम लेख्नुहोस् (Enter your name)",
+            placeholder_feedback_msg: "तपाईंका सल्लाहहरू यहाँ लेख्नुहोस्... (Write your feedback here...)",
+            btn_submit_feedback: "पठाउनुहोस् (Submit)",
+            footer_rights: "©️ २०२६ डिजिटल नोटबुक। सर्वाधिकार सुरक्षित।",
+            reset_modal_title: "मास्टर रिसेट पुष्टि",
+            reset_modal_desc: "तपाईंको सम्पूर्ण Note, Income, Expense, र Dashboard डाटा मेटिनेछ। पुष्टि गर्न तल <b>RESET</b> टाइप गर्नुहोस्:",
+            btn_cancel: "रद्द गर्नुहोस्",
+            btn_reset_system: "सिस्टम रिसेट",
+            dark_mode_text: "डार्क मोड",
+            light_mode_text: "लाइट मोड"
         }
     };
 
-    function t(key) {
-        const lang = GlobalSettings.get('language', 'en');
-        return translations[lang][key] || translations['en'][key] || key;
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
         loadSettingsToUI();
-        applySettings();
+        applyAllSettings();
     });
 
     function loadSettingsToUI() {
-        const lang = GlobalSettings.get('language', 'en');
+        const lang = localStorage.getItem('language') || 'en';
         document.getElementById('language-select').value = lang;
 
-        const theme = GlobalSettings.get('theme', 'dark');
+        const theme = localStorage.getItem('theme') || 'dark';
         updateThemeButtonUI(theme);
 
-        const curr = GlobalSettings.get('currency', 'NPR');
-        document.getElementById('currency-select').value = curr;
-
-        const fSize = GlobalSettings.get('font_size', 'normal');
+        const fSize = localStorage.getItem('font_size') || '15';
         document.getElementById('font-size-select').value = fSize;
 
-        const fFamily = GlobalSettings.get('font_family', 'Canva Sans');
+        const fFamily = localStorage.getItem('font_family') || 'Poppins';
         document.getElementById('font-family-select').value = fFamily;
 
-        const fStyle = GlobalSettings.get('font_style', 'normal');
+        const fStyle = localStorage.getItem('font_style') || 'normal';
         document.getElementById('font-style-select').value = fStyle;
     }
 
-    function applySettings() {
+    function applyAllSettings() {
+        const lang = localStorage.getItem('language') || 'en';
+        document.documentElement.setAttribute('lang', lang);
+
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if(t(key)) el.innerText = t(key);
+            if (translations[lang] && translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
         });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang] && translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeButtonUI(theme);
+
+        const fontSize = localStorage.getItem('font_size') || '15';
+        document.body.style.fontSize = fontSize + 'px';
+
+        const fontFamily = localStorage.getItem('font_family') || 'Poppins';
+        document.body.style.fontFamily = `'${fontFamily}', sans-serif`;
+
+        const fontStyle = localStorage.getItem('font_style') || 'normal';
+        if (fontStyle === 'bold') {
+            document.body.style.fontWeight = '700';
+            document.body.style.fontStyle = 'normal';
+        } else if (fontStyle === 'italic') {
+            document.body.style.fontWeight = '400';
+            document.body.style.fontStyle = 'italic';
+        } else {
+            document.body.style.fontWeight = '400';
+            document.body.style.fontStyle = 'normal';
+        }
+
+        const textEffect = localStorage.getItem('text_effect') || 'normal';
+        document.body.classList.remove('text-effect-shadow', 'text-effect-outline', 'text-effect-background', 'text-effect-hollow');
+        if (textEffect !== 'normal') {
+            document.body.classList.add(`text-effect-${textEffect}`);
+        }
     }
 
     function toggleTheme() {
-        let currentTheme = GlobalSettings.get('theme', 'dark');
+        let currentTheme = localStorage.getItem('theme') || 'dark';
         let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        GlobalSettings.set('theme', newTheme);
-        updateThemeButtonUI(newTheme);
+        localStorage.setItem('theme', newTheme);
+        applyAllSettings();
     }
 
     function updateThemeButtonUI(theme) {
         const btnText = document.getElementById('theme-text');
         const icon = document.getElementById('theme-icon');
+        const lang = localStorage.getItem('language') || 'en';
         if (theme === 'light') {
-            btnText.innerText = "Light Mode";
+            btnText.innerText = lang === 'np' ? "लाइट मोड" : "Light Mode";
             icon.className = "fa-solid fa-sun text-amber-500";
         } else {
-            btnText.innerText = "Dark Mode";
+            btnText.innerText = lang === 'np' ? "डार्क मोड" : "Dark Mode";
             icon.className = "fa-solid fa-moon text-indigo-400";
         }
     }
 
     function changeLanguage(lang) {
-        GlobalSettings.set('language', lang);
-        applySettings();
+        localStorage.setItem('language', lang);
+        applyAllSettings();
+        showToast(lang === 'np' ? "भाषा परिवर्तन भयो!" : "Language Updated!");
     }
 
     function changeFontSize(size) {
-        GlobalSettings.set('font_size', size);
+        localStorage.setItem('font_size', size);
+        applyAllSettings();
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "अक्षरको साइज परिवर्तन भयो!" : "Font Size Updated!");
     }
 
     function changeFontFamily(family) {
-        GlobalSettings.set('font_family', family);
+        localStorage.setItem('font_family', family);
+        applyAllSettings();
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "फन्ट परिवार परिवर्तन भयो!" : "Font Family Updated!");
     }
 
     function changeFontStyle(style) {
-        GlobalSettings.set('font_style', style);
+        localStorage.setItem('font_style', style);
+        applyAllSettings();
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "फन्ट शैली परिवर्तन भयो!" : "Font Style Updated!");
     }
 
     function setTextEffect(effect) {
-        GlobalSettings.set('text_effect', effect);
-        showToast("Text Effect Updated!");
+        localStorage.setItem('text_effect', effect);
+        applyAllSettings();
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "टेक्स्ट इफेक्ट परिवर्तन भयो!" : "Text Effect Updated!");
     }
 
-    function saveCurrency(curr) {
-        GlobalSettings.set('currency', curr);
-        showToast("Currency Updated!");
+    function handleFeedback(event) {
+        event.preventDefault();
+        const name = document.getElementById('fb-name').value.trim();
+        const msg = document.getElementById('fb-msg').value.trim();
+        const lang = localStorage.getItem('language') || 'en';
+
+        if(!name || !msg) {
+            showToast(lang === 'np' ? "कृपया सबै क्षेत्र भर्नुहोस्!" : "Please fill in all fields!", "error");
+            return;
+        }
+
+        const feedbacks = JSON.parse(localStorage.getItem('user_feedbacks') || '[]');
+        feedbacks.push({ name, msg, date: new Date().toISOString() });
+        localStorage.setItem('user_feedbacks', JSON.stringify(feedbacks));
+
+        showToast(lang === 'np' ? "प्रतिक्रिया सफलतापूवक पठाइयो!" : "Feedback submitted successfully!");
+        document.getElementById('feedback-form').reset();
     }
 
     function backupData() {
@@ -445,11 +589,13 @@
         a.href = url;
         a.download = 'digital_notebook_backup.json';
         a.click();
-        showToast("JSON Backup Downloaded!");
+        const lang = localStorage.getItem('language') || 'en';
+        showToast(lang === 'np' ? "JSON ब्याकअप डाउनलोड भयो!" : "JSON Backup Downloaded!");
     }
 
     function restoreData(event) {
         const file = event.target.files[0];
+        const lang = localStorage.getItem('language') || 'en';
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -458,10 +604,10 @@
                 for (let key in data) {
                     localStorage.setItem(key, data[key]);
                 }
-                showToast("Restore Successful!");
+                showToast(lang === 'np' ? "रिस्टोर सफल भयो!" : "Restore Successful!");
                 setTimeout(() => location.reload(), 1000);
             } catch (err) {
-                showToast("Invalid JSON File!", "error");
+                showToast(lang === 'np' ? "अमान्य JSON फाइल!" : "Invalid JSON File!", "error");
             }
         };
         reader.readAsText(file);
@@ -478,33 +624,40 @@
 
     function confirmMasterReset() {
         const val = document.getElementById('reset-input').value.trim().toUpperCase();
+        const lang = localStorage.getItem('language') || 'en';
         if (val === 'RESET') {
             localStorage.clear();
             closeResetModal();
-            showToast("System Reset Successful!");
+            showToast(lang === 'np' ? "सिस्टम रिसेट सफल भयो!" : "System Reset Successful!");
             setTimeout(() => location.reload(), 800);
         } else {
-            showToast("कृपया 'RESET' सही तरिकाले टाइप गर्नुहोस्!", "error");
+            showToast(lang === 'np' ? "कृपया 'RESET' सही तरिकाले टाइप गर्नुहोस्!" : "Please type 'RESET' correctly!", "error");
         }
     }
 
     function toggleText(id) {
         const textElement = document.getElementById('more-' + id);
         const btnElement = document.getElementById('toggle-btn-' + id);
+        const lang = localStorage.getItem('language') || 'en';
+        const seeMoreText = lang === 'np' ? "थप हेर्नुहोस्" : "See More";
+        const seeLessText = lang === 'np' ? "कम हेर्नुहोस्" : "See Less";
+
         if (textElement.classList.contains('show')) {
             textElement.classList.remove('show');
-            btnElement.innerText = "See More (थप हेर्नुहोस्)";
+            btnElement.innerText = seeMoreText;
         } else {
+            textElement.classList.add('source-show', 'show');
             textElement.classList.add('show');
-            btnElement.innerText = "See Less (कम हेर्नुहोस्)";
+            btnElement.innerText = seeLessText;
         }
     }
 
     function checkForUpdates() {
         const statusText = document.getElementById('update-status-text');
-        statusText.innerText = "(Checking...)";
+        const lang = localStorage.getItem('language') || 'en';
+        statusText.innerText = lang === 'np' ? "(जाँच गरिँदैछ...)" : "(Checking...)";
         setTimeout(() => {
-            statusText.innerText = "(You are on v2.5 - Up to date!)";
+            statusText.innerText = lang === 'np' ? "(तपाईं v2.5 मा हुनुहुन्छ - अप-टु-डेट!)" : "(You are on v2.5 - Up to date!)";
         }, 1000);
     }
 </script>
