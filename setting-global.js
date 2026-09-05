@@ -1,32 +1,6 @@
-// Global App Configuration & Settings Bridge
-const GlobalSettings = {
-    // Get setting value from localStorage with defaults
-    get(key, defaultValue = null) {
-        return localStorage.getItem(key) !== null ? localStorage.getItem(key) : defaultValue;
-    },
-
-    // Set setting value to localStorage
-    set(key, value) {
-        localStorage.setItem(key, value);
-        this.applyToDocument();
-    },
-
-    // Get active currency symbol
-    getCurrencySymbol() {
-        const curr = this.get('currency', 'NPR');
-        return curr === 'INR' ? '₹' : 'Rs';
-    },
-
-    // Format money/amount with current currency
-    formatAmount(amount) {
-        const symbol = this.getCurrencySymbol();
-        const num = parseFloat(amount || 0).toLocaleString();
-        return `${symbol} ${num}`;
-    },
-
     // Apply global settings (Theme, Font, Language, Effects) to the current page instantly
     applyToDocument() {
-        // 1. Theme (Dark / Light)
+        // १. थिम (Dark / Light) - यो HTML मा लागु हुन्छ, त्यसैले body नभए पनि काम गर्छ
         const theme = this.get('theme', 'dark');
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
@@ -34,7 +8,7 @@ const GlobalSettings = {
             document.documentElement.classList.remove('dark');
         }
 
-        // 2. Font Size (Matched with settings.html options: small, normal, extra)
+        // २. फन्ट साइज
         const fontSize = this.get('font_size', 'normal');
         if (fontSize === 'small') {
             document.documentElement.style.fontSize = '14px';
@@ -44,15 +18,13 @@ const GlobalSettings = {
             document.documentElement.style.fontSize = '16px';
         }
 
-        // Apply body-level styles once DOM is available
+        // Body स्टाइलहरू सेट गर्ने फंक्सन
         const applyBodyStyles = () => {
             if (!document.body) return;
 
-            // 3. Font Family
             const fontFamily = this.get('font_family', 'Canva Sans');
             document.body.style.fontFamily = `'${fontFamily}', sans-serif`;
 
-            // 4. Font Style (Normal, Bold, Italic)
             const fontStyle = this.get('font_style', 'normal');
             if (fontStyle === 'bold') {
                 document.body.style.fontWeight = '700';
@@ -65,7 +37,6 @@ const GlobalSettings = {
                 document.body.style.fontStyle = 'normal';
             }
 
-            // 5. Text Effects (Shadow, Outline, Background, Hollow)
             const textEffect = this.get('text_effect', 'none');
             document.body.style.textShadow = '';
             document.body.style.backgroundColor = '';
@@ -84,42 +55,10 @@ const GlobalSettings = {
             }
         };
 
+        // तुरुन्तै वा DOM लोड भएपछि चलाउने
         if (document.body) {
             applyBodyStyles();
         } else {
             document.addEventListener('DOMContentLoaded', applyBodyStyles);
         }
-
-        // 6. Card Shape / Border Radius
-        const cardShape = this.get('card_shape', 'rounded-2xl');
-        window.currentCardShape = cardShape;
     },
-
-    // Universal Translation Helper
-    translate(key, dictionary) {
-        const lang = this.get('language', 'en');
-        if (dictionary && dictionary[lang] && dictionary[lang][key]) {
-            return dictionary[lang][key];
-        }
-        if (dictionary && dictionary['en'] && dictionary['en'][key]) {
-            return dictionary['en'][key];
-        }
-        return key;
-    }
-};
-
-// Auto-apply settings as soon as the script is loaded
-GlobalSettings.applyToDocument();
-
-// Re-apply when DOM is fully loaded to ensure body styles attach correctly
-document.addEventListener('DOMContentLoaded', () => {
-    GlobalSettings.applyToDocument();
-});
-
-// Listen to storage changes across tabs/pages for real-time sync
-window.addEventListener('storage', (e) => {
-    GlobalSettings.applyToDocument();
-    if (typeof window.onSettingsChanged === 'function') {
-        window.onSettingsChanged(e);
-    }
-});
