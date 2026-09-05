@@ -39,29 +39,22 @@
 
 <div class="space-y-4 w-full flex-1 max-w-5xl mx-auto">
     <!-- Header Section -->
-    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-2.5 md:p-3.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-3">
-        <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-            <span class="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">📊</span> 
+    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4">
+        <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
+            <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">📊</span> 
             <span>Cashflow & Ledger</span>
         </h1>
         
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-            <!-- Exchange Rate Settings -->
-            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-xl text-xs">
-                <span class="text-slate-400 font-medium">1 INR =</span>
-                <input type="number" id="inr-rate" value="1.6" step="any" onchange="updateExchangeRate()" class="w-12 bg-transparent text-slate-900 dark:text-white font-bold outline-none text-center">
-                <span class="text-slate-400">NPR</span>
-            </div>
-
-            <!-- Date Range Filter & PDF Report -->
+            <!-- Date Range Filter & Export CSV in one line -->
             <div class="flex flex-row items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-xl text-xs">
                 <i class="fa-solid fa-calendar text-slate-400"></i>
                 <input type="date" id="filter-from-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
                 <span class="text-slate-400">-</span>
                 <input type="date" id="filter-to-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
                 <button onclick="clearDateFilter()" class="text-slate-400 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark"></i></button>
-                <button type="button" onclick="exportFullPDF()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ml-2">
-                    <i class="fa-solid fa-file-pdf text-rose-500"></i> PDF
+                <button type="button" onclick="exportToCSV()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ml-2">
+                    <i class="fa-solid fa-file-csv text-indigo-500"></i> CSV
                 </button>
             </div>
         </div>
@@ -89,7 +82,7 @@
 
     <!-- ACCORDION CARD 1: ADD TRANSACTION -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
-        <button onclick="toggleAccordion('section-transaction')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+        <button onclick="toggleAccordion('section-transaction')" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <span class="flex items-center gap-2"><i class="fa-solid fa-right-left text-blue-500"></i> Add New Transaction</span>
             <i id="icon-section-transaction" class="fa-solid fa-chevron-down transition-transform"></i>
         </button>
@@ -100,18 +93,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
-                        <input type="date" id="txn-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        <input type="date" id="txn-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-400 mb-1">Name</label>
-                        <input type="text" id="txn-party" placeholder="Enter name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        <input type="text" id="txn-party" placeholder="Enter name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-400 mb-1">Type</label>
-                        <select id="txn-type" onchange="handleTypeChange()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        <select id="txn-type" onchange="handleTypeChange()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="Receivable">Receivable (To Take)</option>
                             <option value="Payable">Payable (To Give)</option>
                             <option value="Expense">Expense (खर्च)</option>
@@ -131,21 +124,21 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Principal Amount (NPR / IC/INR)</label>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Principal Amount (NPR / INR)</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" step="any" id="txn-amount-npr" oninput="calculateTotalAmount()" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                            <input type="number" step="any" id="txn-amount-inr" oninput="calculateTotalAmount()" placeholder="IC/INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                            <input type="number" step="any" id="txn-amount-inr" oninput="calculateTotalAmount()" placeholder="INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount (in NPR)</label>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount</label>
                         <input type="text" id="txn-total-calc" readonly placeholder="Total calculation" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1">Remarks / Note</label>
-                    <input type="text" id="txn-note" placeholder="Optional details..." class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    <input type="text" id="txn-note" placeholder="Optional details..." class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="flex gap-2 pt-2">
@@ -158,7 +151,7 @@
 
     <!-- ACCORDION CARD 2: PARTY ACCOUNTS & LEDGER -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
-        <button onclick="toggleAccordion('section-party')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+        <button onclick="toggleAccordion('section-party')" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <span class="flex items-center gap-2"><i class="fa-solid fa-users text-purple-500"></i> Party Accounts & Ledger</span>
             <i id="icon-section-party" class="fa-solid fa-chevron-down transition-transform"></i>
         </button>
@@ -172,31 +165,23 @@
 
     <!-- ACCORDION CARD 3: ADD INCOME -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
-        <button onclick="toggleAccordion('section-income')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+        <button onclick="toggleAccordion('section-income')" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <span class="flex items-center gap-2"><i class="fa-solid fa-wallet text-emerald-500"></i> Add Income Source</span>
             <i id="icon-section-income" class="fa-solid fa-chevron-down transition-transform"></i>
         </button>
         <div id="content-section-income" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
             <form id="income-form" onsubmit="saveIncome(event)" class="space-y-3">
                 <input type="hidden" id="edit-income-index" value="">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Income Source Name</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="md:col-span-2">
                         <input type="text" id="income-source-name" placeholder="Income Source Name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
-                        <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        <input type="number" step="any" id="income-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Amount (NPR & IC/INR)</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" step="any" id="income-amount-npr" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                            <input type="number" step="any" id="income-amount-inr" placeholder="IC/INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                        </div>
-                    </div>
+                <div>
+                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                 </div>
                 <div class="flex gap-2">
                     <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
@@ -212,7 +197,7 @@
 
     <!-- ACCORDION CARD 4: ADD CASHFLOW / SAVINGS -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
-        <button onclick="toggleAccordion('section-savings')" class="w-full flex justify-between items-center p-3.5 md:p-4 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+        <button onclick="toggleAccordion('section-savings')" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <span class="flex items-center gap-2"><i class="fa-solid fa-piggy-bank text-amber-500"></i> Add Cashflow / Savings</span>
             <i id="icon-section-savings" class="fa-solid fa-chevron-down transition-transform"></i>
         </button>
@@ -221,11 +206,9 @@
                 <input type="hidden" id="edit-savings-index" value="">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="md:col-span-2">
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Cashflow Title</label>
                         <input type="text" id="savings-title" placeholder="Cashflow Title" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Category</label>
                         <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
                             <option value="Bank">🏦 Bank</option>
                             <option value="Cash">💵 Cash</option>
@@ -234,17 +217,8 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Amount (NPR & IC/INR)</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" step="any" id="savings-amount-npr" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                            <input type="number" step="any" id="savings-amount-inr" placeholder="IC/INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
-                        <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                    </div>
+                    <input type="number" step="any" id="savings-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                 </div>
                 <div class="flex gap-2">
                     <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
@@ -273,7 +247,7 @@
         <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
             <h4 class="font-bold text-xs text-slate-700 dark:text-slate-300">Settle / Payment</h4>
             <div class="grid grid-cols-2 gap-2">
-                <input type="number" step="any" id="settle-amount" placeholder="Amount (NPR)" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                <input type="number" step="any" id="settle-amount" placeholder="Amount" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                 <select id="settle-type" class="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     <option value="Paid">Payment Given (Paid)</option>
                     <option value="Received">Payment Received</option>
@@ -296,15 +270,6 @@
     document.getElementById('txn-date').valueAsDate = new Date();
     document.getElementById('income-date').valueAsDate = new Date();
     document.getElementById('savings-date').valueAsDate = new Date();
-
-    function getExchangeRate() {
-        return parseFloat(document.getElementById('inr-rate').value) || 1.6;
-    }
-
-    function updateExchangeRate() {
-        calculateTotalAmount();
-        refreshAll();
-    }
 
     function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
@@ -340,9 +305,7 @@
     function calculateTotalAmount() {
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
-        const rateMultiplier = getExchangeRate();
-        
-        const principal = npr + (inr * rateMultiplier); 
+        const principal = npr + inr; 
         const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
         const period = parseFloat(document.getElementById('txn-period').value) || 0;
 
@@ -363,9 +326,7 @@
         const type = document.getElementById('txn-type').value;
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
-        const rateMultiplier = getExchangeRate();
-        
-        const principal = npr + (inr * rateMultiplier);
+        const principal = npr + inr;
         const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
         const period = parseFloat(document.getElementById('txn-period').value) || 0;
         
@@ -399,7 +360,7 @@
         document.getElementById('txn-date').value = t.date;
         document.getElementById('txn-party').value = t.party;
         document.getElementById('txn-type').value = t.type;
-        document.getElementById('txn-amount-npr').value = t.npr || 0;
+        document.getElementById('txn-amount-npr').value = t.npr || t.amount;
         document.getElementById('txn-amount-inr').value = t.inr || 0;
         document.getElementById('txn-interest-rate').value = t.rate || 0;
         document.getElementById('txn-period').value = t.period || 0;
@@ -429,21 +390,15 @@
     function saveIncome(e) {
         e.preventDefault();
         const name = document.getElementById('income-source-name').value;
-        const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
-        const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
-        const rateMultiplier = getExchangeRate();
-        const amount = npr + (inr * rateMultiplier);
-        
+        const amount = parseFloat(document.getElementById('income-amount').value);
         const date = document.getElementById('income-date').value;
         const index = document.getElementById('edit-income-index').value;
 
-        const incomeData = { name, npr, inr, amount, date };
-
         if(index === "") {
-            incomes.push(incomeData);
+            incomes.push({ name, amount, date });
             showToast("Income added successfully!");
         } else {
-            incomes[index] = incomeData;
+            incomes[index] = { name, amount, date };
             showToast("Income updated successfully!");
         }
 
@@ -456,8 +411,7 @@
         const i = incomes[index];
         document.getElementById('edit-income-index').value = index;
         document.getElementById('income-source-name').value = i.name;
-        document.getElementById('income-amount-npr').value = i.npr || i.amount || 0;
-        document.getElementById('income-amount-inr').value = i.inr || 0;
+        document.getElementById('income-amount').value = i.amount;
         document.getElementById('income-date').value = i.date;
         document.getElementById('income-submit-btn').innerText = "Update Income";
         document.getElementById('income-cancel-btn').classList.remove('hidden');
@@ -484,21 +438,15 @@
         e.preventDefault();
         const title = document.getElementById('savings-title').value;
         const category = document.getElementById('savings-category').value;
-        const npr = parseFloat(document.getElementById('savings-amount-npr').value) || 0;
-        const inr = parseFloat(document.getElementById('savings-amount-inr').value) || 0;
-        const rateMultiplier = getExchangeRate();
-        const amount = npr + (inr * rateMultiplier);
-
+        const amount = parseFloat(document.getElementById('savings-amount').value);
         const date = document.getElementById('savings-date').value;
         const index = document.getElementById('edit-savings-index').value;
 
-        const savingsData = { title, category, npr, inr, amount, date };
-
         if(index === "") {
-            savings.push(savingsData);
+            savings.push({ title, category, amount, date });
             showToast("Cashflow added successfully!");
         } else {
-            savings[index] = savingsData;
+            savings[index] = { title, category, amount, date };
             showToast("Cashflow updated successfully!");
         }
 
@@ -512,8 +460,7 @@
         document.getElementById('edit-savings-index').value = index;
         document.getElementById('savings-title').value = s.title;
         document.getElementById('savings-category').value = s.category;
-        document.getElementById('savings-amount-npr').value = s.npr || s.amount || 0;
-        document.getElementById('savings-amount-inr').value = s.inr || 0;
+        document.getElementById('savings-amount').value = s.amount;
         document.getElementById('savings-date').value = s.date;
         document.getElementById('savings-submit-btn').innerText = "Update Cashflow";
         document.getElementById('savings-cancel-btn').classList.remove('hidden');
@@ -679,7 +626,7 @@
                 <div class="flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl">
                     <div>
                         <p class="font-semibold text-slate-900 dark:text-white">${t.date} - ${t.note || t.type}</p>
-                        <p class="text-[10px] text-slate-400">${t.type} ${t.rate ? `(Rate: ${t.rate}%, Period: ${t.period}m)` : ''} ${t.inr ? `[IC: ₹${t.inr}]` : ''}</p>
+                        <p class="text-[10px] text-slate-400">${t.type} ${t.rate ? `(Rate: ${t.rate}%, Period: ${t.period}m)` : ''}</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="font-bold ${isRec ? 'text-emerald-500' : 'text-rose-500'}">Rs ${t.amount.toLocaleString()}</span>
@@ -763,39 +710,6 @@
         printWindow.print();
     }
 
-    function exportFullPDF() {
-        const printWindow = window.open('', '_blank');
-        const filteredTxns = getDateFilteredData(transactions);
-        const filteredIncomes = getDateFilteredData(incomes);
-        const filteredSavings = getDateFilteredData(savings);
-
-        let html = `<html><head><title>Complete Financial Report</title><style>body{font-family:sans-serif;padding:20px;}h3{margin-top:25px;}table{width:100%;border-collapse:collapse;margin-top:10px;margin-bottom:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:12px;}th{background:#f4f4f4;}</style></head><body>`;
-        html += `<h2>Complete Financial Report</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
-        
-        html += `<h3>Transactions / Ledgers</h3><table><tr><th>Date</th><th>Party</th><th>Type</th><th>Note</th><th>Amount (Rs)</th></tr>`;
-        filteredTxns.forEach(t => {
-            html += `<tr><td>${t.date}</td><td>${t.party}</td><td>${t.type}</td><td>${t.note || '-'}</td><td>${t.amount}</td></tr>`;
-        });
-        html += `</table>`;
-
-        html += `<h3>Incomes</h3><table><tr><th>Date</th><th>Source Name</th><th>Amount (Rs)</th></tr>`;
-        filteredIncomes.forEach(i => {
-            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.amount}</td></tr>`;
-        });
-        html += `</table>`;
-
-        html += `<h3>Cashflow / Savings</h3><table><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount (Rs)</th></tr>`;
-        filteredSavings.forEach(s => {
-            html += `<tr><td>${s.date}</td><td>${s.title}</td><td>${s.category}</td><td>${s.amount}</td></tr>`;
-        });
-        html += `</table>`;
-
-        html += `</body></html>`;
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.print();
-    }
-
     function renderIncomeList() {
         const container = document.getElementById('income-list-container');
         container.innerHTML = '';
@@ -805,7 +719,7 @@
         dateFiltered.forEach(i => {
             container.innerHTML += `
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
-                    <div><span class="font-semibold">${i.name}</span> ${i.inr ? `<span class="text-[10px] text-amber-500">[IC: ₹${i.inr}]</span>` : ''} <span class="text-[10px] text-slate-400">(${i.date})</span></div>
+                    <div><span class="font-semibold">${i.name}</span> <span class="text-[10px] text-slate-400">(${i.date})</span></div>
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-emerald-500">Rs ${i.amount.toLocaleString()}</span>
                         <button onclick="editIncome(${i.originalIndex})" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen"></i></button>
@@ -818,14 +732,14 @@
 
     function renderSavingsList() {
         const container = document.getElementById('savings-list-container');
-        container.innerHTML =`';
+        container.innerHTML = '';
         const filtered = savings.map((item, idx) => ({ ...item, originalIndex: idx }));
         const dateFiltered = getDateFilteredData(filtered);
 
         dateFiltered.forEach(s => {
             container.innerHTML += `
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
-                    <div><span class="font-semibold">${s.title}</span> <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-600 rounded">${s.category}</span> ${s.inr ? `<span class="text-[10px] text-amber-500">[IC: ₹${s.inr}]</span>` : ''} <span class="text-[10px] text-slate-400">(${s.date})</span></div>
+                    <div><span class="font-semibold">${s.title}</span> <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-600 rounded">${s.category}</span> <span class="text-[10px] text-slate-400">(${s.date})</span></div>
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-amber-500">Rs ${s.amount.toLocaleString()}</span>
                         <button onclick="editSavings(${s.originalIndex})" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen"></i></button>
@@ -834,6 +748,21 @@
                 </div>
             `;
         });
+    }
+
+    function exportToCSV() {
+        let csv = 'Type,Party/Source,Category/Note,Amount,Date\n';
+        transactions.forEach(t => csv += `"Transaction","${t.party}","${t.note || t.type}","${t.amount}","${t.date}"\n`);
+        incomes.forEach(i => csv += `"Income","${i.name}","-","${i.amount}","${i.date}"\n`);
+        savings.forEach(s => csv += `"Cashflow","${s.title}","${s.category}","${s.amount}","${s.date}"\n`);
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `Digital_Khata_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+        a.click();
+        showToast("CSV downloaded successfully!");
     }
 
     refreshAll();
