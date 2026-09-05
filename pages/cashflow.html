@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount</label>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount (Converted to NPR)</label>
                         <input type="text" id="txn-total-calc" readonly placeholder="Total calculation" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
                     </div>
                 </div>
@@ -172,17 +172,31 @@
         <div id="content-section-income" class="hidden p-4 md:p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
             <form id="income-form" onsubmit="saveIncome(event)" class="space-y-3">
                 <input type="hidden" id="edit-income-index" value="">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="md:col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Income Source Name</label>
                         <input type="text" id="income-source-name" placeholder="Income Source Name" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                     <div>
-                        <input type="number" step="any" id="income-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
+                        <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                 </div>
-                <div>
-                    <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Amount (NPR / INR)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" step="any" id="income-amount-npr" oninput="calculateIncomeTotal()" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                            <input type="number" step="any" id="income-amount-inr" oninput="calculateIncomeTotal()" placeholder="INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount (NPR)</label>
+                        <input type="text" id="income-total-calc" readonly placeholder="Total in NPR" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
+                    </div>
                 </div>
+
                 <div class="flex gap-2">
                     <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
                     <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition">Add Income</button>
@@ -192,6 +206,11 @@
                 <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print PDF</button>
             </div>
             <div id="income-list-container" class="space-y-2 pt-2"></div>
+            <!-- Income Total Table -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs font-bold mt-2">
+                <span>Total Income (Filtered):</span>
+                <span id="income-table-total" class="text-emerald-500 text-sm">Rs 0</span>
+            </div>
         </div>
     </div>
 
@@ -206,20 +225,37 @@
                 <input type="hidden" id="edit-savings-index" value="">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="md:col-span-2">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Cashflow Title</label>
                         <input type="text" id="savings-title" placeholder="Cashflow Title" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
                     </div>
                     <div>
-                        <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Category</label>
+                        <select id="savings-category" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2 rounded-xl text-xs outline-none">
                             <option value="Bank">🏦 Bank</option>
                             <option value="Cash">💵 Cash</option>
                             <option value="Investment">📈 Investment</option>
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <input type="number" step="any" id="savings-amount" placeholder="Amount (Rs)" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
-                    <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Amount (NPR / INR)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" step="any" id="savings-amount-npr" oninput="calculateSavingsTotal()" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                            <input type="number" step="any" id="savings-amount-inr" oninput="calculateSavingsTotal()" placeholder="INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Total Amount (NPR)</label>
+                        <input type="text" id="savings-total-calc" readonly placeholder="Total in NPR" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Date</label>
+                        <input type="date" id="savings-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                    </div>
                 </div>
+
                 <div class="flex gap-2">
                     <button type="button" id="savings-cancel-btn" onclick="resetSavingsForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs">Cancel</button>
                     <button type="submit" id="savings-submit-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium p-2.5 rounded-xl text-xs transition">Add Cashflow</button>
@@ -229,6 +265,11 @@
                 <button onclick="printSavingsPDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print PDF</button>
             </div>
             <div id="savings-list-container" class="space-y-2 pt-2"></div>
+            <!-- Savings Total Table -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs font-bold mt-2">
+                <span>Total Cashflow / Savings (Filtered):</span>
+                <span id="savings-table-total" class="text-amber-500 text-sm">Rs 0</span>
+            </div>
         </div>
     </div>
 </div>
@@ -302,10 +343,11 @@
         calculateTotalAmount();
     }
 
+    // Transaction Calculation (NPR + INR*1.6) + Interest
     function calculateTotalAmount() {
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
-        const principal = npr + inr; 
+        const principal = npr + (inr * 1.6); 
         const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
         const period = parseFloat(document.getElementById('txn-period').value) || 0;
 
@@ -319,6 +361,22 @@
         document.getElementById('txn-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
     }
 
+    // Income Calculation (NPR + INR*1.6)
+    function calculateIncomeTotal() {
+        const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
+        const total = npr + (inr * 1.6);
+        document.getElementById('income-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
+    }
+
+    // Savings Calculation (NPR + INR*1.6)
+    function calculateSavingsTotal() {
+        const npr = parseFloat(document.getElementById('savings-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('savings-amount-inr').value) || 0;
+        const total = npr + (inr * 1.6);
+        document.getElementById('savings-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
+    }
+
     function saveTransaction(e) {
         e.preventDefault();
         const date = document.getElementById('txn-date').value;
@@ -326,7 +384,7 @@
         const type = document.getElementById('txn-type').value;
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
-        const principal = npr + inr;
+        const principal = npr + (inr * 1.6);
         const rate = parseFloat(document.getElementById('txn-interest-rate').value) || 0;
         const period = parseFloat(document.getElementById('txn-period').value) || 0;
         
@@ -360,7 +418,7 @@
         document.getElementById('txn-date').value = t.date;
         document.getElementById('txn-party').value = t.party;
         document.getElementById('txn-type').value = t.type;
-        document.getElementById('txn-amount-npr').value = t.npr || t.amount;
+        document.getElementById('txn-amount-npr').value = t.npr || 0;
         document.getElementById('txn-amount-inr').value = t.inr || 0;
         document.getElementById('txn-interest-rate').value = t.rate || 0;
         document.getElementById('txn-period').value = t.period || 0;
@@ -390,15 +448,17 @@
     function saveIncome(e) {
         e.preventDefault();
         const name = document.getElementById('income-source-name').value;
-        const amount = parseFloat(document.getElementById('income-amount').value);
+        const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
+        const amount = npr + (inr * 1.6);
         const date = document.getElementById('income-date').value;
         const index = document.getElementById('edit-income-index').value;
 
         if(index === "") {
-            incomes.push({ name, amount, date });
+            incomes.push({ name, npr, inr, amount, date });
             showToast("Income added successfully!");
         } else {
-            incomes[index] = { name, amount, date };
+            incomes[index] = { name, npr, inr, amount, date };
             showToast("Income updated successfully!");
         }
 
@@ -411,8 +471,10 @@
         const i = incomes[index];
         document.getElementById('edit-income-index').value = index;
         document.getElementById('income-source-name').value = i.name;
-        document.getElementById('income-amount').value = i.amount;
+        document.getElementById('income-amount-npr').value = i.npr || i.amount;
+        document.getElementById('income-amount-inr').value = i.inr || 0;
         document.getElementById('income-date').value = i.date;
+        calculateIncomeTotal();
         document.getElementById('income-submit-btn').innerText = "Update Income";
         document.getElementById('income-cancel-btn').classList.remove('hidden');
     }
@@ -421,6 +483,7 @@
         document.getElementById('income-form').reset();
         document.getElementById('edit-income-index').value = "";
         document.getElementById('income-date').valueAsDate = new Date();
+        document.getElementById('income-total-calc').value = "";
         document.getElementById('income-submit-btn').innerText = "Add Income";
         document.getElementById('income-cancel-btn').classList.add('hidden');
     }
@@ -438,15 +501,17 @@
         e.preventDefault();
         const title = document.getElementById('savings-title').value;
         const category = document.getElementById('savings-category').value;
-        const amount = parseFloat(document.getElementById('savings-amount').value);
+        const npr = parseFloat(document.getElementById('savings-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('savings-amount-inr').value) || 0;
+        const amount = npr + (inr * 1.6);
         const date = document.getElementById('savings-date').value;
         const index = document.getElementById('edit-savings-index').value;
 
         if(index === "") {
-            savings.push({ title, category, amount, date });
+            savings.push({ title, category, npr, inr, amount, date });
             showToast("Cashflow added successfully!");
         } else {
-            savings[index] = { title, category, amount, date };
+            savings[index] = { title, category, npr, inr, amount, date };
             showToast("Cashflow updated successfully!");
         }
 
@@ -460,8 +525,10 @@
         document.getElementById('edit-savings-index').value = index;
         document.getElementById('savings-title').value = s.title;
         document.getElementById('savings-category').value = s.category;
-        document.getElementById('savings-amount').value = s.amount;
+        document.getElementById('savings-amount-npr').value = s.npr || s.amount;
+        document.getElementById('savings-amount-inr').value = s.inr || 0;
         document.getElementById('savings-date').value = s.date;
+        calculateSavingsTotal();
         document.getElementById('savings-submit-btn').innerText = "Update Cashflow";
         document.getElementById('savings-cancel-btn').classList.remove('hidden');
     }
@@ -470,6 +537,7 @@
         document.getElementById('savings-form').reset();
         document.getElementById('edit-savings-index').value = "";
         document.getElementById('savings-date').valueAsDate = new Date();
+        document.getElementById('savings-total-calc').value = "";
         document.getElementById('savings-submit-btn').innerText = "Add Cashflow";
         document.getElementById('savings-cancel-btn').classList.add('hidden');
     }
@@ -716,7 +784,9 @@
         const filtered = incomes.map((item, idx) => ({ ...item, originalIndex: idx }));
         const dateFiltered = getDateFilteredData(filtered);
         
+        let totalIncomeSum = 0;
         dateFiltered.forEach(i => {
+            totalIncomeSum += i.amount;
             container.innerHTML += `
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
                     <div><span class="font-semibold">${i.name}</span> <span class="text-[10px] text-slate-400">(${i.date})</span></div>
@@ -728,6 +798,7 @@
                 </div>
             `;
         });
+        document.getElementById('income-table-total').innerText = 'Rs ' + totalIncomeSum.toLocaleString();
     }
 
     function renderSavingsList() {
@@ -736,7 +807,9 @@
         const filtered = savings.map((item, idx) => ({ ...item, originalIndex: idx }));
         const dateFiltered = getDateFilteredData(filtered);
 
+        let totalSavingsSum = 0;
         dateFiltered.forEach(s => {
+            totalSavingsSum += s.amount;
             container.innerHTML += `
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-xs">
                     <div><span class="font-semibold">${s.title}</span> <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-600 rounded">${s.category}</span> <span class="text-[10px] text-slate-400">(${s.date})</span></div>
@@ -748,6 +821,7 @@
                 </div>
             `;
         });
+        document.getElementById('savings-table-total').innerText = 'Rs ' + totalSavingsSum.toLocaleString();
     }
 
     function exportToCSV() {
