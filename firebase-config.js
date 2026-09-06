@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// तपाईंको Firebase Config
+// Your Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
   authDomain: "digital-a2552.firebaseapp.com",
@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 1. डाटा क्लाउडमा ब्याकअप (Save) गर्ने Function
+// 1. Function to backup (save) data to the cloud
 export async function backupToCloud(userId = "default_user") {
     try {
         const localData = {
@@ -29,14 +29,14 @@ export async function backupToCloud(userId = "default_user") {
         };
 
         await set(ref(db, 'users/' + userId), localData);
-        return { success: true, message: "Cloud मा डाटा सफल रूपमा सेभ भयो!" };
+        return { success: true, message: "Data successfully saved to the cloud!" };
     } catch (error) {
         console.error("Cloud Backup Error:", error);
         return { success: false, message: error.message };
     }
 }
 
-// 2. क्लाउडबाट डाटा तान्ने (Restore/Sync) गर्ने Function
+// 2. Function to retrieve (restore/sync) data from the cloud
 export async function restoreFromCloud(userId = "default_user") {
     try {
         const dbRef = ref(db);
@@ -49,9 +49,9 @@ export async function restoreFromCloud(userId = "default_user") {
             if (data.language) localStorage.setItem('language', data.language);
             if (data.currency) localStorage.setItem('currency', data.currency);
             
-            return { success: true, message: "क्लाउडबाट डाटा सफलतापुर्वक Sync भयो!" };
+            return { success: true, message: "Data successfully synced from the cloud!" };
         } else {
-            return { success: false, message: "क्लाउडमा कुनै ब्याकअप भेटिएन!" };
+            return { success: false, message: "No backup found in the cloud!" };
         }
     } catch (error) {
         console.error("Cloud Restore Error:", error);
@@ -59,20 +59,20 @@ export async function restoreFromCloud(userId = "default_user") {
     }
 }
 
-// 3. एडमिनले ५ मिनेटको म्याद भएको QR बनाउने Function
+// 3. Function for admin to create a QR code valid for 5 minutes
 export async function generateSecureFamilyQR(adminUid) {
     try {
-        const expiryTime = Date.now() + (5 * 60 * 1000); // करेन्ट समयमा ५ मिनेट थपेको
+        const expiryTime = Date.now() + (5 * 60 * 1000); // Adding 5 minutes to the current time
         
-        // फायरबेसमा एक्सपायरी समय सेभ गर्ने
+        // Save expiry time in Firebase
         await set(ref(db, 'users/' + adminUid + '/security/qrToken'), {
             exp: expiryTime
         });
 
-        // QR कोड बनाउने डाटा प्याकेज
+        // Data package to create the QR code
         const securePayload = JSON.stringify({ uid: adminUid, exp: expiryTime });
         
-        // QR देखाउने ठाउँ खाली गरेर नयाँ बनाउने
+        // Clear the QR display area and generate a new one
         const qrcodeElement = document.getElementById("qrcode");
         if (qrcodeElement) {
             qrcodeElement.innerHTML = "";
@@ -83,14 +83,14 @@ export async function generateSecureFamilyQR(adminUid) {
             });
         }
         
-        return { success: true, message: "५ मिनेटको लागि सुरक्षित QR जेनेरेट भयो!" };
+        return { success: true, message: "Secure QR generated for 5 minutes!" };
     } catch (error) {
         console.error("QR Gen Error:", error);
         return { success: false, message: error.message };
     }
 }
 
-// 4. परिवारको सदस्यले QR स्क्यान वा भेरिफाइ गर्ने Function
+// 4. Function for family member to scan or verify the QR code
 export async function verifyAndConnect(scannedPayload) {
     try {
         const data = JSON.parse(scannedPayload);
@@ -101,23 +101,23 @@ export async function verifyAndConnect(scannedPayload) {
         const snapshot = await get(child(dbRef, `users/${adminUid}/security/qrToken`));
         
         if (!snapshot.exists()) {
-            return { success: false, message: "अमान्य QR कोड!" };
+            return { success: false, message: "Invalid QR code!" };
         }
         
         const serverData = snapshot.val();
         const currentTime = Date.now();
         
-        // समय नाघ्यो कि नाइँ जाँच गर्ने
+        // Check if time has expired
         if (currentTime > qrExpiryTime || currentTime > serverData.exp) {
-            return { success: false, message: "यो QR कोडको म्याद समाप्त भयो! सुरक्षाको लागि नयाँ कोड माग्नुहोस्।" };
+            return { success: false, message: "This QR code has expired! Please request a new code for security." };
         }
         
-        // सबै ठीक छ भने लेजर जोड्ने
+        // If everything is correct, connect the ledger
         localStorage.setItem('connectedFamilyKey', adminUid);
-        return { success: true, message: "सफलतापूर्वक परिवारको लेजरसँग जोडियो!" };
+        return { success: true, message: "Successfully connected to the family ledger!" };
 
     } catch (e) {
         console.error("Verify Error:", e);
-        return { success: false, message: "यो गलत QR कोड हो!" };
+        return { success: false, message: "This is an incorrect QR code!" };
     }
 }
