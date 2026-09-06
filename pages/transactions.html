@@ -17,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -67,38 +67,38 @@
     <!-- Title and Animated Message Section -->
     <div class="space-y-3">
         <h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white" data-i18n="page_title">
-            छिट्टै आउँदैछ! (Coming Soon)
+            Coming Soon!
         </h1>
         <p class="text-sm md:text-base font-semibold shimmer-animation py-2 leading-relaxed" data-i18n="animated_message">
-            हामी नयाँ कोसेली लिएर छिट्टै आउँदैछौं...
+            We are launching exciting new updates very soon...
         </p>
         <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto" data-i18n="page_desc">
-            हामी तपाईंको अनुभवलाई थप उत्कृष्ट बनाउन रोमाञ्चक सुविधाहरूमा काम गरिरहेका छौं। कृपया पर्खनुहोला!
+            We are working on amazing features to enhance your digital experience. Stay tuned!
         </p>
     </div>
 
     <!-- QR Generation and Scanner Section Integration -->
     <div class="space-y-4 text-left pt-2">
-        <!-- १. एडमिनले QR देखाउने र बनाउने सेक्सन -->
+        <!-- 1. Admin QR Generator Section -->
         <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">परिवार جوड्ने सुरक्षित QR</h3>
-            <button onclick="handleGenerateQR()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm">QR जेनेरेट गर्नुहोस्</button>
+            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">Secure Family Connection QR</h3>
+            <button onclick="handleGenerateQR()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm">Generate QR Code</button>
             
-            <!-- QR देखिने बक्स -->
+            <!-- QR Display Box -->
             <div id="qrcode" class="mt-4 flex justify-center"></div>
         </div>
 
-        <!-- २. परिवारको सदस्यले QR स्क्यान गर्ने सेक्सन -->
+        <!-- 2. Family Member QR Scanner Section -->
         <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">परिवारको लेजर स्क्यान गरेर जोड्नुहोस्</h3>
+            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">Scan Family Ledger to Connect</h3>
             
-            <!-- लाइभ क्यामेरा देखिने ठाउँ -->
+            <!-- Live Camera Viewfinder -->
             <div id="qr-reader" class="mx-auto rounded-xl overflow-hidden mb-2" style="width: 100%; max-width: 260px;"></div>
-            <button onclick="startCameraScanner()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm mb-3">क्या메라बाट स्क्यान गर्नुहोस्</button>
+            <button onclick="startCameraScanner()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm mb-3">Scan Using Camera</button>
             
-            <!-- वा ग्यालरीबाट फोटो हालेर स्क्यान गर्ने अप्सन -->
+            <!-- Gallery Upload Option -->
             <div class="text-xs text-slate-500 dark:text-slate-400">
-                <span class="block mb-1">ग्यालरीबाट फोटो छान्नुहोस्:</span>
+                <span class="block mb-1">Or choose an image from gallery:</span>
                 <input type="file" accept="image/*" onchange="scanQrFromGallery(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-300 cursor-pointer">
             </div>
         </div>
@@ -107,7 +107,7 @@
     <!-- Action Button / Navigation -->
     <div class="pt-2">
         <a href="settings.html" class="inline-flex items-center justify-center gap-2 w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium p-3 rounded-xl text-xs transition">
-            <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btn_back">सेटिङ्मा फर्किनुहोस् (Back to Settings)</span>
+            <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btn_back">Back to Settings</span>
         </a>
     </div>
 
@@ -145,7 +145,7 @@
             },
             () => {}
         ).catch(() => {
-            showToast("क्या메라 खोल्न सकिएन वा अनुमति मिलेन।", "error");
+            showToast("Unable to access the camera or permission denied.", "error");
         });
     };
 
@@ -160,7 +160,7 @@
             const result = await verifyAndConnect(decodedText);
             showToast(result.message, result.success ? "success" : "error");
         } catch(err) {
-            showToast("यो फोटोमा स्पष्ट QR कोड फेला परेन!", "error");
+            showToast("No clear QR code found in this image!", "error");
         }
     };
 </script>
@@ -188,15 +188,9 @@
     const translations = {
         en: {
             page_title: "Coming Soon!",
-            animated_message: "We are coming soon with a new surprise gift...",
-            page_desc: "We are working on exciting features to enhance your experience. Stay tuned!",
+            animated_message: "We are launching exciting new updates very soon...",
+            page_desc: "We are working on amazing features to enhance your digital experience. Stay tuned!",
             btn_back: "Back to Settings"
-        },
-        np: {
-            page_title: "छिट्टै आउँदैछ! (Coming Soon)",
-            animated_message: "हामी नयाँ कोसेली लिएर छिट्टै आउँदैछौं...",
-            page_desc: "हामी तपाईंको अनुभवलाई थप उत्कृष्ट बनाउन रोमाञ्चक सुविधाहरूमा काम गरिरहेका छौं। कृपया पर्खनुहोला!",
-            btn_back: "सेटिङ्मा फर्किनुहोस् (Back to Settings)"
         }
     };
 
