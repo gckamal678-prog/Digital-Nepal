@@ -38,45 +38,66 @@
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-2 md:p-6 pb-28 transition-colors duration-300 w-full m-0 min-h-screen flex flex-col justify-between">
 
 <div class="space-y-4 w-full flex-1 max-w-5xl mx-auto">
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 gap-4">
+    <!-- Header Section with Corrected Global PDF Filter (Styled as per image) -->
+    <div class="flex justify-between items-center bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
         <h1 class="text-base md:text-xl font-bold tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
             <span class="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-emerald-500">📊</span> 
-            <span>Cashflow & Ledger</span>
+            <span id="profile-org-name">Cashflow & Ledger</span>
         </h1>
-        
-        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-            <!-- Date Range Filter & Export CSV in one line -->
-            <div class="flex flex-row items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-xl text-xs">
-                <i class="fa-solid fa-calendar text-slate-400"></i>
-                <input type="date" id="filter-from-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
-                <span class="text-slate-400">-</span>
-                <input type="date" id="filter-to-date" onchange="applyGlobalFilters()" class="bg-transparent text-slate-900 dark:text-white outline-none">
-                <button onclick="clearDateFilter()" class="text-slate-400 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark"></i></button>
-                <button type="button" onclick="exportToCSV()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ml-2">
-                    <i class="fa-solid fa-file-csv text-indigo-500"></i> CSV
-                </button>
-            </div>
+        <button type="button" id="generate-pdf-btn" class="bg-rose-500 hover:bg-rose-600 text-white border-none px-4 py-2 rounded-xl cursor-pointer text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-file-pdf"></i> PDF
+        </button>
+    </div>
+
+    <!-- Filter Bar Container (Matched with image layout - Single Line) -->
+    <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-2 shadow-sm overflow-x-auto">
+        <div class="flex-1 min-w-[120px]">
+            <select id="transaction-type-filter" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                <option value="all">🏢 (All)</option>
+                <option value="Receivable">लिने (Receivable)</option>
+                <option value="Expense">खर्च (Expense)</option>
+                <option value="Payable">दिने (Payable)</option>
+                <option value="Savings">बचत (Savings)</option>
+                <option value="Income">आम्दानी</option>
+            </select>
+        </div>
+        <div class="flex-1 min-w-[120px]">
+            <input type="date" id="start-date" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none"> 
+        </div>
+        <div class="flex items-center gap-1.5 flex-1 min-w-[130px]">
+            <span class="text-slate-400 text-xs shrink-0">To</span> 
+            <input type="date" id="end-date" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
         </div>
     </div>
 
     <!-- Advanced Summary Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50">
-            <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">Total Income</p>
-            <h2 id="summary-income" class="text-lg md:text-xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
+    <div class="space-y-3">
+        <!-- First Line: Total Income, Total Saving, Expense -->
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50">
+                <p class="text-[10px] md:text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider truncate">TOTAL INCOME</p>
+                <h2 id="summary-income" class="text-sm md:text-xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">Rs 0</h2>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50">
+                <p class="text-[10px] md:text-[11px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider truncate">TOTAL SAVING</p>
+                <h2 id="summary-cashflow" class="text-sm md:text-xl font-extrabold text-amber-800 dark:text-amber-200 mt-1">Rs 0</h2>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-950/40 p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50">
+                <p class="text-[10px] md:text-[11px] text-blue-700 dark:text-blue-400 font-bold uppercase tracking-wider truncate">EXPENSE</p>
+                <h2 id="summary-expense" class="text-sm md:text-xl font-extrabold text-blue-800 dark:text-blue-200 mt-1">Rs 0</h2>
+            </div>
         </div>
-        <div class="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50">
-            <p class="text-[11px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider">Total Cashflow</p>
-            <h2 id="summary-cashflow" class="text-lg md:text-xl font-extrabold text-amber-800 dark:text-amber-200 mt-1">Rs 0</h2>
-        </div>
-        <div class="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-2xl border border-rose-200 dark:border-rose-900/50">
-            <p class="text-[11px] text-rose-700 dark:text-rose-400 font-bold uppercase tracking-wider">Receivable (To Take)</p>
-            <h2 id="summary-receivable" class="text-lg md:text-xl font-extrabold text-rose-800 dark:text-rose-200 mt-1">Rs 0</h2>
-        </div>
-        <div class="bg-orange-50 dark:bg-orange-950/40 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/50">
-            <p class="text-[11px] text-orange-700 dark:text-orange-400 font-bold uppercase tracking-wider">Payable (To Give)</p>
-            <h2 id="summary-payable" class="text-lg md:text-xl font-extrabold text-orange-800 dark:text-orange-200 mt-1">Rs 0</h2>
+
+        <!-- Second Line: Receivable & Payable -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-2xl border border-rose-200 dark:border-rose-900/50">
+                <p class="text-[10px] md:text-[11px] text-rose-700 dark:text-rose-400 font-bold uppercase tracking-wider truncate">RECEIVABLE</p>
+                <h2 id="summary-receivable" class="text-sm md:text-xl font-extrabold text-rose-800 dark:text-rose-200 mt-1">Rs 0</h2>
+            </div>
+            <div class="bg-orange-50 dark:bg-orange-950/40 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/50">
+                <p class="text-[10px] md:text-[11px] text-orange-700 dark:text-orange-400 font-bold uppercase tracking-wider truncate">PAYABLE</p>
+                <h2 id="summary-payable" class="text-sm md:text-xl font-extrabold text-orange-800 dark:text-orange-200 mt-1">Rs 0</h2>
+            </div>
         </div>
     </div>
 
@@ -105,8 +126,8 @@
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-400 mb-1">Type</label>
                         <select id="txn-type" onchange="handleTypeChange()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="Receivable">Receivable (To Take)</option>
-                            <option value="Payable">Payable (To Give)</option>
+                            <option value="Receivable">Receivable (लिनु)</option>
+                            <option value="Payable">Payable (दिनु)</option>
                             <option value="Expense">Expense (खर्च)</option>
                         </select>
                     </div>
@@ -302,15 +323,127 @@
     </div>
 </div>
 
+<!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+      authDomain: "digital-a2552.firebaseapp.com",
+      projectId: "digital-a2552",
+      storageBucket: "digital-a2552.firebasestorage.app",
+      messagingSenderId: "218135618179",
+      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.db = db;
+    window.dbRef = ref;
+    window.dbSet = set;
+    window.dbPush = push;
+    window.dbRemove = remove;
+    window.dbUpdate = update;
+    window.dbOnValue = onValue;
+
+    if(window.initFirebaseSync) {
+        window.initFirebaseSync();
+    }
+</script>
+
 <script>
-    let transactions = JSON.parse(localStorage.getItem('my_transactions')) || [];
-    let incomes = JSON.parse(localStorage.getItem('my_incomes')) || [];
-    let savings = JSON.parse(localStorage.getItem('my_cashflow')) || [];
+    let transactions = [];
+    let incomes = [];
+    let savings = [];
     let activePartyName = null;
 
     document.getElementById('txn-date').valueAsDate = new Date();
     document.getElementById('income-date').valueAsDate = new Date();
     document.getElementById('savings-date').valueAsDate = new Date();
+
+    function initFirebaseSync() {
+        window.dbOnValue(window.dbRef(window.db, 'my_transactions'), (snapshot) => {
+            const data = snapshot.val();
+            transactions = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+            refreshAll();
+            if(activePartyName) renderModalLedgerContent();
+        });
+
+        window.dbOnValue(window.dbRef(window.db, 'my_incomes'), (snapshot) => {
+            const data = snapshot.val();
+            incomes = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+            refreshAll();
+        });
+
+        window.dbOnValue(window.dbRef(window.db, 'my_cashflow'), (snapshot) => {
+            const data = snapshot.val();
+            savings = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+            refreshAll();
+        });
+    }
+
+    window.initFirebaseSync = initFirebaseSync;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedProfile = localStorage.getItem('userProfile');
+        if (savedProfile) {
+            const profile = JSON.parse(savedProfile);
+            if(profile.name) {
+                const orgNameEl = document.getElementById('profile-org-name');
+                if(orgNameEl) orgNameEl.textContent = profile.name;
+            }
+        }
+    });
+
+    document.getElementById('generate-pdf-btn').addEventListener('click', () => {
+        const selectedType = document.getElementById('transaction-type-filter').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        const filteredData = transactions.filter(item => {
+            const matchesType = (selectedType === 'all') || (item.type === selectedType);
+            const matchesDate = (!startDate || item.date >= startDate) && (!endDate || item.date <= endDate);
+            return matchesType && matchesDate;
+        });
+
+        generatePDFReport(filteredData, selectedType);
+    });
+
+    function generatePDFReport(data, type) {
+        const printWindow = window.open('', '_blank');
+        let orgName = document.getElementById('profile-org-name')?.textContent || 'Digital Notebook';
+
+        let html = `<html><head><title>Financial Report</title><style>
+            body { font-family: sans-serif; padding: 20px; color: #0f172a; }
+            .pdf-header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; font-size: 11pt; }
+            th { background: #f1f5f9; }
+        </style></head><body>`;
+
+        html += `<div class="pdf-header">`;
+        html += `<h1 style="margin: 0; font-size: 20pt; color: #0f172a;">${orgName}</h1>`;
+        html += `<p style="margin: 5px 0 0 0; font-size: 11pt; color: #64748b;">डिजिटल वित्तीय रिपोर्ट (${type})</p>`;
+        html += `</div>`;
+
+        html += `<table><tr><th>Date</th><th>Party / Name</th><th>Type</th><th>Note</th><th>Amount (Rs)</th></tr>`;
+        let totalAmount = 0;
+        data.forEach(item => {
+            totalAmount += (item.amount || 0);
+            html += `<tr><td>${item.date}</td><td>${item.party || '-'}</td><td>${item.type}</td><td>${item.note || '-'}</td><td>${item.amount}</td></tr>`;
+        });
+        html += `</table>`;
+        html += `<p style="font-weight: bold; text-align: right;">Total: Rs ${totalAmount.toLocaleString()}</p>`;
+
+        html += `</body></html>`;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+        showToast("PDF generated successfully!");
+    }
 
     function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
@@ -343,7 +476,6 @@
         calculateTotalAmount();
     }
 
-    // Transaction Calculation (NPR + INR*1.6) + Interest
     function calculateTotalAmount() {
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
@@ -361,7 +493,6 @@
         document.getElementById('txn-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
     }
 
-    // Income Calculation (NPR + INR*1.6)
     function calculateIncomeTotal() {
         const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
@@ -369,7 +500,6 @@
         document.getElementById('income-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
     }
 
-    // Savings Calculation (NPR + INR*1.6)
     function calculateSavingsTotal() {
         const npr = parseFloat(document.getElementById('savings-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('savings-amount-inr').value) || 0;
@@ -377,10 +507,15 @@
         document.getElementById('savings-total-calc').value = total > 0 ? `Rs ${total.toFixed(2)}` : '';
     }
 
+    function formatPartyName(name) {
+        if(!name) return '';
+        return name.trim().replace(/\s+/g, ' ');
+    }
+
     function saveTransaction(e) {
         e.preventDefault();
         const date = document.getElementById('txn-date').value;
-        const party = document.getElementById('txn-party').value.trim();
+        const party = formatPartyName(document.getElementById('txn-party').value);
         const type = document.getElementById('txn-type').value;
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
@@ -408,7 +543,6 @@
 
         saveData();
         resetTxnForm();
-        refreshAll();
         if(activePartyName) renderModalLedgerContent();
     }
 
@@ -439,7 +573,6 @@
         if(confirm("Are you sure you want to delete this transaction?")) {
             transactions.splice(index, 1);
             saveData();
-            refreshAll();
             if(activePartyName) renderModalLedgerContent();
             showToast("Transaction deleted successfully!");
         }
@@ -464,7 +597,6 @@
 
         saveData();
         resetIncomeForm();
-        refreshAll();
     }
 
     function editIncome(index) {
@@ -492,7 +624,6 @@
         if(confirm("Are you sure you want to delete this income?")) {
             incomes.splice(index, 1);
             saveData();
-            refreshAll();
             showToast("Income deleted successfully!");
         }
     }
@@ -517,7 +648,6 @@
 
         saveData();
         resetSavingsForm();
-        refreshAll();
     }
 
     function editSavings(index) {
@@ -546,12 +676,16 @@
         if(confirm("Are you sure you want to delete this cashflow?")) {
             savings.splice(index, 1);
             saveData();
-            refreshAll();
             showToast("Cashflow deleted successfully!");
         }
     }
 
     function saveData() {
+        if (window.db && window.dbSet) {
+            window.dbSet(window.dbRef(window.db, 'my_transactions'), transactions);
+            window.dbSet(window.dbRef(window.db, 'my_incomes'), incomes);
+            window.dbSet(window.dbRef(window.db, 'my_cashflow'), savings);
+        }
         localStorage.setItem('my_transactions', JSON.stringify(transactions));
         localStorage.setItem('my_incomes', JSON.stringify(incomes));
         localStorage.setItem('my_cashflow', JSON.stringify(savings));
@@ -567,19 +701,9 @@
         handleTypeChange();
     }
 
-    function applyGlobalFilters() {
-        refreshAll();
-    }
-
-    function clearDateFilter() {
-        document.getElementById('filter-from-date').value = '';
-        document.getElementById('filter-to-date').value = '';
-        refreshAll();
-    }
-
     function getDateFilteredData(data) {
-        const fromDate = document.getElementById('filter-from-date').value;
-        const toDate = document.getElementById('filter-to-date').value;
+        const fromDate = document.getElementById('start-date').value;
+        const toDate = document.getElementById('end-date').value;
         return data.filter(item => {
             if (fromDate && item.date < fromDate) return false;
             if (toDate && item.date > toDate) return false;
@@ -601,10 +725,12 @@
 
         let receivable = 0;
         let payable = 0;
+        let expense = 0;
 
         filteredTxns.forEach(t => {
             if(t.type === 'Receivable') receivable += t.amount;
-            else if(t.type === 'Payable' || t.type === 'Expense') payable += t.amount;
+            else if(t.type === 'Payable') payable += t.amount;
+            else if(t.type === 'Expense') expense += t.amount;
         });
 
         let totalIncome = filteredIncomes.reduce((sum, i) => sum + i.amount, 0);
@@ -612,6 +738,7 @@
 
         document.getElementById('summary-income').innerText = 'Rs ' + totalIncome.toLocaleString();
         document.getElementById('summary-cashflow').innerText = 'Rs ' + totalCashflow.toLocaleString();
+        document.getElementById('summary-expense').innerText = 'Rs ' + expense.toLocaleString();
         document.getElementById('summary-receivable').innerText = 'Rs ' + receivable.toLocaleString();
         document.getElementById('summary-payable').innerText = 'Rs ' + payable.toLocaleString();
     }
@@ -622,24 +749,32 @@
         container.innerHTML = '';
 
         const partyMap = {};
-        transactions.forEach((t, index) => {
-            if(!partyMap[t.party]) partyMap[t.party] = { receivable: 0, payable: 0 };
-            if(t.type === 'Receivable') partyMap[t.party].receivable += t.amount;
-            else partyMap[t.party].payable += t.amount;
+        transactions.forEach((t) => {
+            if(t.type === 'Expense') return;
+            
+            const cleanParty = t.party.trim();
+            const lowerKey = cleanParty.toLowerCase();
+            
+            if(!partyMap[lowerKey]) {
+                partyMap[lowerKey] = { displayName: cleanParty, receivable: 0, payable: 0 };
+            }
+            
+            if(t.type === 'Receivable') partyMap[lowerKey].receivable += t.amount;
+            else if(t.type === 'Payable') partyMap[lowerKey].payable += t.amount;
         });
 
-        let parties = Object.keys(partyMap).sort();
+        let partyKeys = Object.keys(partyMap).sort();
         if(searchQuery) {
-            parties = parties.filter(p => p.toLowerCase().includes(searchQuery));
+            partyKeys = partyKeys.filter(k => partyMap[k].displayName.toLowerCase().includes(searchQuery));
         }
 
-        if(parties.length === 0) {
+        if(partyKeys.length === 0) {
             container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No party records found.</p>`;
             return;
         }
 
-        parties.forEach(party => {
-            const data = partyMap[party];
+        partyKeys.forEach(key => {
+            const data = partyMap[key];
             const net = data.receivable - data.payable;
             const netText = net >= 0 ? `To Take: Rs ${net.toLocaleString()}` : `To Give: Rs ${Math.abs(net).toLocaleString()}`;
             const badgeColor = net >= 0 ? 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40' : 'text-rose-500 bg-rose-50 dark:bg-rose-950/40';
@@ -647,10 +782,10 @@
             container.innerHTML += `
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl gap-2">
                     <div>
-                        <h4 class="font-bold text-xs text-slate-900 dark:text-white">${party}</h4>
+                        <h4 class="font-bold text-xs text-slate-900 dark:text-white">${data.displayName}</h4>
                         <p class="text-[11px] font-semibold mt-0.5 px-2 py-0.5 rounded inline-block ${badgeColor}">${netText}</p>
                     </div>
-                    <button onclick="openLedgerModal('${party}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">View Ledger / Settle</button>
+                    <button onclick="openLedgerModal('${data.displayName.replace(/'/g, "\\'")}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">View Ledger / Settle</button>
                 </div>
             `;
         });
@@ -678,7 +813,7 @@
         
         const partyTxns = [];
         transactions.forEach((t, idx) => {
-            if(t.party === activePartyName) {
+            if(t.party && t.party.toLowerCase() === activePartyName.toLowerCase() && t.type !== 'Expense') {
                 partyTxns.push({ ...t, originalIndex: idx });
             }
         });
@@ -729,13 +864,12 @@
         saveData();
         document.getElementById('settle-amount').value = '';
         renderModalLedgerContent();
-        refreshAll();
         showToast("Payment recorded successfully!");
     }
 
     function printPartyLedger() {
         const printWindow = window.open('', '_blank');
-        const partyTxns = transactions.filter(t => t.party === activePartyName);
+        const partyTxns = transactions.filter(t => t.party && t.party.toLowerCase() === activePartyName.toLowerCase() && t.type !== 'Expense');
         let html = `<html><head><title>Ledger - ${activePartyName}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f4f4f4;}</style></head><body>`;
         html += `<h2>Party Statement: ${activePartyName}</h2><p>Generated on: ${new Date().toLocaleDateString()}</p>`;
         html += `<table><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount (Rs)</th></tr>`;
@@ -823,23 +957,6 @@
         });
         document.getElementById('savings-table-total').innerText = 'Rs ' + totalSavingsSum.toLocaleString();
     }
-
-    function exportToCSV() {
-        let csv = 'Type,Party/Source,Category/Note,Amount,Date\n';
-        transactions.forEach(t => csv += `"Transaction","${t.party}","${t.note || t.type}","${t.amount}","${t.date}"\n`);
-        incomes.forEach(i => csv += `"Income","${i.name}","-","${i.amount}","${i.date}"\n`);
-        savings.forEach(s => csv += `"Cashflow","${s.title}","${s.category}","${s.amount}","${s.date}"\n`);
-
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('href', url);
-        a.setAttribute('download', `Digital_Khata_Backup_${new Date().toISOString().slice(0,10)}.csv`);
-        a.click();
-        showToast("CSV downloaded successfully!");
-    }
-
-    refreshAll();
 </script>
 
 </body>
