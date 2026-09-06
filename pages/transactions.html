@@ -10,6 +10,12 @@
     </script>
     <!-- Global Settings Script Integration -->
     <script src="../global.js"></script>
+    
+    <!-- Firebase SDK & QR Generator Scripts -->
+    <script type="module" src="../firebase-config.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=Mukta:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -17,7 +23,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 4px; }
 
-        /* Custom Pulse & Glowing Animations */
         @keyframes floatEffect {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -39,7 +44,6 @@
             animation: shimmerText 4s linear infinite;
         }
 
-        /* Mobile touch fix */
         a, button {
             touch-action: manipulation;
         }
@@ -73,10 +77,37 @@
         </p>
     </div>
 
+    <!-- QR Generation and Scanner Section Integration -->
+    <div class="space-y-4 text-left pt-2">
+        <!-- १. एडमिनले QR देखाउने र बनाउने सेक्सन -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">परिवार جوड्ने सुरक्षित QR</h3>
+            <button onclick="handleGenerateQR()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm">QR जेनेरेट गर्नुहोस्</button>
+            
+            <!-- QR देखिने बक्स -->
+            <div id="qrcode" class="mt-4 flex justify-center"></div>
+        </div>
+
+        <!-- २. परिवारको सदस्यले QR स्क्यान गर्ने सेक्सन -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <h3 class="text-sm font-semibold mb-2 text-slate-800 dark:text-slate-200">परिवारको लेजर स्क्यान गरेर जोड्नुहोस्</h3>
+            
+            <!-- लाइभ क्यामेरा देखिने ठाउँ -->
+            <div id="qr-reader" class="mx-auto rounded-xl overflow-hidden mb-2" style="width: 100%; max-width: 260px;"></div>
+            <button onclick="startCameraScanner()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2.5 px-4 rounded-xl transition shadow-sm mb-3">क्या메라बाट स्क्यान गर्नुहोस्</button>
+            
+            <!-- वा ग्यालरीबाट फोटो हालेर स्क्यान गर्ने अप्सन -->
+            <div class="text-xs text-slate-500 dark:text-slate-400">
+                <span class="block mb-1">ग्यालरीबाट फोटो छान्नुहोस्:</span>
+                <input type="file" accept="image/*" onchange="scanQrFromGallery(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-300 cursor-pointer">
+            </div>
+        </div>
+    </div>
+
     <!-- Action Button / Navigation -->
-    <div class="pt-4">
-        <a href="settings.html" class="inline-flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-3 rounded-xl text-xs transition shadow-md shadow-indigo-600/20">
-            <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btn_back">सेटिङ्मा फर्կनुहोस् (Back to Settings)</span>
+    <div class="pt-2">
+        <a href="settings.html" class="inline-flex items-center justify-center gap-2 w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium p-3 rounded-xl text-xs transition">
+            <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btn_back">सेटिङ्मा फर्किनुहोस् (Back to Settings)</span>
         </a>
     </div>
 
@@ -86,6 +117,53 @@
     </div>
 
 </div>
+
+<script type="module">
+    import { generateSecureFamilyQR, verifyAndConnect } from '../firebase-config.js';
+
+    window.handleGenerateQR = async function() {
+        const currentUserId = localStorage.getItem('connectedFamilyKey') || "default_user";
+        const result = await generateSecureFamilyQR(currentUserId);
+        showToast(result.message, result.success ? "success" : "error");
+    };
+
+    window.startCameraScanner = function() {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 200, height: 200 }
+            },
+            async (decodedText) => {
+                const result = await verifyAndConnect(decodedText);
+                showToast(result.message, result.success ? "success" : "error");
+                try {
+                    await html5QrCode.stop();
+                } catch(e) {}
+            },
+            () => {}
+        ).catch(() => {
+            showToast("क्या메라 खोल्न सकिएन वा अनुमति मिलेन।", "error");
+        });
+    };
+
+    window.scanQrFromGallery = async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        
+        try {
+            const decodedText = await html5QrCode.scanFile(file, true);
+            const result = await verifyAndConnect(decodedText);
+            showToast(result.message, result.success ? "success" : "error");
+        } catch(err) {
+            showToast("यो फोटोमा स्पष्ट QR कोड फेला परेन!", "error");
+        }
+    };
+</script>
 
 <script>
     function showToast(msg, type = "info") {
@@ -104,7 +182,7 @@
         setTimeout(() => {
             toast.classList.add('opacity-0');
             setTimeout(() => toast.remove(), 300);
-        }, 1000);
+        }, 1500);
     }
 
     const translations = {
@@ -130,7 +208,6 @@
         const lang = localStorage.getItem('language') || 'en';
         document.documentElement.setAttribute('lang', lang);
 
-        // Apply theme saved in local storage if available
         const theme = localStorage.getItem('theme') || 'dark';
         if (theme === 'light') {
             document.documentElement.classList.remove('dark');
@@ -138,7 +215,6 @@
             document.documentElement.classList.add('dark');
         }
 
-        // Apply font settings if available
         const fontSize = localStorage.getItem('font_size') || '15';
         document.body.style.fontSize = fontSize + 'px';
 
