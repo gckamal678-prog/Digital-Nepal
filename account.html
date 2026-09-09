@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Digital NoteBook - Account & Data Management</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Poppins', 'sans-serif'],
+            }
+        }
+    }
+}
+</script>
+<script>
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+    } else {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Firebase App & Auth SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<style>
+    @keyframes pulseGlow {
+        0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+        50% { opacity: 0.8; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8)); }
+    }
+    .animated-title { animation: pulseGlow 3s infinite ease-in-out; }
+</style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+<!-- MANDATORY LOGIN OVERLAY / MODAL -->
+<div id="login-overlay" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 w-full max-w-md shadow-2xl text-center space-y-6">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-600 mx-auto flex items-center justify-center shadow-lg">
+            <img src="N1024.png" alt="Logo" class="w-10 h-10 object-cover rounded-lg">
+        </div>
+        <div class="space-y-2">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Digital NoteBook</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">कृपया एप प्रयोग गर्न अगाडि बढ्नको लागि Google मार्फत लग-इन गर्नुहोस्।</p>
+        </div>
+        <button onclick="handleGoogleAuth()" class="w-full py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-white rounded-xl text-xs font-bold flex items-center justify-center gap-3 shadow hover:bg-slate-50 transition">
+            <i class="fa-brands fa-google text-red-500 text-base"></i> Google बाट लगइन गर्नुहोस्
+        </button>
+    </div>
+</div>
+
+<!-- MASTER RESET MODAL -->
+<div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
+            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) प्रविष्ट गर्नुहोस्:
+        </p>
+        <div class="space-y-3">
+            <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+            <input type="password" id="reset-pin" placeholder="Enter 4-digit PIN (Default: 1234)" maxlength="4" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+        </div>
+        <div class="flex gap-2 justify-end pt-2">
+            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_cancel">Cancel</button>
+            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700" data-i18n="btn_reset_system">Reset System</button>
+        </div>
+    </div>
+</div>
+
+<div class="flex min-h-screen w-full">
+    
+    <!-- SIDEBAR SECTION -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+        
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-cyan-500">
+                        Digital <span class="text-emerald-400">NoteBook</span>
+                    </h1>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">✕</button>
+        </div>
+
+        <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
+                <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
+                    <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                <div>
+                    <h3 id="sidebar-profile-name" class="text-white font-bold text-sm">User</h3>
+                    <p class="text-[10px] text-slate-400" id="sidebar-user-email">guest@notebook.com</p>
+                </div>
+            </div>
+
+            <nav class="space-y-1 font-medium">
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>⚙️</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
+            </nav>
+
+            <div class="pt-4 mt-4 border-t border-slate-800">
+                <button onclick="logoutUser()" class="w-full py-2.5 bg-rose-600/20 border border-rose-500/30 hover:bg-rose-600 text-rose-300 hover:text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span class="lang-text" data-en="Logout" data-np="लगआउट गर्नुहोस्">Logout</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col w-full">
+        
+        <!-- HEADER SECTION -->
+        <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+            <div class="flex items-center space-x-2.5">
+                <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                        Digital NoteBook
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition">ENG</button>
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
+                <div class="relative cursor-pointer" onclick="toggleSidebar()">
+                    <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="p-4 space-y-4 flex-1 w-full max-w-5xl mx-auto overflow-y-auto">
+            <div>
+                <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
+                <h2 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-emerald-500"></i> <span class="lang-text" data-en="Account & Data Management" data-np="खाता र डाटा व्यवस्थापन">Account & Data Management</span>
+                </h2>
+            </div>
+
+            <!-- SECURITY LOCK SETTINGS (PIN & BIOMETRIC) -->
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span class="lang-text" data-en="Security & Lock Settings" data-np="सुरक्षा र लक सेटिंग्स">Security & Lock Settings</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800 dark:text-white"><span class="lang-text" data-en="App PIN Lock" data-np="एप पिन लक">App PIN Lock</span></h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400"><span class="lang-text" data-en="Secure your app with a 4-digit PIN" data-np="४-अंकको पिन कोड प्रयोग गरेर एप सुरक्षित गर्नुहोस्">Secure your app with a 4-digit PIN</span></p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="pin-lock-toggle" onchange="togglePinLockSetting(this)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
+                        <div id="pin-setup-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                            <input type="password" id="new-app-pin" placeholder="Enter 4-digit PIN" maxlength="4" class="w-full p-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none">
+                            <button onclick="saveAppPin()" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"><span class="lang-text" data-en="Save PIN" data-np="पिन सेभ गर्नुहोस्">Save PIN</span></button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800 dark:text-white"><span class="lang-text" data-en="Biometric Unlock (Fingerprint/Face)" data-np="बायोमेट्रिक अनलक (फिंगरप्रिन्ट/फेस)">Biometric Unlock (Fingerprint/Face)</span></h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400"><span class="lang-text" data-en="Unlock app using device biometric" data-np="डिफाइस बायोमेट्रिक प्रयोग गरी अनलक गर्नुहोस्">Unlock app using device biometric</span></p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="biometric-toggle" onchange="toggleBiometricLock(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOOGLE LOGIN & ACCOUNT CARD -->
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-emerald-500"></i> Google Authentication
+                </h3>
+                <div id="auth-status-container" class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold overflow-hidden">
+                            <img id="auth-user-img" src="N1024.png" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 id="auth-user-name" class="font-bold text-slate-800 dark:text-white text-xs">Not Logged In</h4>
+                            <p id="auth-user-email" class="text-[11px] text-slate-500 dark:text-slate-400">Please sign in to sync data</p>
+                        </div>
+                    </div>
+                    <button id="google-auth-btn" onclick="handleGoogleAuth()" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow hover:bg-slate-100 transition">
+                        <i class="fa-brands fa-google text-red-500"></i> <span id="auth-btn-text">Google बाट लगइन गर्नुहोस्</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BACKUP & DATA MANAGEMENT SECTION -->
+            <div class="space-y-4 w-full">
+                <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 w-full">
+                        <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
+                        </button>
+                        <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                            <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
+                            <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
+                        </label>
+                        <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Firebase Configuration Setup
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    let currentUser = null;
+
+    firebase.auth().onAuthStateChanged((user) => {
+        currentUser = user;
+        const loginOverlay = document.getElementById('login-overlay');
+        const nameEl = document.getElementById('auth-user-name');
+        const emailEl = document.getElementById('auth-user-email');
+        const imgEl = document.getElementById('auth-user-img');
+        const btnText = document.getElementById('auth-btn-text');
+        const sidebarName = document.getElementById('sidebar-profile-name');
+        const sidebarEmail = document.getElementById('sidebar-user-email');
+        const sidebarAvatar = document.getElementById('sidebar-avatar-img');
+        const headerAvatar = document.getElementById('header-avatar-img');
+
+        if (user) {
+            // Hide mandatory login overlay if user is logged in
+            if(loginOverlay) loginOverlay.classList.add('hidden');
+
+            if(nameEl) nameEl.innerText = user.displayName || 'Google User';
+            if(emailEl) emailEl.innerText = user.email || '';
+            if(imgEl && user.photoURL) imgEl.src = user.photoURL;
+            if(btnText) btnText.innerText = 'लगआउट गर्नुहोस् (Logout)';
+            
+            if(sidebarName) sidebarName.innerText = user.displayName || 'User';
+            if(sidebarEmail) sidebarEmail.innerText = user.email || '';
+            if(sidebarAvatar && user.photoURL) sidebarAvatar.src = user.photoURL;
+            if(headerAvatar && user.photoURL) headerAvatar.src = user.photoURL;
+        } else {
+            // Show mandatory login overlay if user is NOT logged in
+            if(loginOverlay) loginOverlay.classList.remove('hidden');
+
+            if(nameEl) nameEl.innerText = 'Not Logged In';
+            if(emailEl) emailEl.innerText = 'Please sign in to sync data';
+            if(btnText) btnText.innerText = 'Google बाट लगइन गर्नुहोस्';
+        }
+    });
+
+    function handleGoogleAuth() {
+        if (currentUser) {
+            firebase.auth().signOut().then(() => {
+                showToast("सफलतापूर्वक लगआउट भयो!", "success");
+            }).catch((error) => {
+                showToast("लगआउट असफल: " + error.message, "error");
+            });
+        } else {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    showToast("लगइन सफल भयो!", "success");
+                })
+                .catch((error) => {
+                    showToast("लगइन असफल: " + error.message, "error");
+                });
+        }
+    }
+
+    function logoutUser() {
+        firebase.auth().signOut().then(() => {
+            showToast("लगआउट भयो!", "success");
+        });
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.toggle('-translate-x-full');
+    }
+
+    let currentLang = localStorage.getItem('lang') || 'EN';
+
+    const translations = {
+        EN: {
+            reset_title: "Master Reset Confirm",
+            reset_desc: "All your data will be permanently deleted. Type 'RESET' and enter your PIN to confirm:",
+            btn_cancel: "Cancel",
+            btn_reset_system: "Reset System",
+            data_management: "Data Management & Backup",
+            btn_backup: "Backup JSON",
+            btn_restore: "Restore JSON",
+            btn_reset: "Master Reset"
+        },
+        NEP: {
+            reset_title: "मास्टर रिसेट पुष्टि",
+            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) प्रविष्ट गर्नुहोस्:",
+            btn_cancel: "रद्द गर्नुहोस्",
+            btn_reset_system: "सिस्टम रिसेट गर्नुहोस्",
+            data_management: "डाटा व्यवस्थापन र ब्याकअप",
+            btn_backup: "ब्याकअप JSON",
+            btn_restore: "पुनः भण्डारण JSON",
+            btn_reset: "मास्टर रिसेट"
+        }
+    };
+
+    function updateLanguageUI() {
+        const btn = document.getElementById('lang-toggle-btn');
+        if(btn) btn.innerText = currentLang;
+
+        document.querySelectorAll('.lang-text').forEach(el => {
+            const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
+            if(text) el.innerText = text;
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[currentLang] && translations[currentLang][key]) {
+                el.innerText = translations[currentLang][key];
+            }
+        });
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'EN' ? 'NEP' : 'EN';
+        localStorage.setItem('lang', currentLang);
+        updateLanguageUI();
+    }
+
+    function updateThemeUI() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const themeBtn = document.getElementById('theme-toggle-btn');
+        if(themeBtn) themeBtn.innerText = isDark ? '🌛' : '🌞';
+    }
+
+    function toggleTheme() {
+        const htmlEl = document.documentElement;
+        if (htmlEl.classList.contains('dark')) {
+            htmlEl.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            htmlEl.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+        updateThemeUI();
+    }
+
+    function updateDynamicHeader() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = now.toLocaleDateString(currentLang === 'NEP' ? 'ne-NP' : 'en-US', options).toUpperCase();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+
+        const dateEl = document.getElementById('dynamic-date');
+        if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
+    }
+
+    setInterval(updateDynamicHeader, 1000);
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+        toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
+        setTimeout(() => {
+            toast.classList.add('translate-y-2', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function togglePinLockSetting(checkbox) {
+        const box = document.getElementById('pin-setup-box');
+        if (checkbox.checked) {
+            box.classList.remove('hidden');
+        } else {
+            box.classList.add('hidden');
+            localStorage.removeItem('app_pin_lock');
+            showToast(currentLang === 'NEP' ? 'पिन लक बन्द भयो!' : 'PIN Lock disabled!', 'success');
+        }
+    }
+
+    function saveAppPin() {
+        const pin = document.getElementById('new-app-pin').value.trim();
+        if (pin.length !== 4) {
+            showToast(currentLang === 'NEP' ? 'कृपया ४ अंकको पिन राख्नुहोस्!' : 'Please enter a 4-digit PIN!', 'error');
+            return;
+        }
+        localStorage.setItem('app_pin_lock', pin);
+        showToast(currentLang === 'NEP' ? 'पिन सफलतापूर्वक सेभ भयो!' : 'PIN saved successfully!', 'success');
+    }
+
+    function toggleBiometricLock(checkbox) {
+        if (checkbox.checked) {
+            if (window.PublicKeyCredential) {
+                localStorage.setItem('biometric_lock', 'true');
+                showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक सक्षम भयो!' : 'Biometric lock enabled!', 'success');
+            } else {
+                checkbox.checked = false;
+                showToast(currentLang === 'NEP' ? 'यो ब्राउजरमा बायोमेट्रिक सपोर्ट छैन!' : 'Biometric not supported in this browser!', 'error');
+            }
+        } else {
+            localStorage.removeItem('biometric_lock');
+            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक बन्द भयो!' : 'Biometric lock disabled!', 'success');
+        }
+    }
+
+    function loadSecuritySettings() {
+        const savedPin = localStorage.getItem('app_pin_lock');
+        if (savedPin) {
+            document.getElementById('pin-lock-toggle').checked = true;
+            document.getElementById('pin-setup-box').classList.remove('hidden');
+            document.getElementById('new-app-pin').value = savedPin;
+        }
+        const savedBiometric = localStorage.getItem('biometric_lock');
+        if (savedBiometric) {
+            document.getElementById('biometric-toggle').checked = true;
+        }
+    }
+
+    function backupData() {
+        const allData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            allData[key] = localStorage.getItem(key);
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `digital_notebook_backup_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast('ब्याकअप फाइल डाउनलोड भयो!', 'success');
+    }
+
+    function restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                for (const key in data) {
+                    localStorage.setItem(key, data[key]);
+                }
+                showToast('डाटा सफलतापूर्वक पुनर्स्थापना भयो!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } catch (err) {
+                showToast('अमान्य ब्याकअप फाइल!', 'error');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function openResetModal() {
+        document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+        document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function confirmMasterReset() {
+        const textVal = document.getElementById('reset-input').value.trim();
+        const pinVal = document.getElementById('reset-pin').value.trim();
+
+        if (textVal !== 'RESET') {
+            showToast("कृपया 'RESET' टाइप गर्नुहोस्!", 'error');
+            return;
+        }
+
+        if (pinVal !== '1234' && pinVal !== '') {
+            showToast("गलत पिन (PIN)!", 'error');
+            return;
+        }
+
+        localStorage.clear();
+        showToast('सिस्टम सफलतापूर्वक रिसेट भयो!', 'success');
+        setTimeout(() => location.reload(), 1000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateLanguageUI();
+        updateThemeUI();
+        updateDynamicHeader();
+        loadSecuritySettings();
+    });
+</script>
+</body>
+</html>
