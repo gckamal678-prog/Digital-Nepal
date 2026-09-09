@@ -378,7 +378,7 @@ tailwind.config = {
         container.innerHTML = '';
 
         if (incomes.length === 0) {
-            container.innerHTML = `<p class="text-slate-400 text-center py-3">कुनै आम्दानी रेकर्ड फेला परेन।</p>`;
+            container.innerHTML = `<p class="text-slate-400 text-center py-3">No incomes records found.</p>`;
             if(totalContainer) totalContainer.innerText = 'Rs 0.00';
             return;
         }
