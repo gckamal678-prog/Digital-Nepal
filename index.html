@@ -4,6 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NoteBook">
+<link rel="apple-touch-icon" href="N1024.png">
+<meta name="keywords" content="digital notebook, transaction manager, nepali finance app, income expense tracker, note taking app, KAMAL G.C.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dn.kamalgc.com.np">
+<meta property="og:title" content="Digital NoteBook - Transactions & Notes">
+<meta property="og:description" content="Manage your daily transactions, receivables, payables, and personal notes securely in one place.">
+<meta property="og:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Digital NoteBook">
+<meta name="twitter:description" content="Digital notebook and transaction management application.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
+
+<meta name="description" content="Digital notebook and transaction management application.">
+<meta name="author" content="Kamal GC">
+<meta name="theme-color" content="#090d16">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -132,17 +158,6 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- PIN SECURITY MODAL (गोलो लगाएको सेटअप भाग हटाइएको छ) -->
-<div id="pin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-40 flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center space-y-4 border border-slate-200 dark:border-slate-800">
-        <div class="text-3xl">🔒</div>
-        <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Enter Security PIN</h3>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400">Please enter your 4-digit PIN to continue.</p>
-        <input type="password" id="login-pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
-        <button onclick="verifyLoginPin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-lg shadow-indigo-600/20 active:scale-95">Login</button>
-    </div>
-</div>
-
 <!-- TOAST NOTIFICATION -->
 <div id="toast-notification" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2 rounded-xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
     <span id="toast-message">Message</span>
@@ -182,6 +197,7 @@ tailwind.config = {
 
             <nav class="space-y-1 font-medium">
                 <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
@@ -191,6 +207,10 @@ tailwind.config = {
                 <div>
                     <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="इमेल">Email</span></label>
+                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
@@ -418,26 +438,6 @@ tailwind.config = {
         }, 2000);
     }
 
-    // PIN Authentication Logic (केबल लगइन मात्र गर्ने, सेटअप account.html मा हुने)
-    function verifyLoginPin() {
-        const enteredPin = document.getElementById('login-pin-input').value;
-        const savedPin = localStorage.getItem('app_pin');
-
-        if (!savedPin) {
-            showToast('No PIN set yet! Please set a PIN in account page.');
-            document.getElementById('pin-modal').style.display = 'none';
-            return;
-        }
-
-        if (enteredPin === savedPin) {
-            showToast('Login successful!');
-            document.getElementById('pin-modal').style.display = 'none';
-        } else {
-            showToast('Incorrect PIN! Please try again.');
-            document.getElementById('login-pin-input').value = '';
-        }
-    }
-
     // Onboarding & Language Tour Data
     const translations = {
         en: {
@@ -619,8 +619,25 @@ tailwind.config = {
         if(document.getElementById('summary-payable')) document.getElementById('summary-payable').innerText = `Rs ${totalPayable.toLocaleString()}`;
     }
 
+    window.addEventListener('pageshow', (event) => {
+        updateSummaryCards();
+    });
+
+    window.addEventListener('focus', () => {
+        updateSummaryCards();
+    });
+
+    window.addEventListener('storage', (event) => {
+        updateSummaryCards();
+    });
+
+    window.addEventListener('dataUpdated', () => {
+        updateSummaryCards();
+    });
+
     function saveProfileDetails() {
         const name = document.getElementById('input-full-name').value;
+        const email = document.getElementById('input-email').value;
         const address = document.getElementById('input-address').value;
         const mobile = document.getElementById('input-mobile').value;
 
@@ -628,6 +645,7 @@ tailwind.config = {
             localStorage.setItem('profile_name', name);
             localStorage.setItem('user_profile_name', name);
         }
+        localStorage.setItem('profile_email', email);
         localStorage.setItem('profile_address', address);
         localStorage.setItem('profile_mobile', mobile);
 
@@ -638,10 +656,12 @@ tailwind.config = {
 
     function loadUserData() {
         const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
+        const savedEmail = localStorage.getItem('profile_email') || '';
         const savedAddress = localStorage.getItem('profile_address') || '';
         const savedMobile = localStorage.getItem('profile_mobile') || '';
 
         if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
+        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
         if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
         if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
 
@@ -672,7 +692,6 @@ tailwind.config = {
         });
     }
 
-    // Splash Screen & Initialization Flow
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
         updateThemeUI();
@@ -681,7 +700,6 @@ tailwind.config = {
         loadAvatar();
         updateSummaryCards();
 
-        // Splash screen typing effect & progress
         const text = "DIGITAL NOTEBOOK";
         const typingElement = document.getElementById("typing-title");
         const progressBar = document.getElementById("progress-bar");
@@ -710,12 +728,6 @@ tailwind.config = {
         }, 40);
 
         setTimeout(typeWriter, 200);
-
-        // Check PIN / Onboarding Tour
-        if (localStorage.getItem('app_pin')) {
-            document.getElementById('pin-modal').style.display = 'flex';
-            document.getElementById('login-pin-input').focus();
-        }
     });
 
     function dismissSplash() {
@@ -841,7 +853,7 @@ tailwind.config = {
             overlay.classList.add('hidden');
             overlay.style.removeProperty('opacity');
         }, 500);
-        localStorage.setItem('hasSeenTour', 'true');
+        localStorage.hasSeenTour = 'true';
     }
 </script>
 </body>
