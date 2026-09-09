@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Digital NoteBook - Income Sources</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Poppins', 'sans-serif'],
+            }
+        }
+    }
+}
+</script>
+<script>
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+    } else {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+<div class="flex min-h-screen w-full">
+    
+    <!-- SIDEBAR SECTION -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+        
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                        Digital NoteBook
+                    </h1>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">
+                ✕
+            </button>
+        </div>
+
+        <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
+                <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
+                    <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                <div>
+                    <h3 id="sidebar-profile-name" class="text-white font-bold text-sm"></h3>
+                    <p class="text-[10px] text-slate-400"><span class="lang-text" data-en="Click icon to set photo" data-np="फोटो राख्न क्लिक गर्नुहोस्">Click icon to set photo</span></p>
+                </div>
+            </div>
+
+            <!-- SIDEBAR NAVIGATION -->
+            <nav class="space-y-1 font-medium">
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
+                <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>💰</span> <span class="lang-text" data-en="Income Sources" data-np="आम्दानी स्रोतहरू">Income Sources</span></a>
+            </nav>
+
+            <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
+                <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                </h3>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
+                    <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
+                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
+                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
+                    <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col h-full w-full overflow-hidden">
+        
+        <!-- HEADER SECTION (Navbar) -->
+        <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+            <div class="flex items-center space-x-2.5">
+                <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                    <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                        Digital NoteBook
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition">ENG</button>
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
+                <div class="relative cursor-pointer" onclick="toggleSidebar()">
+                    <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="p-4 space-y-4 flex-1 w-full max-w-2xl mx-auto overflow-y-auto">
+            <div>
+                <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
+                <h2 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wallet text-emerald-500"></i> <span class="lang-text" data-en="Income Sources Manager" data-np="आम्दानी स्रोत व्यवस्थापक">Income Sources Manager</span>
+                </h2>
+            </div>
+
+            <!-- INCOME FORM SECTION -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 space-y-3">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-emerald-500"></i> <span class="lang-text" data-en="Add Income Source Form" data-np="आम्दानी स्रोत थप्ने फारम">Add Income Source Form</span>
+                </h3>
+
+                <form id="income-form" onsubmit="saveIncome(event)" class="space-y-3">
+                    <input type="hidden" id="edit-income-index" value="">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1"><span class="lang-text" data-en="Income Source Name" data-np="आम्दानी स्रोतको नाम">Income Source Name</span></label>
+                            <input type="text" id="income-source-name" placeholder="e.g. Salary, Business" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1"><span class="lang-text" data-en="Date" data-np="मिति">Date</span></label>
+                            <input type="date" id="income-date" required class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1"><span class="lang-text" data-en="Amount (NPR / INR)" data-np="रकम (नेरु / भारु)">Amount (NPR / INR)</span></label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" step="any" id="income-amount-npr" oninput="calculateIncomeTotal()" placeholder="NPR (Rs)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                                <input type="number" step="any" id="income-amount-inr" oninput="calculateIncomeTotal()" placeholder="INR (₹)" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1"><span class="lang-text" data-en="Total Amount (NPR)" data-np="जम्मा रकम (नेरु)">Total Amount (NPR)</span></label>
+                            <input type="text" id="income-total-calc" readonly placeholder="Total in NPR" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs outline-none font-bold">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" id="income-cancel-btn" onclick="resetIncomeForm()" class="hidden w-1/3 bg-slate-500 text-white p-2.5 rounded-xl text-xs font-semibold"><span class="lang-text" data-en="Cancel" data-np="रद्द गर्नुहोस्">Cancel</span></button>
+                        <button type="submit" id="income-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition shadow-md"><span class="lang-text" data-en="Save Income Record" data-np="आम्दानी रेकर्ड सेभ गर्नुहोस्">Save Income Record</span></button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SAVED TRANSACTIONS / INCOME GROUPED LIST SECTION -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list text-emerald-500"></i> <span class="lang-text" data-en="Grouped Income Ledger" data-np="समूहकृत आम्दानी खाता">Grouped Income Ledger</span>
+                    </h3>
+                    <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print / PDF</button>
+                </div>
+
+                <!-- SEARCH & SORT CONTROLS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-search"></i></span>
+                        <input type="text" id="search-income" oninput="renderIncomes()" placeholder="Search source name..." class="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs outline-none">
+                    </div>
+                    <div>
+                        <select id="sort-income" onchange="renderIncomes()" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs outline-none">
+                            <option value="name">Sort by Name (A-Z)</option>
+                            <option value="total_desc">Highest Total Amount</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="income-list-container" class="space-y-2 pt-1 max-h-80 overflow-y-auto">
+                    <!-- Grouped Records Will Show Here -->
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs font-bold">
+                    <span><span class="lang-text" data-en="Grand Total Income:" data-np="कुल जम्मा आम्दानी:">Grand Total Income:</span></span>
+                    <span id="income-table-total" class="text-emerald-500 text-sm">Rs 0.00</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.toggle('-translate-x-full');
+    }
+
+    let currentLang = localStorage.getItem('lang') || 'EN';
+
+    function updateLanguageUI() {
+        const btn = document.getElementById('lang-toggle-btn');
+        if(btn) btn.innerText = currentLang;
+
+        document.querySelectorAll('.lang-text').forEach(el => {
+            const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
+            if(text) el.innerText = text;
+        });
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'EN' ? 'NEP' : 'EN';
+        localStorage.setItem('lang', currentLang);
+        updateLanguageUI();
+        updateDynamicHeader();
+        renderIncomes();
+    }
+
+    function updateThemeUI() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const themeBtn = document.getElementById('theme-toggle-btn');
+        if(themeBtn) themeBtn.innerText = isDark ? '🌛' : '🌞';
+    }
+
+    function toggleTheme() {
+        const htmlEl = document.documentElement;
+        if (htmlEl.classList.contains('dark')) {
+            htmlEl.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            htmlEl.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+        updateThemeUI();
+    }
+
+    function updateDynamicHeader() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = now.toLocaleDateString(currentLang === 'NEP' ? 'ne-NP' : 'en-US', options).toUpperCase();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+
+        const dateEl = document.getElementById('dynamic-date');
+        if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
+    }
+
+    setInterval(updateDynamicHeader, 1000);
+
+    function loadUserData() {
+        const savedName = localStorage.getItem('profile_name') || '';
+        const savedAddress = localStorage.getItem('profile_address') || '';
+        const savedMobile = localStorage.getItem('profile_mobile') || '';
+
+        if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
+        if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
+        if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+
+        const nameEl = document.getElementById('sidebar-profile-name');
+        if(nameEl) nameEl.innerText = savedName;
+    }
+
+    function saveProfileDetails() {
+        const name = document.getElementById('input-full-name').value;
+        const address = document.getElementById('input-address').value;
+        const mobile = document.getElementById('input-mobile').value;
+
+        if(name) localStorage.setItem('profile_name', name);
+        localStorage.setItem('profile_address', address);
+        localStorage.setItem('profile_mobile', mobile);
+
+        loadUserData();
+        showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
+    }
+
+    function handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                localStorage.setItem('profile_avatar', base64Image);
+                loadAvatar();
+                showToast(currentLang === 'NEP' ? 'प्रोफाइल फोटो अपडेट भयो!' : 'Profile photo updated!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function loadAvatar() {
+        const savedImage = localStorage.getItem('profile_avatar') || 'N1024.png';
+        ['sidebar-avatar-img', 'header-avatar-img'].forEach(id => {
+            const img = document.getElementById(id);
+            if(img) img.src = savedImage;
+        });
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        toast.className = `${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    const INR_RATE = 1.6;
+
+    function calculateIncomeTotal() {
+        const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
+        const total = npr + (inr * INR_RATE);
+        document.getElementById('income-total-calc').value = total.toFixed(2);
+    }
+
+    function saveIncome(event) {
+        event.preventDefault();
+        const index = document.getElementById('edit-income-index').value;
+        const sourceName = document.getElementById('income-source-name').value.trim();
+        const date = document.getElementById('income-date').value;
+        const npr = parseFloat(document.getElementById('income-amount-npr').value) || 0;
+        const inr = parseFloat(document.getElementById('income-amount-inr').value) || 0;
+        const total = parseFloat(document.getElementById('income-total-calc').value) || 0;
+
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        const item = { sourceName, date, npr, inr, total };
+
+        if (index === "") {
+            incomes.unshift(item);
+            showToast('आम्दानी सफलतापूर्वक सेभ भयो!', 'success');
+        } else {
+            incomes[index] = item;
+            showToast('आम्दानी रेकर्ड अपडेट भयो!', 'success');
+        }
+
+        localStorage.setItem('digital_notebook_incomes', JSON.stringify(incomes));
+        resetIncomeForm();
+        renderIncomes();
+    }
+
+    function resetIncomeForm() {
+        document.getElementById('income-form').reset();
+        document.getElementById('edit-income-index').value = "";
+        document.getElementById('income-submit-btn').innerText = currentLang === 'NEP' ? 'आम्दानी रेकर्ड सेभ गर्नुहोस्' : 'Save Income Record';
+        document.getElementById('income-cancel-btn').classList.add('hidden');
+        document.getElementById('income-date').valueAsDate = new Date();
+        calculateIncomeTotal();
+    }
+
+    function renderIncomes() {
+        const container = document.getElementById('income-list-container');
+        const totalContainer = document.getElementById('income-table-total');
+        const searchQuery = document.getElementById('search-income').value.toLowerCase();
+        const sortOption = document.getElementById('sort-income').value;
+        if(!container) return;
+
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        container.innerHTML = '';
+
+        if (incomes.length === 0) {
+            container.innerHTML = `<p class="text-slate-400 text-center py-3">कुनै आम्दानी रेकर्ड फेला परेन।</p>`;
+            if(totalContainer) totalContainer.innerText = 'Rs 0.00';
+            return;
+        }
+
+        let grouped = {};
+        incomes.forEach((inc, originalIdx) => {
+            let key = inc.sourceName.trim();
+            let matchedKey = Object.keys(grouped).find(k => k.toLowerCase() === key.toLowerCase()) || key;
+            
+            if (!grouped[matchedKey]) {
+                grouped[matchedKey] = {
+                    name: matchedKey,
+                    total: 0,
+                    items: []
+                };
+            }
+            grouped[matchedKey].total += inc.total;
+            grouped[matchedKey].items.push({ ...inc, originalIdx });
+        });
+
+        let groupArray = Object.values(grouped);
+
+        if (searchQuery) {
+            groupArray = groupArray.filter(g => g.name.toLowerCase().includes(searchQuery));
+        }
+
+        if (sortOption === 'name') {
+            groupArray.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortOption === 'total_desc') {
+            groupArray.sort((a, b) => b.total - a.total);
+        }
+
+        let grandTotal = 0;
+
+        groupArray.forEach((group, gIdx) => {
+            grandTotal += group.total;
+
+            const groupDiv = document.createElement('div');
+            groupDiv.className = "bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 rounded-xl overflow-hidden mb-2";
+
+            let headerHtml = `
+                <div class="flex justify-between items-center p-3 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-800/80 transition" onclick="toggleGroupLedger('${gIdx}')">
+                    <div class="flex items-center gap-2">
+                        <i id="icon-${gIdx}" class="fa-solid fa-chevron-right text-[10px] text-slate-400 transition-transform"></i>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-xs">${group.name}</h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">${group.items.length} records</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-emerald-500 text-xs">Rs ${group.total.toFixed(2)}</span>
+                </div>
+            `;
+
+            let detailsHtml = `<div id="ledger-${gIdx}" class="hidden border-t border-slate-200 dark:border-slate-700/60 divide-y divide-slate-200 dark:divide-slate-700/40 bg-white dark:bg-slate-900/50 p-2 space-y-1.5">`;
+            
+            group.items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            group.items.forEach(item => {
+                detailsHtml += `
+                    <div class="flex justify-between items-center py-1.5 px-2 text-[11px]">
+                        <div>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">${item.date}</span>
+                            <span class="text-slate-400 text-[10px] ml-2">NPR: ${item.npr} | INR: ${item.inr}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-emerald-500">Rs ${item.total.toFixed(2)}</span>
+                            <button onclick="event.stopPropagation(); editIncome(${item.originalIdx})" class="text-blue-500 hover:text-blue-600"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="event.stopPropagation(); deleteIncome(${item.originalIdx})" class="text-rose-500 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            detailsHtml += `</div>`;
+            groupDiv.innerHTML = headerHtml + detailsHtml;
+            container.appendChild(groupDiv);
+        });
+
+        if(totalContainer) totalContainer.innerText = `Rs ${grandTotal.toFixed(2)}`;
+    }
+
+    function toggleGroupLedger(gIdx) {
+        const ledger = document.getElementById(`ledger-${gIdx}`);
+        const icon = document.getElementById(`icon-${gIdx}`);
+        if(ledger.classList.contains('hidden')) {
+            ledger.classList.remove('hidden');
+            icon.classList.add('rotate-90');
+        } else {
+            ledger.classList.add('hidden');
+            icon.classList.remove('rotate-90');
+        }
+    }
+
+    function editIncome(idx) {
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        const inc = incomes[idx];
+        if(!inc) return;
+
+        document.getElementById('edit-income-index').value = idx;
+        document.getElementById('income-source-name').value = inc.sourceName;
+        document.getElementById('income-date').value = inc.date;
+        document.getElementById('income-amount-npr').value = inc.npr;
+        document.getElementById('income-amount-inr').value = inc.inr;
+        document.getElementById('income-total-calc').value = inc.total;
+
+        document.getElementById('income-submit-btn').innerText = currentLang === 'NEP' ? 'अपडेट गर्नुहोस्' : 'Update Income';
+        document.getElementById('income-cancel-btn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteIncome(idx) {
+        if(confirm('के तपाईं यो आम्दानी रेकर्ड हटाउन निश्चित हुनुहुन्छ?')) {
+            let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+            incomes.splice(idx, 1);
+            localStorage.setItem('digital_notebook_incomes', JSON.stringify(incomes));
+            renderIncomes();
+            showToast('आम्दानी रेकर्ड हटाइयो!', 'success');
+        }
+    }
+
+    function printIncomePDF() {
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        if(incomes.length === 0) {
+            showToast('प्रिन्ट गर्न कुनै डाटा छैन!', 'error');
+            return;
+        }
+
+        let printWindow = window.open('', '_blank');
+        let html = `<html><head><title>Income Report</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f2f2f2;}</style></head><body><h2>Digital NoteBook - Income Report</h2><table><tr><th>Date</th><th>Source Name</th><th>NPR</th><th>INR</th><th>Total (NPR)</th></tr>`;
+        let sum = 0;
+        incomes.forEach(i => {
+            sum += i.total;
+            html += `<tr><td>${i.date}</td><td>${i.sourceName}</td><td>${i.npr}</td><td>${i.inr}</td><td>Rs ${i.total.toFixed(2)}</td></tr>`;
+        });
+        html += `</table><h3>Total Income: Rs ${sum.toFixed(2)}</h3></body></html>`;
+        
+        printWindow.document.write(html);
+        printWindow.document.close();
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateLanguageUI();
+        updateThemeUI();
+        updateDynamicHeader();
+        loadUserData();
+        loadAvatar();
+        renderIncomes();
+        const dateInput = document.getElementById('income-date');
+        if(dateInput && !dateInput.value) {
+            dateInput.valueAsDate = new Date();
+        }
+    });
+</script>
+</body>
+</html>
