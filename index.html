@@ -103,7 +103,7 @@ tailwind.config = {
             <div class="relative">
                 <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 opacity-75 blur-sm animate-spin-slow"></div>
                 <div class="relative w-20 h-20 rounded-full bg-slate-900/90 border-2 border-emerald-500/60 p-2 shadow-2xl flex items-center justify-center backdrop-blur-md overflow-hidden">
-                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full" onerror="this.src='https://via.placeholder.com/150'">
                 </div>
             </div>
         </div>
@@ -132,7 +132,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- PIN SECURITY MODAL -->
+<!-- PIN SECURITY MODAL (गोलो लगाएको सेटअप भाग हटाइएको छ) -->
 <div id="pin-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-40 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center space-y-4 border border-slate-200 dark:border-slate-800">
         <div class="text-3xl">🔒</div>
@@ -140,13 +140,6 @@ tailwind.config = {
         <p class="text-[11px] text-slate-500 dark:text-slate-400">Please enter your 4-digit PIN to continue.</p>
         <input type="password" id="login-pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
         <button onclick="verifyLoginPin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-lg shadow-indigo-600/20 active:scale-95">Login</button>
-        <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
-            <p class="text-[10px] text-slate-400 mb-1">First time? Set a PIN (e.g., 1234):</p>
-            <div class="flex gap-2">
-                <input type="password" id="setup-pin-input" maxlength="4" placeholder="New PIN" class="w-full text-center border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-xs outline-none">
-                <button onclick="savePin()" class="bg-slate-800 hover:bg-slate-700 text-indigo-400 font-medium px-3 py-2 rounded-lg text-xs border border-slate-700 transition">Save</button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -162,7 +155,7 @@ tailwind.config = {
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
-                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                 </div>
                 <div>
                     <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-teal-400">
@@ -177,7 +170,7 @@ tailwind.config = {
             <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
                 <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
                     <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                 </div>
                 <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
@@ -189,7 +182,6 @@ tailwind.config = {
 
             <nav class="space-y-1 font-medium">
                 <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <!-- QR Scan link removed from sidebar as requested -->
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
@@ -237,7 +229,7 @@ tailwind.config = {
                 <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
                 <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                     <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
                         Digital NoteBook
@@ -250,7 +242,7 @@ tailwind.config = {
                 <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
                 <div class="relative cursor-pointer" onclick="toggleSidebar()">
                     <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                 </div>
             </div>
@@ -266,7 +258,7 @@ tailwind.config = {
                 </div>
                 <a href="qrscan.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition">
                     <div class="w-12 h-12 bg-white flex items-center justify-center p-0.5 rounded">
-                        <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain">
+                        <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                     <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="क्यूआर स्क्यान">QR Scan</span></span>
                 </a>
@@ -426,24 +418,14 @@ tailwind.config = {
         }, 2000);
     }
 
-    // PIN Authentication Logic
-    function savePin() {
-        const pin = document.getElementById('setup-pin-input').value;
-        if (pin.length === 4) {
-            localStorage.setItem('app_pin', pin);
-            document.getElementById('setup-pin-input').value = '';
-            showToast('PIN saved successfully! Now you can login.');
-        } else {
-            showToast('Please enter a 4-digit PIN.');
-        }
-    }
-
+    // PIN Authentication Logic (केबल लगइन मात्र गर्ने, सेटअप account.html मा हुने)
     function verifyLoginPin() {
         const enteredPin = document.getElementById('login-pin-input').value;
         const savedPin = localStorage.getItem('app_pin');
 
         if (!savedPin) {
-            showToast('No PIN set yet! Please set a PIN below first.');
+            showToast('No PIN set yet! Please set a PIN in account page.');
+            document.getElementById('pin-modal').style.display = 'none';
             return;
         }
 
@@ -579,7 +561,6 @@ tailwind.config = {
             greetingText = currentLang === 'np' ? 'शुभ साँझ' : 'Good evening';
         }
 
-        // Updated default name fallback to avoid hardcoded placeholder names impacting users
         const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
         const greetingEl = document.getElementById('dynamic-greeting');
         if (greetingEl) {
@@ -743,7 +724,6 @@ tailwind.config = {
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.remove();
-                // Trigger language modal or tour if first time
                 if (!localStorage.getItem('hasSeenTour')) {
                     if (!localStorage.getItem('userLang')) {
                         document.getElementById('language-modal').classList.remove('hidden');
@@ -841,11 +821,10 @@ tailwind.config = {
 
     function nextStep() {
         const t = translations[currentLang];
-        if (currentStep < t.steps.length - 1) {
+        if (currentStep < t.steps.length - 1)
             currentStep++;
-        } else {
+        else
             endTour();
-        }
     }
 
     function prevStep() {
