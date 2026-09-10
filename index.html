@@ -272,17 +272,7 @@ tailwind.config = {
 
     let currentUser = null;
 
-    // Firebase Auth State & Redirect Result Handling
-    firebase.auth().getRedirectResult().then((result) => {
-        if (result.user) {
-            showToast("लगइन सफल भयो!");
-            document.getElementById('login-overlay').classList.add('hidden');
-        }
-    }).catch((error) => {
-        console.error("Redirect Auth Error:", error);
-        showToast("लगइन असफल: " + error.message);
-    });
-
+    // Firebase Auth State Listener
     firebase.auth().onAuthStateChanged((user) => {
         currentUser = user;
         const loginOverlay = document.getElementById('login-overlay');
@@ -308,11 +298,16 @@ tailwind.config = {
 
     function handleGoogleAuth() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        // Mobile-friendly redirect method to avoid 'The requested action is invalid' errors caused by pop-up blockers
-        firebase.auth().signInWithRedirect(provider).catch((error) => {
-            console.error("Auth Error:", error);
-            showToast("लगइन असफल: " + error.message);
-        });
+        // Popup विधि प्रयोग गरिएको जसले मोबाइल र ल्यापटप दुवैमा काम गर्छ र "The requested action is invalid" एरर आउँदैन
+        firebase.auth().signInWithPopup(provider)
+            .then((result) => {
+                showToast("लगइन सफल भयो!");
+                document.getElementById('login-overlay').classList.add('hidden');
+            })
+            .catch((error) => {
+                console.error("Auth Error:", error);
+                showToast("लगइन असफल: " + error.message);
+            });
     }
 
     function logoutUser() {
