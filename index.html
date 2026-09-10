@@ -228,14 +228,6 @@ tailwind.config = {
                 <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full transition-all duration-100" style="width: 0%;"></div>
             </div>
         </div>
-        <div id="enter-container" class="pt-2 opacity-0 transition-opacity duration-500 pointer-events-none">
-            <button onclick="dismissSplash()" class="group relative px-6 py-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                <span class="relative z-10 flex items-center gap-2">
-                    ACCESS NOTEBOOK 
-                    <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </span>
-            </button>
-        </div>
     </div>
 </div>
 
@@ -490,7 +482,6 @@ tailwind.config = {
             return;
         }
 
-        // Password validation: Minimum 6 chars, at least one uppercase, one lowercase, one number, one special character
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
         if (!passwordRegex.test(password)) {
             showToast("Password must be at least 6 chars with uppercase, lowercase, number & special char (@$!%*?&).");
@@ -499,7 +490,6 @@ tailwind.config = {
 
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Sign out immediately so user can log in explicitly with the new credentials
                 signOut(auth).then(() => {
                     showToast("Account successfully created! Please login with your credentials.");
                     document.getElementById('auth-password').value = '';
@@ -617,6 +607,10 @@ tailwind.config = {
             lockScreen.classList.remove('hidden');
             if (window.PublicKeyCredential) {
                 document.getElementById('biometric-container').classList.remove('hidden');
+                // Automatically attempt biometric prompt on load if supported
+                setTimeout(() => {
+                    triggerBiometricAuth();
+                }, 500);
             }
         } else {
             lockScreen.classList.add('hidden');
@@ -632,6 +626,7 @@ tailwind.config = {
         localStorage.setItem('user_security_pin', pinInput);
         showToast("6-digit PIN successfully saved!");
         document.getElementById('input-security-pin').value = "";
+        checkSecurityLock();
     }
 
     window.pressPinKey = function(digit) {
@@ -684,31 +679,55 @@ tailwind.config = {
     }
 
     window.triggerBiometricAuth = async function() {
-        if (window.PublicKeyCredential) {
-            try {
-                const publicKey = {
-                    challenge: new Uint8Array(32),
-                    rp: { name: "Digital NoteBook" },
-                    user: {
-                        id: new Uint8Array(16),
-                        name: "user@notebook.com",
-                        displayName: "Notebook User"
-                    },
-                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                    timeout: 60000,
-                    authenticatorSelection: { authenticatorAttachment: "platform" },
-                    attestation: "none"
-                };
-                await navigator.credentials.create({ publicKey });
-                showToast("Biometric Verified!");
-                document.getElementById('security-lock-screen').classList.add('hidden');
-            } catch (error) {
-                showToast("Biometric verification simulated/failed. Use PIN.");
+        try {
+            if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                if (available) {
+                    const publicKey = {
+                        challenge: new Uint8Array(32),
+                        rp: { name: "Digital NoteBook" },
+                        user: {
+                            id: new Uint8Array(16),
+                            name: "user@notebook.com",
+                            displayName: "Notebook User"
+                        },
+                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                        timeout: 60000,
+                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                        attestation: "none"
+                    };
+                    await navigator.credentials.create({ publicKey });
+                    showToast("Biometric Verified Successfully!");
+                    document.getElementById('security-lock-screen').classList.add('hidden');
+                    return;
+                }
             }
-        } else {
-            showToast("Biometric not supported on this browser.");
+            // Fallback web authentication check or standard prompt simulation if standard API resolves
+            const credential = await navigator.credentials.get({
+                publicKey: {
+                    challenge: new Uint8Array(32),
+                    timeout: 60000,
+                    userVerification: "required"
+                }
+            }).catch(() => null);
+
+            if (credential) {
+                showToast("Biometric Verified Successfully!");
+                document.getElementById('security-lock-screen').classList.add('hidden');
+            } else {
+                showToast("Please use your 6-digit PIN.");
+            }
+        } catch (error) {
+            showToast("Please enter your 6-digit PIN.");
         }
     }
+
+    // Trigger lock screen check when app regains focus or visibility
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            checkSecurityLock();
+        }
+    });
 
     // Onboarding & Language Tour Data
     const translations = {
@@ -977,7 +996,6 @@ tailwind.config = {
         const typingElement = document.getElementById("typing-title");
         const progressBar = document.getElementById("progress-bar");
         const loadPercent = document.getElementById("load-percent");
-        const enterContainer = document.getElementById("enter-container");
 
         let i = 0;
         function typeWriter() {
@@ -990,15 +1008,17 @@ tailwind.config = {
 
         let progress = 0;
         const loadingInterval = setInterval(() => {
-            progress += Math.floor(Math.random() * 8) + 3;
+            progress += 2; // Increments to hit 100% within ~5 seconds (50 steps * 100ms)
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                enterContainer.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    dismissSplash();
+                }, 400);
             }
             progressBar.style.width = progress + '%';
             loadPercent.textContent = progress + '%';
-        }, 40);
+        }, 100);
 
         setTimeout(typeWriter, 200);
     });
@@ -1124,9 +1144,9 @@ tailwind.config = {
         overlay.style.opacity = '0';
         setTimeout(() => {
             overlay.classList.add('hidden');
-            overlay.style.removeProperty('opacity');
+            overlay.style.opacity = '1';
         }, 500);
-        localStorage.hasSeenTour = 'true';
+        localStorage.setItem('hasSeenTour', 'true');
     }
 </script>
 </body>
