@@ -91,27 +91,6 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- 3. ONBOARDING TOUR OVERLAY -->
-<div id="onboarding-overlay" class="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs hidden transition-opacity duration-500">
-    <div id="spotlight-box" class="absolute transition-all duration-500 ease-in-out rounded-2xl ring-4 ring-emerald-500 ring-offset-4 ring-offset-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.5)] pointer-events-none">
-        <div class="absolute -inset-2 rounded-full border border-emerald-500/30 animate-pulse-slow"></div>
-    </div>
-    <div id="tour-card" class="absolute z-50 w-80 bg-slate-900 border border-emerald-500/30 rounded-xl p-5 text-white shadow-2xl transition-all duration-500 ease-in-out opacity-0 scale-95">
-        <div class="flex justify-between items-center mb-2">
-            <span id="tour-step-indicator" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20"></span>
-            <button onclick="endTour()" id="skip-text" class="text-slate-400 hover:text-white text-xs font-mono transition-colors">Skip ✕</button>
-        </div>
-        <div id="tour-content" class="transition-opacity duration-300 delay-100">
-            <h3 id="tour-title" class="text-sm font-bold text-emerald-300 mb-1"></h3>
-            <p id="tour-desc" class="text-xs text-slate-300 leading-relaxed mb-5"></p>
-        </div>
-        <div class="flex justify-between items-center border-t border-slate-800 pt-4">
-            <button id="prev-btn" onclick="prevStep()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed">Previous</button>
-            <button id="next-btn" onclick="nextStep()" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs font-mono transition-all duration-300 shadow-lg shadow-emerald-500/20">Next</button>
-        </div>
-    </div>
-</div>
-
 <!-- WELCOME SPLASH SCREEN -->
 <div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700 overflow-hidden select-none">
     <div class="absolute inset-0 bg-[linear-gradient(to_right,#065f4615_1px,transparent_1px),linear-gradient(to_bottom,#065f4615_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none"></div>
@@ -293,6 +272,17 @@ tailwind.config = {
 
     let currentUser = null;
 
+    // Firebase Auth State & Redirect Result Handling
+    firebase.auth().getRedirectResult().then((result) => {
+        if (result.user) {
+            showToast("लगइन सफल भयो!");
+            document.getElementById('login-overlay').classList.add('hidden');
+        }
+    }).catch((error) => {
+        console.error("Redirect Auth Error:", error);
+        showToast("लगइन असफल: " + error.message);
+    });
+
     firebase.auth().onAuthStateChanged((user) => {
         currentUser = user;
         const loginOverlay = document.getElementById('login-overlay');
@@ -309,7 +299,6 @@ tailwind.config = {
             if(sidebarAvatar && user.photoURL) sidebarAvatar.src = user.photoURL;
             if(headerAvatar && user.photoURL) headerAvatar.src = user.photoURL;
         } else {
-            // यदि स्प्लैश स्क्रीन हटिसकेको छ भने मात्र लगइन ओभरले देखाउने
             const splash = document.getElementById('splash-screen');
             if(!splash && loginOverlay) {
                 loginOverlay.classList.remove('hidden');
@@ -319,14 +308,11 @@ tailwind.config = {
 
     function handleGoogleAuth() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider)
-            .then((result) => {
-                showToast("लगइन सफल भयो!");
-                document.getElementById('login-overlay').classList.add('hidden');
-            })
-            .catch((error) => {
-                showToast("लगइन असफल: " + error.message);
-            });
+        // Mobile-friendly redirect method to avoid 'The requested action is invalid' errors caused by pop-up blockers
+        firebase.auth().signInWithRedirect(provider).catch((error) => {
+            console.error("Auth Error:", error);
+            showToast("लगइन असफल: " + error.message);
+        });
     }
 
     function logoutUser() {
@@ -350,40 +336,15 @@ tailwind.config = {
     const translations = {
         en: {
             welcomeTitle: "Welcome to Digital Notebook!",
-            welcomeSub: "Glad to have you here. Let's explore your dashboard.",
-            skip: "Skip ✕",
-            prev: "Previous",
-            next: "Next",
-            finish: "Finish",
-            steps: [
-                {
-                    targetSelector: '#top-controls-area',
-                    title: "Language & Theme Control",
-                    desc: "Choose your preferred language (EN/NP), toggle themes, and manage your profile controls here.",
-                    position: "bottom"
-                }
-            ]
+            welcomeSub: "Glad to have you here. Let's explore your dashboard."
         },
         np: {
             welcomeTitle: "Digital Notebook मा स्वागत छ!",
-            welcomeSub: "तपाईंलाई यहाँ स्वागत गर्न पाउँदा खुसी लाग्यो।",
-            skip: "छोड्नुहोस् ✕",
-            prev: "पछाडि",
-            next: "पछिल्लो",
-            finish: "सकियो",
-            steps: [
-                {
-                    targetSelector: '#top-controls-area',
-                    title: "भाषा र थिम कन्ट्रोल",
-                    desc: "तपाईंलाई मनपर्ने भाषा (EN/NP) छान्नुहोस्, थिम परिवर्तन गर्नुहोस्।",
-                    position: "bottom"
-                }
-            ]
+            welcomeSub: "तपाईंलाई यहाँ स्वागत गर्न पाउँदा खुसी लाग्यो।"
         }
     };
 
     let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'np';
-    let currentStep = 0;
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
@@ -494,15 +455,12 @@ tailwind.config = {
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.remove();
-                // स्प्लैश सकिएपछि लगइन चेक गर्ने
                 if (!currentUser) {
                     document.getElementById('login-overlay').classList.remove('hidden');
-                } else if (!localStorage.getItem('hasSeenTour')) {
-                    if (!localStorage.getItem('userLang')) {
-                        document.getElementById('language-modal').classList.remove('hidden');
-                    } else {
-                        showWelcomeMessage();
-                    }
+                } else if (!localStorage.getItem('userLang')) {
+                    document.getElementById('language-modal').classList.remove('hidden');
+                } else {
+                    showWelcomeMessage();
                 }
             }, 700);
         }
