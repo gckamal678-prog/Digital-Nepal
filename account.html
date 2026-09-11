@@ -52,7 +52,7 @@ tailwind.config = {
             <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
         </h3>
         <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
-            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन वा फिंगरप्रिन्ट प्रयोग गर्नुहोस्:
+            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन प्रयोग गर्नुहोस्:
         </p>
         <div class="space-y-3">
             <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
@@ -62,9 +62,6 @@ tailwind.config = {
                     <i id="reset-eye-icon" class="fa-solid fa-eye"></i>
                 </button>
             </div>
-            <button onclick="authenticateFingerprintForReset()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2">
-                <i class="fa-solid fa-fingerprint"></i> <span class="lang-text" data-en="Use Fingerprint Verification" data-np="फिंगरप्रिन्ट प्रमाणीकरण प्रयोग गर्नुहोस्">Use Fingerprint Verification</span>
-            </button>
         </div>
         <div class="flex gap-2 justify-end pt-2">
             <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl" data-i18n="btn_no">No</button>
@@ -162,7 +159,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 2. SECURITY & LOCK SETTINGS -->
+            <!-- 2. SECURITY & LOCK SETTINGS (PIN LOCK ONLY) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
                 <h3 class="text-sm font-bold flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span class="lang-text" data-en="Security & Lock Settings" data-np="सुरक्षा र लक सेटिंग्स">Security & Lock Settings</span>
@@ -188,17 +185,6 @@ tailwind.config = {
                             </div>
                             <button onclick="saveAppPin()" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"><span class="lang-text" data-en="Save PIN" data-np="पिन सेभ गर्नुहोस्">Save PIN</span></button>
                         </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-fingerprint text-indigo-500"></i> <span class="lang-text" data-en="Biometric / Fingerprint Unlock" data-np="बायोमेट्रिक / फिंगरप्रिन्ट अनलक">Biometric / Fingerprint Unlock</span></h4>
-                            <p class="text-[10px] text-slate-400"><span class="lang-text" data-en="Use device biometrics for security" data-np="फिंगरप्रिन्ट प्रयोग गर्नुहोस्">Use device biometrics for security</span></p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="fingerprint-toggle" onchange="toggleFingerprintSetting(this)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-300 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -390,7 +376,6 @@ tailwind.config = {
         document.getElementById('delete-form-box').classList.toggle('hidden');
     }
 
-    // Unique Device ID generator to prevent profile collision across different phones
     function getDeviceUniqueId() {
         let devId = localStorage.getItem('device_unique_identifier');
         if (!devId) {
@@ -475,7 +460,6 @@ tailwind.config = {
 
         const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
         user.reauthenticateWithCredential(credential).then(() => {
-            // Optional EmailJS notification (Handled safely if configured)
             try {
                 emailjs.send("service_id", "template_id", {
                     to_email: "support@kamalgc.com.np",
@@ -499,9 +483,8 @@ tailwind.config = {
         } else {
             box.classList.add('hidden');
             localStorage.removeItem('user_security_pin');
-            localStorage.removeItem('biometric_lock');
-            document.getElementById('fingerprint-toggle').checked = false;
-            showToast('PIN Lock & Biometric disabled!', 'success');
+            localStorage.removeItem('pin_lock_enabled');
+            showToast('PIN Lock disabled!', 'success');
         }
     }
 
@@ -514,22 +497,6 @@ tailwind.config = {
         localStorage.setItem('user_security_pin', pin);
         localStorage.setItem('pin_lock_enabled', 'true');
         showToast('PIN saved successfully!', 'success');
-    }
-
-    function toggleFingerprintSetting(checkbox) {
-        const savedPin = localStorage.getItem('user_security_pin');
-        if (checkbox.checked) {
-            if (!savedPin) {
-                showToast('कृपया पहिले ६-अंकको पिन सेट गर्नुहोस्!', 'error');
-                checkbox.checked = false;
-                return;
-            }
-            localStorage.setItem('biometric_lock', 'true');
-            showToast('फिंगरप्रिन्ट लक सक्षम गरियो!', 'success');
-        } else {
-            localStorage.removeItem('biometric_lock');
-            showToast('फिंगरप्रिन्ट लक बन्द गरियो!', 'success');
-        }
     }
 
     function backupData() {
@@ -548,7 +515,6 @@ tailwind.config = {
         showToast('Backup file downloaded!', 'success');
     }
 
-    // Improved Restore & Local Storage JSON Upload Logic
     function restoreData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -579,16 +545,6 @@ tailwind.config = {
     function openResetModal() { document.getElementById('reset-modal').classList.remove('hidden'); }
     function closeResetModal() { document.getElementById('reset-modal').classList.add('hidden'); }
 
-    function authenticateFingerprintForReset() {
-        const biometricEnabled = localStorage.getItem('biometric_lock');
-        if (biometricEnabled === 'true') {
-            showToast('फिंगरप्रिन्ट सफलतापूर्वक प्रमाणित भयो!', 'success');
-            document.getElementById('reset-pin').value = localStorage.getItem('user_security_pin') || '';
-        } else {
-            showToast('फिंगरप्रिन्ट लक अन गरिएको छैन।', 'error');
-        }
-    }
-
     function confirmMasterReset() {
         const textVal = document.getElementById('reset-input').value.trim();
         const pinVal = document.getElementById('reset-pin').value.trim();
@@ -617,9 +573,6 @@ tailwind.config = {
             document.getElementById('pin-lock-toggle').checked = true;
             document.getElementById('pin-setup-box').classList.remove('hidden');
             document.getElementById('new-app-pin').value = savedPin;
-        }
-        if (localStorage.getItem('biometric_lock') === 'true') {
-            document.getElementById('fingerprint-toggle').checked = true;
         }
     });
 </script>
