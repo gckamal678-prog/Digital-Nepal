@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Digital NoteBook - QR Scan & Share</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Poppins', 'sans-serif'],
+                }
+            }
+        }
+    }
+    </script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
+
+    <div id="feedbackMsg" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition-all"></div>
+
+    <div class="flex min-h-screen w-full">
+        
+        <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
+                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                            Digital NoteBook
+                        </h1>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">✕</button>
+            </div>
+
+            <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
+                <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
+                    <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
+                        <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                            <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                    <div>
+                        <h3 id="sidebar-profile-name" class="text-white font-bold text-sm"></h3>
+                        <p class="text-[10px] text-slate-400"><span class="lang-text" data-en="Click icon to set photo" data-np="फोटो राख्न क्लिक गर्नुहोस्">Click icon to set photo</span></p>
+                    </div>
+                </div>
+
+                <nav class="space-y-1 font-medium">
+                    <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
+                </nav>
+
+                <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
+                    <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
+                        <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                    </h3>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Full Name</label>
+                        <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Address</label>
+                        <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Mobile Number</label>
+                        <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Info</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col w-full h-full overflow-hidden">
+            <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+                <div class="flex items-center space-x-2.5">
+                    <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
+                    <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
+                            <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Digital NoteBook</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <span id="timerBadge" class="text-[10px] bg-rose-950 text-rose-400 border border-rose-800/50 px-2 py-0.5 rounded-full font-mono">5:00</span>
+                    <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200">ENG</button>
+                    <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm">🌛</button>
+                    <div class="relative cursor-pointer" onclick="toggleSidebar()">
+                        <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                            <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-3 md:p-6 space-y-3 flex-1 w-full overflow-y-auto bg-slate-100 dark:bg-slate-950">
+                <div class="flex justify-between items-center px-1 text-slate-700 dark:text-white">
+                    <div>
+                        <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-1 rounded-xl flex border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <button onclick="switchTab('scan')" id="scanTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow">Scan QR</button>
+                    <button onclick="switchTab('share')" id="shareTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400">Share QR</button>
+                </div>
+
+                <div id="scanView" class="space-y-3">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex justify-around items-center shadow-sm">
+                        <button onclick="toggleTorch()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span class="text-[10px]">Flash</span>
+                        </button>
+                        <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+                        <button onclick="document.getElementById('fileInput').click()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-[10px]">Gallery</span>
+                        </button>
+                    </div>
+
+                    <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="scanImageFromFile(event)">
+
+                    <div class="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-2 text-center relative overflow-hidden min-h-[260px] flex flex-col justify-center items-center shadow-sm">
+                        <div id="reader" class="w-full rounded-xl overflow-hidden"></div>
+                        <div id="scannerLoading" class="text-emerald-500 text-xs font-medium animate-pulse mt-2">Camera active & scanning...</div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 space-y-2 shadow-sm">
+                        <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Code Manual Entry</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="manualTokenInput" placeholder="Paste sync token or link..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-white text-xs focus:outline-none focus:border-emerald-500">
+                            <button onclick="submitManualToken()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-white rounded-xl font-bold text-xs transition shadow-md">Sync</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="shareView" class="space-y-3 hidden">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl p-4 shadow-sm flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 id="profileName" class="text-sm font-bold tracking-tight"></h3>
+                                <span class="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Active User</span>
+                            </div>
+                            <p id="profilePhone" class="text-[11px] text-slate-400 mt-0.5">Digital NoteBook ID</p>
+                        </div>
+                        <button onclick="openNativeShareSheet()" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition text-slate-700 dark:text-slate-200 flex items-center gap-1.5 font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                            Share QR & Token
+                        </button>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center space-y-3">
+                        <!-- QR Wrapper with High Correction level and centered logo overlay -->
+                        <div id="qrcodeWrapper" class="relative inline-block p-3 bg-white rounded-xl shadow-inner">
+                            <div id="qrcode"></div>
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="w-9 h-9 rounded-full bg-white border-2 border-emerald-600 p-0.5 shadow-md overflow-hidden flex items-center justify-center">
+                                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Scan this QR code within <span id="expiryCountdown" class="text-amber-400 font-bold">5:00 minutes</span> to securely sync data.</p>
+                        <button onclick="generateSecureQRToken()" class="text-emerald-500 hover:underline text-[11px] font-semibold">Generate New QR</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="cropperModal" style="display:none;" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl max-w-sm w-full text-slate-800 dark:text-white shadow-2xl space-y-3">
+            <h3 class="text-xs font-bold text-emerald-500">Crop & Zoom QR Code</h3>
+            <div class="max-h-64 overflow-hidden bg-black rounded-xl flex justify-center items-center">
+                <img id="imageToCrop" src="" class="max-w-full">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeCropper()" class="w-1/2 bg-slate-100 dark:bg-slate-800 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="performCroppedScan()" class="w-1/2 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold">Crop & Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, child, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+          authDomain: "digital-a2552.firebaseapp.com",
+          projectId: "digital-a2552",
+          storageBucket: "digital-a2552.firebasestorage.app",
+          messagingSenderId: "218135618179",
+          appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let CURRENT_USER_ID = localStorage.getItem('my_unique_userid');
+        if (!CURRENT_USER_ID) {
+            CURRENT_USER_ID = "user_" + Math.random().toString(36).substring(2, 8);
+            localStorage.setItem('my_unique_userid', CURRENT_USER_ID);
+        }
+
+        let html5QrCode = null;
+        let lastGeneratedToken = "";
+        let cropperInstance = null;
+        let torchOn = false;
+        let qrTimerInterval = null;
+        let tokenExpiryTimestamp = 0;
+        let currentLang = localStorage.getItem('lang') || 'EN';
+
+        window.onload = function() {
+            updateLanguageUI();
+            updateThemeUI();
+            updateDynamicHeader();
+            loadUserData();
+            loadAvatar();
+            generateSecureQRToken();
+            listenForSyncRequests();
+            setTimeout(() => { startRealScanner(); }, 500);
+        };
+
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.toggle('-translate-x-full');
+        };
+
+        window.updateLanguageUI = function() {
+            const btn = document.getElementById('lang-toggle-btn');
+            if(btn) btn.innerText = currentLang;
+            document.querySelectorAll('.lang-text').forEach(el => {
+                const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
+                if(text) el.innerText = text;
+            });
+        };
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'EN' ? 'NEP' : 'EN';
+            localStorage.setItem('lang', currentLang);
+            updateLanguageUI();
+            updateDynamicHeader();
+        };
+
+        window.updateThemeUI = function() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if(themeBtn) themeBtn.innerText = isDark ? '🌛' : '🌞';
+        };
+
+        window.toggleTheme = function() {
+            const htmlEl = document.documentElement;
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeUI();
+        };
+
+        window.updateDynamicHeader = function() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString(currentLang === 'NEP' ? 'ne-NP' : 'en-US', options).toUpperCase();
+            const dateEl = document.getElementById('dynamic-date');
+            if (dateEl) dateEl.innerText = dateString;
+        };
+
+        window.saveProfileDetails = function() {
+            const name = document.getElementById('input-full-name').value;
+            const address = document.getElementById('input-address').value;
+            const mobile = document.getElementById('input-mobile').value;
+            if(name) localStorage.setItem('profile_name', name);
+            localStorage.setItem('profile_address', address);
+            localStorage.setItem('profile_mobile', mobile);
+            loadUserData();
+            alert('Details saved successfully!');
+        };
+
+        window.loadUserData = function() {
+            const savedName = localStorage.getItem('profile_name') || '';
+            const savedAddress = localStorage.getItem('profile_address') || '';
+            const savedMobile = localStorage.getItem('profile_mobile') || '';
+            if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
+            if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
+            if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+            const nameEl = document.getElementById('sidebar-profile-name');
+            if(nameEl) nameEl.innerText = savedName;
+            const profileNameEl = document.getElementById('profileName');
+            if(profileNameEl) profileNameEl.innerText = savedName || 'User Name';
+        };
+
+        window.handleAvatarUpload = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('profile_avatar', e.target.result);
+                    loadAvatar();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.loadAvatar = function() {
+            const savedImage = localStorage.getItem('profile_avatar') || 'N1024.png';
+            ['sidebar-avatar-img', 'header-avatar-img'].forEach(id => {
+                const img = document.getElementById(id);
+                if(img) img.src = savedImage;
+            });
+        };
+
+        window.switchTab = function(tab) {
+            const scanTabBtn = document.getElementById('scanTabBtn');
+            const shareTabBtn = document.getElementById('shareTabBtn');
+            const scanView = document.getElementById('scanView');
+            const shareView = document.getElementById('shareView');
+
+            if (tab === 'scan') {
+                scanTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow";
+                shareTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400";
+                scanView.classList.remove('hidden');
+                shareView.classList.add('hidden');
+                startRealScanner();
+            } else {
+                shareTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow";
+                scanTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400";
+                shareView.classList.remove('hidden');
+                scanView.classList.add('hidden');
+                stopRealScanner();
+            }
+        };
+
+        window.generateSecureQRToken = function() {
+            const qrcodeContainer = document.getElementById('qrcode');
+            if (!qrcodeContainer) return;
+            qrcodeContainer.innerHTML = ""; 
+            
+            const uniqueHash = Math.random().toString(36).substring(2, 8);
+            tokenExpiryTimestamp = Date.now() + (5 * 60 * 1000); 
+            
+            const secureToken = `https://gckamal678-prog.github.io/index.html?sync=${CURRENT_USER_ID}_${tokenExpiryTimestamp}_${uniqueHash}`;
+            lastGeneratedToken = secureToken;
+
+            if (typeof QRCode !== 'undefined') {
+                // CorrectLevel.H प्रयोग गरिएको छ ताकि लोगो राख्दा पनि बाहिरी एपले स्क्यान गर्न सकोस्
+                new QRCode(qrcodeContainer, {
+                    text: secureToken,
+                    width: 150,
+                    height: 150,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+            startExpiryTimer();
+        };
+
+        function startExpiryTimer() {
+            if (qrTimerInterval) clearInterval(qrTimerInterval);
+            qrTimerInterval = setInterval(() => {
+                const secondsLeft = Math.floor((tokenExpiryTimestamp - Date.now()) / 1000);
+                const timerBadge = document.getElementById('timerBadge');
+                const expiryCountdown = document.getElementById('expiryCountdown');
+
+                if (secondsLeft <= 0) {
+                    clearInterval(qrTimerInterval);
+                    if (timerBadge) timerBadge.textContent = "Expired";
+                    if (expiryCountdown) expiryCountdown.textContent = "Expired!";
+                    document.getElementById('qrcode').innerHTML = '<p class="text-rose-500 text-[11px] font-bold p-4">QR Expired!<br>Generate new.</p>';
+                } else {
+                    const mins = Math.floor(secondsLeft / 60);
+                    const secs = secondsLeft % 60;
+                    const formattedTime = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    if (timerBadge) timerBadge.textContent = formattedTime;
+                    if (expiryCountdown) expiryCountdown.textContent = formattedTime + " minutes";
+                }
+            }, 1000);
+        }
+
+        window.openNativeShareSheet = async function() {
+            if (!lastGeneratedToken) generateSecureQRToken();
+            if (Date.now() > tokenExpiryTimestamp) {
+                showFeedback("QR expired! Generate a new one.", "error");
+                return;
+            }
+
+            try {
+                const wrapper = document.getElementById('qrcodeWrapper');
+                if (window.html2canvas) {
+                    html2canvas(wrapper, { backgroundColor: '#ffffff', scale: 2 }).then(async (canvas) => {
+                        canvas.toBlob(async (blob) => {
+                            const file = new File([blob], "digital-notebook-qr.png", { type: "image/png" });
+                            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    title: 'Digital NoteBook QR Sync',
+                                    text: `Secure Sync Link: ${lastGeneratedToken}`,
+                                    files: [file]
+                                });
+                            } else if (navigator.share) {
+                                await navigator.share({
+                                    title: 'Digital NoteBook QR Sync',
+                                    text: `Secure Sync Link: ${lastGeneratedToken}`
+                                });
+                            }
+                        }, 'image/png');
+                    });
+                }
+            } catch (err) {
+                showFeedback("Sharing failed or cancelled!", "error");
+            }
+        };
+
+        window.restoreFromCloud = async function(userIdToFetch) {
+            try {
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, `users/${userIdToFetch}`));
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
+                    if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
+                    if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
+                    return { success: true, message: "Synced successfully!" };
+                } else {
+                    return { success: false, message: "No cloud backup found!" };
+                }
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        };
+
+        function handleScanSuccess(text) {
+            if (typeof text !== 'string') return;
+
+            if (text.includes('sync=')) {
+                const paramPart = text.split('sync=')[1];
+                const parts = paramPart.split('_');
+                if (parts.length >= 3) {
+                    const targetUserId = parts[0];
+                    const expiryTime = parseInt(parts[1], 10);
+
+                    if (Date.now() > expiryTime) {
+                        playBeep(false);
+                        showFeedback("यो QR कोडको समय समाप्त भइसकेको छ!", "error");
+                        return;
+                    }
+
+                    if (targetUserId === CURRENT_USER_ID) {
+                        playBeep(false);
+                        showFeedback("तपाईंले आफ्नै QR स्क्यान गर्न मिल्दैन!", "error");
+                        return;
+                    }
+
+                    const enteredPin = prompt("सुरक्षाको लागि ६-अंकको पिन (PIN) कोड प्रविष्ट गर्नुहोस्:");
+                    if (!enteredPin || enteredPin.length !== 6) {
+                        showFeedback("६ अंकको पिन अनिवार्य छ!", "error");
+                        return;
+                    }
+
+                    playBeep(true);
+                    showFeedback("अनुमतिको लागि अनुरोध पठाइयो...", "success");
+
+                    const requestRef = ref(db, `sync_requests/${targetUserId}`);
+                    set(requestRef, {
+                        requesterId: CURRENT_USER_ID,
+                        pin: enteredPin,
+                        timestamp: Date.now(),
+                        status: 'pending'
+                    }).then(() => {
+                        alert("डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
+                        onValue(requestRef, (snapshot) => {
+                            const reqData = snapshot.val();
+                            if (reqData && reqData.status === 'approved') {
+                                showFeedback("अनुमति मिल्यो! डाटा सिङ्क हुँदैछ...", "success");
+                                window.restoreFromCloud(targetUserId).then(res => {
+                                    if (res.success) {
+                                        alert("डाटा सफलतापूर्वक सिङ्क भयो!");
+                                        window.location.href = "index.html";
+                                    }
+                                });
+                            } else if (reqData && reqData.status === 'rejected') {
+                                showFeedback("मालिकले अनुमति अस्वीकार गर्नुभयो!", "error");
+                            }
+                        }, { onlyOnce: true });
+                    });
+                    return;
+                }
+            }
+
+            if (text.startsWith('http://') || text.startsWith('https://')) {
+                playBeep(true);
+                window.open(text, '_blank');
+                return;
+            }
+
+            playBeep(false);
+            showFeedback("अज्ञात QR कोड वा टेक्स्ट फेला पर्‍यो!", "error");
+        }
+
+        function listenForSyncRequests() {
+            const myRequestRef = ref(db, `sync_requests/${CURRENT_USER_ID}`);
+            onValue(myRequestRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.status === 'pending') {
+                    const userPin = data.pin;
+                    const confirmSync = confirm(`कसैले तपाईंको डेटा सिङ्क गर्न खोज्दैछ!\nउनीहरूले हालेको पिन: ${userPin}\nके तपाईं अनुमति दिनुहुन्छ?`);
+                    if (confirmSync) {
+                        update(myRequestRef, { status: 'approved' });
+                    } else {
+                        update(myRequestRef, { status: 'rejected' });
+                    }
+                }
+            });
+        }
+
+        window.submitManualToken = function() {
+            const token = document.getElementById('manualTokenInput').value.trim();
+            if(!token) {
+                showFeedback("Please enter a token or link!", "error");
+                return;
+            }
+            handleScanSuccess(token);
+        };
+
+        window.scanImageFromFile = function(e) {
+            if (!e.target.files || e.target.files.length === 0) return;
+            const imageFile = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imgElement = document.getElementById('imageToCrop');
+                imgElement.src = event.target.result;
+                document.getElementById('cropperModal').style.display = 'flex';
+                if (cropperInstance) cropperInstance.destroy();
+                cropperInstance = new Cropper(imgElement, { aspectRatio: 1, viewMode: 1 });
+            };
+            reader.readAsDataURL(imageFile);
+        };
+
+        window.closeCropper = function() {
+            document.getElementById('cropperModal').style.display = 'none';
+            if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+            document.getElementById('fileInput').value = '';
+        };
+
+        window.performCroppedScan = function() {
+            if (!cropperInstance) return;
+            const croppedCanvas = cropperInstance.getCroppedCanvas({ width: 500, height: 500 });
+            croppedCanvas.toBlob((blob) => {
+                closeCropper();
+                const html5QrCodeFromFile = new Html5Qrcode("reader");
+                html5QrCodeFromFile.scanFile(blob, true)
+                    .then(decodedText => { handleScanSuccess(decodedText); })
+                    .catch(err => { showFeedback("No valid QR found in cropped area!", "error"); });
+            }, 'image/png');
+        };
+
+        window.toggleTorch = function() {
+            if (!html5QrCode || !html5QrCode.isScanning) return;
+            torchOn = !torchOn;
+            html5QrCode.applyVideoConstraints({ advanced: [{ torch: torchOn }] }).catch(err => {});
+        };
+
+        window.startRealScanner = function() {
+            const spinner = document.getElementById('scannerLoading');
+            if (spinner) spinner.classList.remove('hidden');
+            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+
+            if (!html5QrCode.isScanning) {
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 170, height: 170 } },
+                    (decodedText) => { handleScanSuccess(decodedText); },
+                    () => {}
+                ).catch((err) => {
+                    if (spinner) spinner.classList.add('hidden');
+                    showFeedback("Camera permission needed.", "error");
+                });
+            }
+        };
+
+        window.stopRealScanner = function() {
+            const spinner = document.getElementById('scannerLoading');
+            if (spinner) spinner.classList.add('hidden');
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => {});
+            }
+        };
+
+        function playBeep(isSuccess) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = isSuccess ? 'sine' : 'sawtooth';
+                oscillator.frequency.setValueAtTime(isSuccess ? 880 : 300, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + (isSuccess ? 0.15 : 0.3));
+            } catch (e) {}
+        }
+
+        function showFeedback(message, type) {
+            const fb = document.getElementById('feedbackMsg');
+            if (!fb) return;
+            fb.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition-all ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`;
+            fb.textContent = message;
+            fb.classList.remove('hidden');
+            setTimeout(() => { fb.classList.add('hidden'); }, 3000);
+        }
+    </script>
+</body>
+</html>
