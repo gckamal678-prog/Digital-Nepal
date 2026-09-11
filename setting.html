@@ -215,21 +215,41 @@ tailwind.config = {
                     </form>
                 </div>
 
-                <!-- DANGER ZONE: DELETE ACCOUNT SECTION -->
-                <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 w-full">
-                    <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone: Permanent Account Deletion</h2>
-                    
-                    <div class="space-y-3 text-xs w-full">
-                        <textarea id="delete-reason" data-translate-placeholder="deleteReasonPlaceholder" placeholder="Reason for deleting account..." rows="2" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none"></textarea>
-                        <input type="password" id="delete-confirm-password" data-translate-placeholder="confirmPasswordPlaceholder" placeholder="Enter your current password to confirm" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500">
-                        <button onclick="handleDeleteAccount()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition" data-translate="deleteAccountBtn">
-                            Permanently Delete Account
+                <!-- 7. DELETE ACCOUNT (HIDDEN SYSTEM WITH REASONS & EMAIL) -->
+                <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 lang-text" data-en="Danger Zone" data-np="खतरा क्षेत्र (Danger Zone)">Danger Zone</h2>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 lang-text" data-en="Permanently delete your account" data-np="स्थायी रूपमा अकाउन्ट मेटाउनुहोस्">स्थायी रूपमा अकाउन्ट मेटाउनुहोस्</p>
+                        </div>
+                        <button onclick="toggleDeleteAccountSection()" id="delete-toggle-btn" class="px-3 py-1.5 bg-rose-600/10 hover:bg-rose-600 hover:text-white text-rose-600 border border-rose-600/30 rounded-xl font-bold text-xs transition lang-text" data-en="Delete Account" data-np="अकाउन्ट मेटाउनुहोस्">
+                            Delete Account
+                        </button>
+                    </div>
+
+                    <!-- Hidden Delete Form -->
+                    <div id="delete-form-box" class="hidden space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
+                        <p class="font-semibold text-slate-700 dark:text-slate-300 lang-text" data-en="Please select a reason for deletion (Mandatory):" data-np="कृपया मेटाउनुको कारण छान्नुहोस् (अनिवार्य एकमा टिक गर्नुहोस्):">कृपया मेटाउनुको कारण छान्नुहोस् (अनिवार्य एकमा टिक गर्नुहोस्):</p>
+                        <div class="space-y-1.5 text-slate-600 dark:text-slate-400">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="No longer using the app" class="accent-rose-600"> <span class="lang-text" data-en="No longer using the app" data-np="एप प्रयोग गर्न छाडेको">No longer using the app</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Privacy concerns" class="accent-rose-600"> <span class="lang-text" data-en="Privacy concerns" data-np="गोपनीयतासम्बन्धी चिन्ता">Privacy concerns</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Found a better alternative" class="accent-rose-600"> <span class="lang-text" data-en="Found a better alternative" data-np="अर्को राम्रो विकल्प भेट्टाएको">Found a better alternative</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Other reason" class="accent-rose-600"> <span class="lang-text" data-en="Other reason" data-np="अन्य कारण">Other reason</span></label>
+                        </div>
+                        <textarea id="delete-custom-reason" class="lang-placeholder w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none" placeholder="Write additional reasons (optional)..." rows="2"></textarea>
+                        
+                        <div class="relative">
+                            <input type="password" id="delete-confirm-password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none pr-10" placeholder="Enter your current password to confirm">
+                            <button type="button" onclick="togglePasswordVisibility('delete-confirm-password', 'del-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200"><i id="del-eye" class="fa-solid fa-eye"></i></button>
+                        </div>
+
+                        <button onclick="submitDeleteAccountRequest()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition lang-text" data-en="Submit & Delete Account" data-np="पेस गर्नुहोस् र अकाउन्ट मेटाउनुहोस्">
+                            Submit & Delete Account
                         </button>
                     </div>
                 </div>
 
             </div>
-
         </main>
     </div>
 </div>
@@ -266,9 +286,7 @@ tailwind.config = {
             feedback_title: "Feedback & Suggestions",
             your_name: "Your Name:",
             your_message: "Message or Feedback:",
-            btn_submit: "Submit",
-            dangerZoneTitle: "Danger Zone: Permanent Account Deletion",
-            deleteAccountBtn: "Permanently Delete Account"
+            btn_submit: "Submit"
         },
         NEP: {
             policy_title: "ℹ️ नीति, सर्तहरू र बारेमा",
@@ -280,9 +298,7 @@ tailwind.config = {
             feedback_title: "प्रतिक्रिया तथा सुझाव (Feedback & Suggestions)",
             your_name: "तपाईंको नाम / Your Name:",
             your_message: "सुझाव वा प्रतिक्रिया / Message or Feedback:",
-            btn_submit: "पठाउनुहोस् (Submit)",
-            dangerZoneTitle: "खतरा क्षेत्र: स्थायी अकाउन्ट मेटाउने",
-            deleteAccountBtn: "स्थायी रूपमा अकाउन्ट मेटाउनुहोस्"
+            btn_submit: "पठाउनुहोस् (Submit)"
         }
     };
 
@@ -297,13 +313,6 @@ tailwind.config = {
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
-        });
-
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
             if (translations[currentLang] && translations[currentLang][key]) {
                 el.innerText = translations[currentLang][key];
             }
@@ -391,6 +400,25 @@ tailwind.config = {
         showToast(currentLang === 'NEP' ? 'तपाईंसँग नवीनतम संस्करण (Version 6.7) छ!' : 'You are running the latest version (6.7)!', 'success');
     }
 
+    function toggleDeleteAccountSection() {
+        const box = document.getElementById('delete-form-box');
+        if (box) box.classList.toggle('hidden');
+    }
+
+    function togglePasswordVisibility(fieldId, iconId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(iconId);
+        if (field.type === "password") {
+            field.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            field.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+
     // EmailJS Feedback Handler
     function handleFeedback(event) {
         event.preventDefault();
@@ -429,13 +457,17 @@ tailwind.config = {
     }
 
     // Delete Account Handler with EmailJS notification
-    function handleDeleteAccount() {
-        const reason = document.getElementById('delete-reason').value;
+    function submitDeleteAccountRequest() {
+        const checkboxes = document.querySelectorAll('input[name="del_reason"]:checked');
+        let reasons = Array.from(checkboxes).map(cb => cb.value).join(', ');
+        const customReason = document.getElementById('delete-custom-reason').value;
+        if (customReason) reasons += (reasons ? '; ' : '') + customReason;
+        
         const password = document.getElementById('delete-confirm-password').value;
         const user = auth.currentUser;
 
-        if (!reason) {
-            showToast("Please provide a reason for deletion.", 'error');
+        if (!reasons) {
+            showToast("Please select at least one reason for deletion.", 'error');
             return;
         }
         if (!password) {
@@ -451,14 +483,13 @@ tailwind.config = {
         const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
 
         user.reauthenticateWithCredential(credential).then(() => {
-            // Send EmailJS notification before deleting the account
             const now = new Date();
             const timeString = now.toLocaleString();
             const deleteParams = {
                 name: user.email,
                 email: user.email,
                 title: 'Digital NoteBook - Account Deletion Alert',
-                message: `User Account Deleted.\nEmail: ${user.email}\nReason: ${reason}`,
+                message: `User Account Deleted.\nEmail: ${user.email}\nReasons: ${reasons}`,
                 time: timeString
             };
 
@@ -469,7 +500,6 @@ tailwind.config = {
                     console.log('Failed to send deletion email', error);
                 });
 
-            // Proceed to delete user account
             user.delete().then(() => {
                 showToast("Account successfully deleted.");
                 window.location.href = 'index.html';
