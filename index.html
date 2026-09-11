@@ -543,24 +543,46 @@ tailwind.config = {
         }, 2000);
     }
 
-    // Security PIN & Biometric Verification Logic (Dashboard Guard)
+    // Security PIN & Biometric Verification Logic (Dashboard Guard with 2-Minute Expiry)
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
         const lockScreen = document.getElementById('security-lock-screen');
+        
         if (savedPin && savedPin.length === 6) {
-            lockScreen.classList.remove('hidden');
-            if (window.PublicKeyCredential) {
-                document.getElementById('biometric-container').classList.remove('hidden');
-                setTimeout(() => {
-                    triggerBiometricAuth();
-                }, 500);
+            const lastActiveTime = localStorage.getItem('last_active_timestamp');
+            const currentTime = new Date().getTime();
+            const twoMinutes = 2 * 60 * 1000;
+
+            // Check if 2 minutes have elapsed since last active time
+            if (!lastActiveTime || (currentTime - parseInt(lastActiveTime)) > twoMinutes) {
+                lockScreen.classList.remove('hidden');
+                if (window.PublicKeyCredential) {
+                    document.getElementById('biometric-container').classList.remove('hidden');
+                    setTimeout(() => {
+                        triggerBiometricAuth();
+                    }, 500);
+                }
+            } else {
+                lockScreen.classList.add('hidden');
             }
         } else {
             lockScreen.classList.add('hidden');
         }
     }
+
+    // Update timestamp on user interaction to keep session alive
+    function updateActiveTimestamp() {
+        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
+        if (savedPin && savedPin.length === 6) {
+            localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
+        }
+    }
+
+    ['click', 'keypress', 'touchstart', 'mousemove'].forEach(event => {
+        document.addEventListener(event, updateActiveTimestamp, { passive: true });
+    });
 
     window.pressPinKey = function(digit) {
         if (currentEnteredPin.length < 6) {
@@ -602,6 +624,7 @@ tailwind.config = {
         if (currentEnteredPin === savedPin) {
             showToast("Unlocked successfully!");
             document.getElementById('security-lock-screen').classList.add('hidden');
+            localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             currentEnteredPin = "";
             updatePinDots();
         } else {
@@ -632,6 +655,7 @@ tailwind.config = {
                     await navigator.credentials.create({ publicKey });
                     showToast("Biometric Verified Successfully!");
                     document.getElementById('security-lock-screen').classList.add('hidden');
+                    localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
                     return;
                 }
             }
@@ -646,11 +670,12 @@ tailwind.config = {
             if (credential) {
                 showToast("Biometric Verified Successfully!");
                 document.getElementById('security-lock-screen').classList.add('hidden');
+                localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             } else {
                 showToast("Please use your 6-digit PIN.");
             }
         } catch (error) {
-            showToast("Please enter your 6-digit PIN.");
+            showToast("Please use your 6-digit PIN.");
         }
     }
 
