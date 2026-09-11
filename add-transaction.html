@@ -180,9 +180,9 @@ tailwind.config = {
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-400 mb-1"><span class="lang-text" data-en="Type" data-np="प्रकार">Type</span></label>
                                 <select id="txn-type" onchange="handleTypeChange()" class="w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
-                                    <option value="Receivable">Receivable (लिनु)</option>
-                                    <option value="Payable">Payable (दिनु)</option>
-                                    <option value="Expense">Expense (खर्च)</option>
+                                    <option value="Receivable">Receivable</option>
+                                    <option value="Payable">Payable</option>
+                                    <option value="Expense">Expense</option>
                                 </select>
                             </div>
                             <div id="interest-fields-wrapper" class="grid grid-cols-2 gap-2">
@@ -277,7 +277,7 @@ tailwind.config = {
                 updatedAt: new Date().toISOString()
             };
             await set(ref(db, 'users/' + userId), localData);
-            alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक क्लाउडमा सेभ भयो!' : 'Data successfully saved to cloud!');
+            alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक सेभ भयो!' : 'Data successfully saved!');
         } catch (error) {
             console.error("Cloud Backup Error:", error);
             alert(error.message);
@@ -294,10 +294,10 @@ tailwind.config = {
                 if (data.theme) localStorage.setItem('theme', data.theme);
                 if (data.language) localStorage.setItem('lang', data.language);
                 
-                alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक सिंक भयो!' : 'Data successfully synced from cloud!');
+                alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक सिंक भयो!' : 'Data successfully synced!');
                 setTimeout(() => location.reload(), 1000);
             } else {
-                alert(currentLang === 'NEP' ? 'क्लाउडमा कुनै ब्याकअप फेला परेन!' : 'No backup found in cloud!');
+                alert(currentLang === 'NEP' ? 'कुनै ब्याकअप फेला परेन!' : 'No backup found!');
             }
         } catch (error) {
             console.error("Cloud Restore Error:", error);
@@ -416,7 +416,6 @@ tailwind.config = {
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
         
-        // Ensure total calculation updates correctly for Expense or other types
         let total = parseFloat(document.getElementById('txn-total-calc').value) || 0;
         if (total === 0) {
             total = npr + (inr * INR_RATE);
@@ -462,7 +461,6 @@ tailwind.config = {
             return;
         }
 
-        // Grouping transactions by Party Name (case-insensitive grouping)
         const parties = {};
         transactions.forEach((tx, idx) => {
             const rawName = tx.party || 'Unknown';
@@ -477,7 +475,6 @@ tailwind.config = {
             }
             parties[matchedKey].items.push({ ...tx, originalIndex: idx });
 
-            // Fix calculation: Expense reduces balance or acts correctly based on user ledger logic
             if (tx.type === 'Receivable') {
                 parties[matchedKey].balance += tx.total;
             } else if (tx.type === 'Payable') {
@@ -489,12 +486,10 @@ tailwind.config = {
 
         let partyArray = Object.values(parties);
 
-        // Search Filter
         if (searchQuery) {
             partyArray = partyArray.filter(p => p.name.toLowerCase().includes(searchQuery));
         }
 
-        // Sorting Parties
         if (sortOption === 'name') {
             partyArray.sort((a, b) => a.name.localeCompare(b.name));
         } else if (sortOption === 'balance_desc') {
@@ -595,7 +590,7 @@ tailwind.config = {
         let partyItems = transactions.filter(t => (t.party || '').toLowerCase() === partyName.toLowerCase());
         
         if(partyItems.length === 0) {
-            alert('प्रिन्ट गर्न कुनै डाटा छैन!');
+            alert('No data to print!');
             return;
         }
 
