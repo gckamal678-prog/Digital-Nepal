@@ -38,6 +38,9 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
 
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
 <div class="flex min-h-screen w-full">
     
     <!-- SIDEBAR SECTION -->
@@ -69,34 +72,34 @@ tailwind.config = {
                 <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                 <div>
                     <h3 id="sidebar-profile-name" class="text-white font-bold text-sm"></h3>
-                    <p class="text-[10px] text-slate-400"><span class="lang-text" data-en="Click icon to set photo" data-np="फोटो राख्न क्लिक गर्नुहोस्">Click icon to set photo</span></p>
+                    <p class="text-[10px] text-slate-400">Click icon to set photo</p>
                 </div>
             </div>
 
             <!-- SIDEBAR NAVIGATION -->
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>📝</span> <span class="lang-text" data-en="NotePad Studio" data-np="नोटप्याड स्टुडियो">NotePad Studio</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span>Overview</span></a>
+                <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>📝</span> <span>NotePad Studio</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span>Personal Info</span>
                 </h3>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Full Name</span></label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Address</span></label>
                     <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
-                    <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
+                    <span>Save Info</span>
                 </button>
             </div>
         </div>
@@ -143,7 +146,7 @@ tailwind.config = {
                     <input type="text" id="search-input" oninput="renderNotes()" placeholder="Search notes..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs outline-none">
                 </div>
                 <button onclick="openNoteModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                    <i class="fa-solid fa-plus"></i> <span class="lang-text" data-en="New Note" data-np="नयाँ नोट">New Note</span>
+                    <i class="fa-solid fa-plus"></i> <span>New Note</span>
                 </button>
             </div>
 
@@ -184,11 +187,6 @@ tailwind.config = {
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang;
-
-        document.querySelectorAll('.lang-text').forEach(el => {
-            const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
-            if(text) el.innerText = text;
-        });
     }
 
     function toggleLanguage() {
@@ -229,6 +227,24 @@ tailwind.config = {
 
     setInterval(updateDynamicHeader, 1000);
 
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+        
+        toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-100 translate-y-2 opacity-0 flex items-center gap-2`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 20);
+        
+        setTimeout(() => {
+            toast.classList.add('translate-y-2', 'opacity-0');
+            setTimeout(() => toast.remove(), 100);
+        }, 1500);
+    }
+
     function saveProfileDetails() {
         const name = document.getElementById('input-full-name').value;
         const address = document.getElementById('input-address').value;
@@ -239,7 +255,7 @@ tailwind.config = {
         localStorage.setItem('profile_mobile', mobile);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
+        showToast('Details saved successfully!', 'success');
     }
 
     function loadUserData() {
