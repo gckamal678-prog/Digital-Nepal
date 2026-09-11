@@ -517,30 +517,39 @@ tailwind.config = {
     }
 
     function loadSavedPreferences() {
-        const savedSize = localStorage.getItem('pref_font_size');
-        if (savedSize) {
-            changeFontSize(savedSize);
-            const selectEl = document.getElementById('font-size-select');
-            if(selectEl) selectEl.value = savedSize;
-        }
-        const savedFamily = localStorage.getItem('pref_font_family');
-        if (savedFamily) {
-            document.body.style.fontFamily = `'${savedFamily}', sans-serif`;
-            const familyEl = document.getElementById('font-family-select');
-            if(familyEl) familyEl.value = savedFamily;
-        }
-        const savedStyle = localStorage.getItem('pref_font_style');
-        if (savedStyle) {
-            changeStyle = savedStyle;
-            changeFontStyle(savedStyle);
-            const styleEl = document.getElementById('font-style-select');
-            if(styleEl) styleEl.value = savedStyle;
-        }
-        const savedEffect = localStorage.getItem('pref_text_effect');
-        if (savedEffect) {
-            setTextEffect(savedEffect);
-        }
+    const savedSize = localStorage.getItem('pref_font_size');
+    if (savedSize) {
+        let scaleSize = '12px';
+        if (savedSize === 'small') scaleSize = '11px';
+        else if (savedSize === 'medium') scaleSize = '13px';
+        else if (savedSize === 'large') scaleSize = '15px';
+        document.documentElement.style.fontSize = scaleSize;
+        const selectEl = document.getElementById('font-size-select');
+        if(selectEl) selectEl.value = savedSize;
     }
+    const savedFamily = localStorage.getItem('pref_font_family');
+    if (savedFamily) {
+        document.body.style.fontFamily = `'${savedFamily}', sans-serif`;
+        const familyEl = document.getElementById('font-family-select');
+        if(familyEl) familyEl.value = savedFamily;
+    }
+    const savedStyle = localStorage.getItem('pref_font_style');
+    if (savedStyle) {
+        if (savedStyle === 'bold') {
+            document.body.style.fontWeight = 'bold';
+            document.body.style.fontStyle = 'normal';
+        } else if (savedStyle === 'italic') {
+            document.body.style.fontWeight = 'normal';
+            document.body.style.fontStyle = 'italic';
+        }
+        const styleEl = document.getElementById('font-style-select');
+        if(styleEl) styleEl.value = savedStyle;
+    }
+    const savedEffect = localStorage.getItem('pref_text_effect');
+    if (savedEffect) {
+        setTextEffect(savedEffect);
+    }
+}
 
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
