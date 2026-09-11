@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook - Settings & Preferences</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Firebase App (core) and Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <!-- EmailJS SDK -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
@@ -211,6 +214,20 @@ tailwind.config = {
                         <button type="submit" id="fb-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition" data-i18n="btn_submit">पठाउनुहोस् (Submit)</button>
                     </form>
                 </div>
+
+                <!-- DANGER ZONE: DELETE ACCOUNT SECTION -->
+                <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 w-full">
+                    <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone: Permanent Account Deletion</h2>
+                    
+                    <div class="space-y-3 text-xs w-full">
+                        <textarea id="delete-reason" data-translate-placeholder="deleteReasonPlaceholder" placeholder="Reason for deleting account..." rows="2" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none"></textarea>
+                        <input type="password" id="delete-confirm-password" data-translate-placeholder="confirmPasswordPlaceholder" placeholder="Enter your current password to confirm" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500">
+                        <button onclick="handleDeleteAccount()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition" data-translate="deleteAccountBtn">
+                            Permanently Delete Account
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
         </main>
@@ -218,6 +235,19 @@ tailwind.config = {
 </div>
 
 <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+      authDomain: "digital-a2552.firebaseapp.com",
+      projectId: "digital-a2552",
+      storageBucket: "digital-a2552.firebasestorage.app",
+      messagingSenderId: "218135618179",
+      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.toggle('-translate-x-full');
@@ -236,7 +266,9 @@ tailwind.config = {
             feedback_title: "Feedback & Suggestions",
             your_name: "Your Name:",
             your_message: "Message or Feedback:",
-            btn_submit: "Submit"
+            btn_submit: "Submit",
+            dangerZoneTitle: "Danger Zone: Permanent Account Deletion",
+            deleteAccountBtn: "Permanently Delete Account"
         },
         NEP: {
             policy_title: "ℹ️ नीति, सर्तहरू र बारेमा",
@@ -248,7 +280,9 @@ tailwind.config = {
             feedback_title: "प्रतिक्रिया तथा सुझाव (Feedback & Suggestions)",
             your_name: "तपाईंको नाम / Your Name:",
             your_message: "सुझाव वा प्रतिक्रिया / Message or Feedback:",
-            btn_submit: "पठाउनुहोस् (Submit)"
+            btn_submit: "पठाउनुहोस् (Submit)",
+            dangerZoneTitle: "खतरा क्षेत्र: स्थायी अकाउन्ट मेटाउने",
+            deleteAccountBtn: "स्थायी रूपमा अकाउन्ट मेटाउनुहोस्"
         }
     };
 
@@ -263,6 +297,13 @@ tailwind.config = {
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
+            if (translations[currentLang] && translations[currentLang][key]) {
+                el.innerText = translations[currentLang][key];
+            }
+        });
+
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.getAttribute('data-translate');
             if (translations[currentLang] && translations[currentLang][key]) {
                 el.innerText = translations[currentLang][key];
             }
@@ -350,7 +391,7 @@ tailwind.config = {
         showToast(currentLang === 'NEP' ? 'तपाईंसँग नवीनतम संस्करण (Version 6.7) छ!' : 'You are running the latest version (6.7)!', 'success');
     }
 
-    // EmailJS Feedback Handler (Updated with time variable)
+    // EmailJS Feedback Handler
     function handleFeedback(event) {
         event.preventDefault();
         const name = document.getElementById('fb-name').value;
@@ -369,7 +410,7 @@ tailwind.config = {
                 email: 'gckamal67@gmail.com',
                 title: 'Digital NoteBook Feedback',
                 message: msg,
-                time: timeString // टेम्प्लेटको {{time}} का लागि थपिएको
+                time: timeString
             };
 
             emailjs.send('service_8zfv1vu', 'template_36j91tf', templateParams)
@@ -385,6 +426,59 @@ tailwind.config = {
                     submitBtn.innerText = currentLang === 'NEP' ? 'पठाउनुहोस् (Submit)' : 'Submit';
                 });
         }
+    }
+
+    // Delete Account Handler with EmailJS notification
+    function handleDeleteAccount() {
+        const reason = document.getElementById('delete-reason').value;
+        const password = document.getElementById('delete-confirm-password').value;
+        const user = auth.currentUser;
+
+        if (!reason) {
+            showToast("Please provide a reason for deletion.", 'error');
+            return;
+        }
+        if (!password) {
+            showToast("Please confirm your password.", 'error');
+            return;
+        }
+
+        if (!user) {
+            showToast("No user logged in.", 'error');
+            return;
+        }
+
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+
+        user.reauthenticateWithCredential(credential).then(() => {
+            // Send EmailJS notification before deleting the account
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            const deleteParams = {
+                name: user.email,
+                email: user.email,
+                title: 'Digital NoteBook - Account Deletion Alert',
+                message: `User Account Deleted.\nEmail: ${user.email}\nReason: ${reason}`,
+                time: timeString
+            };
+
+            emailjs.send('service_8zfv1vu', 'template_36j91tf', deleteParams)
+                .then(function(response) {
+                    console.log('Deletion email sent successfully', response);
+                }, function(error) {
+                    console.log('Failed to send deletion email', error);
+                });
+
+            // Proceed to delete user account
+            user.delete().then(() => {
+                showToast("Account successfully deleted.");
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                showToast("Error: " + error.message, 'error');
+            });
+        }).catch((error) => {
+            showToast("Incorrect password. Please try again.", 'error');
+        });
     }
 
     function saveProfileDetails() {
