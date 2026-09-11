@@ -135,8 +135,8 @@ tailwind.config = {
             </div>
 
             <div class="flex items-center space-x-2">
-                <!-- Top Right Total Saving Icon & Total Display -->
-                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-emerald-400">
+                <!-- Top Right Total Saving Display -->
+                <div class="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded-md flex items-center gap-1.5 text-xs font-bold text-emerald-400 shadow-sm">
                     <i class="fa-solid fa-piggy-bank"></i>
                     <span id="header-total-savings">Rs 0.00</span>
                 </div>
@@ -268,10 +268,8 @@ tailwind.config = {
                 updatedAt: new Date().toISOString()
             };
             await set(ref(db, 'users/' + userId), localData);
-            alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक क्लाउडमा सेभ भयो!' : 'Data successfully saved to cloud!');
         } catch (error) {
             console.error("Cloud Backup Error:", error);
-            alert(error.message);
         }
     }
 
@@ -285,14 +283,10 @@ tailwind.config = {
                 if (data.theme) localStorage.setItem('theme', data.theme);
                 if (data.language) localStorage.setItem('lang', data.language);
                 
-                alert(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक सिंक भयो!' : 'Data successfully synced from cloud!');
                 setTimeout(() => location.reload(), 1000);
-            } else {
-                alert(currentLang === 'NEP' ? 'क्लाउडमा कुनै ब्याकअप फेला परेन!' : 'No backup found in cloud!');
             }
         } catch (error) {
             console.error("Cloud Restore Error:", error);
-            alert(error.message);
         }
     }
 
@@ -539,20 +533,15 @@ tailwind.config = {
     }
 
     function deleteSavings(idx) {
-        if(confirm(currentLang === 'NEP' ? 'के तपाईं यो रेकर्ड हटाउन निश्चित हुनुहुन्छ?' : 'Are you sure you want to delete this record?')) {
-            let savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || '[]');
-            savings.splice(idx, 1);
-            localStorage.setItem('digital_notebook_savings', JSON.stringify(savings));
-            renderSavings();
-        }
+        let savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || '[]');
+        savings.splice(idx, 1);
+        localStorage.setItem('digital_notebook_savings', JSON.stringify(savings));
+        renderSavings();
     }
 
     function printSavingsPDF() {
         let savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || '[]');
-        if(savings.length === 0) {
-            alert('प्रिन्ट गर्न कुनै डाटा छैन!');
-            return;
-        }
+        if(savings.length === 0) return;
 
         let printWindow = window.open('', '_blank');
         let html = `<html><head><title>Savings Report</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f2f2f2;}</style></head><body><h2>Digital NoteBook - Savings Report</h2><table><tr><th>Date</th><th>Title</th><th>Category</th><th>NPR</th><th>INR</th><th>Total (NPR)</th></tr>`;
@@ -580,7 +569,6 @@ tailwind.config = {
         localStorage.setItem('profile_mobile', mobile);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
     }
 
     function loadUserData() {
