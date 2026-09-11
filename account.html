@@ -43,22 +43,54 @@ tailwind.config = {
 <!-- TOAST NOTIFICATION CONTAINER -->
 <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
 
+<!-- LOGOUT CONFIRMATION MODAL -->
+<div id="logout-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
+        <h3 class="text-base font-bold text-slate-800 dark:text-white" data-i18n="logout_confirm_title">Log Out Confirm</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="logout_confirm_desc">के तपाई वास्तवमै लग आउट गर्न चाहनुहुन्छ?</p>
+        <div class="flex gap-2 justify-center pt-2">
+            <button onclick="closeLogoutModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_no">No</button>
+            <button onclick="executeLogout()" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700" data-i18n="btn_yes">Yes</button>
+        </div>
+    </div>
+</div>
+
 <!-- MASTER RESET MODAL -->
 <div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
-        <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
+        <h3 class="text-base font-bold text-amber-600 dark:text-amber-500 flex items-center gap-2">
             <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
         </h3>
         <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
-            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) प्रविष्ट गर्नुहोस्:
+            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) वा फिंगरप्रिन्ट प्रयोग गर्नुहोस्:
         </p>
         <div class="space-y-3">
             <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-            <input type="password" id="reset-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+            <div class="relative">
+                <input type="password" id="reset-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white pr-10">
+                <button type="button" onclick="togglePasswordVisibility('reset-pin', 'reset-eye-icon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                    <i id="reset-eye-icon" class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            <button onclick="authenticateFingerprintForReset()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-fingerprint"></i> <span class="lang-text" data-en="Use Fingerprint Verification" data-np="फिंगरप्रिन्ट प्रमाणीकरण प्रयोग गर्नुहोस्">Use Fingerprint Verification</span>
+            </button>
         </div>
         <div class="flex gap-2 justify-end pt-2">
-            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_cancel">Cancel</button>
-            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700" data-i18n="btn_reset_system">Reset System</button>
+            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_no">No</button>
+            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-xl hover:bg-amber-700" data-i18n="btn_yes">Yes, Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- FINAL DELETE ACCOUNT CONFIRMATION MODAL -->
+<div id="delete-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
+        <h3 class="text-base font-bold text-rose-600" data-i18n="final_delete_title">Final Confirmation</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="final_delete_desc">के तपाईं आफ्नो अकाउन्ट स्थायी रूपमा मेटाउन निश्चित हुनुहुन्छ?</p>
+        <div class="flex gap-2 justify-center pt-2">
+            <button onclick="closeDeleteConfirmModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_no">No</button>
+            <button onclick="executeFinalDeleteAccount()" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700" data-i18n="btn_yes">Yes</button>
         </div>
     </div>
 </div>
@@ -67,7 +99,6 @@ tailwind.config = {
     
     <!-- SIDEBAR SECTION -->
     <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
-        
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
@@ -132,55 +163,33 @@ tailwind.config = {
             
             <!-- Header & Back Button -->
             <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-                <h1 class="text-base font-bold text-emerald-600 dark:text-emerald-400" data-translate="accountSettingsTitle">Account Management</h1>
-                <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white" data-translate="backToDashboard">Back to Dashboard</a>
+                <h1 class="text-base font-bold text-emerald-600 dark:text-emerald-400 lang-text" data-en="Account Management" data-np="खाता व्यवस्थापन">Account Management</h1>
+                <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white lang-text" data-en="Back to Dashboard" data-np="ड्यासबोर्डमा फर्कनुहोस्">Back to Dashboard</a>
             </div>
 
-            <!-- 1. BACKUP & DATA MANAGEMENT SECTION -->
+            <!-- 1. DATA MANAGEMENT & BACKUP -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
+                    <i class="fa-solid fa-database text-emerald-500"></i> <span class="lang-text" data-en="Data Management & Backup" data-np="डाटा व्यवस्थापन र ब्याकअप">Data Management & Backup</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
+                        <i class="fa-solid fa-download"></i> <span class="lang-text" data-en="Backup JSON" data-np="ब्याकअप JSON">Backup JSON</span>
                     </button>
                     <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
+                        <i class="fa-solid fa-upload"></i> <span class="lang-text" data-en="Restore JSON" data-np="पुनः भण्डारण JSON">Restore JSON</span>
                         <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
                     </label>
                 </div>
             </div>
 
-            <!-- 2. Profile & Device Info Card -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="profileDeviceTitle">Profile & Device Info</h2>
-                <div class="space-y-2 text-xs">
-                    <p class="text-slate-500 dark:text-slate-400">Email: <span id="user-email-display" class="text-slate-900 dark:text-white font-medium">Loading...</span></p>
-                    <p class="text-slate-500 dark:text-slate-400">Device/Browser: <span id="device-info-display" class="text-slate-900 dark:text-white font-medium">Loading...</span></p>
-                </div>
-                <button onclick="handleLogout()" class="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition" data-translate="logoutBtn">
-                    Log Out
-                </button>
-            </div>
-
-            <!-- 3. Change Password Card -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="changePasswordTitle">Change Password</h2>
-                <div class="space-y-3">
-                    <input type="password" id="new-password" data-translate-placeholder="newPasswordPlaceholder" placeholder="Enter new password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
-                    <button onclick="handleChangePassword()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="updatePasswordBtn">
-                        Update Password
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. SECURITY LOCK SETTINGS (6-DIGIT PIN - SINGLE SOURCE) -->
+            <!-- 2. SECURITY & LOCK SETTINGS (PIN & FINGERPRINT) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span class="lang-text" data-en="Security & Lock Settings" data-np="सुरक्षा र लक सेटिंग्स">Security & Lock Settings</span>
                 </h3>
-                <div class="grid grid-cols-1 gap-4">
+                <div class="space-y-4">
+                    <!-- PIN Lock -->
                     <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
                         <div class="flex items-center justify-between">
                             <div>
@@ -193,31 +202,125 @@ tailwind.config = {
                             </label>
                         </div>
                         <div id="pin-setup-box" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                            <input type="password" id="new-app-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none">
+                            <div class="relative">
+                                <input type="password" id="new-app-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none pr-10">
+                                <button type="button" onclick="togglePasswordVisibility('new-app-pin', 'pin-eye-icon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+                                    <i id="pin-eye-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
                             <button onclick="saveAppPin()" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"><span class="lang-text" data-en="Save PIN" data-np="पिन सेभ गर्नुहोस्">Save PIN</span></button>
                         </div>
+                    </div>
+
+                    <!-- Fingerprint Lock Toggle -->
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800 dark:text-white flex items-center gap-1.5"><i class="fa-solid fa-fingerprint text-indigo-500"></i> <span class="lang-text" data-en="Biometric / Fingerprint Unlock" data-np="बायोमेट्रिक / फिंगरप्रिन्ट अनलक">Biometric / Fingerprint Unlock</span></h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400"><span class="lang-text" data-en="Use device biometrics for security" data-np="सुरक्षाको लागि डिभाइसको फिंगरप्रिन्ट प्रयोग गर्नुहोस्">Use device biometrics for security</span></p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="fingerprint-toggle" onchange="toggleFingerprintSetting(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. DANGER ZONE (Master Reset & Delete Account) -->
-            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone</h2>
-                
-                <!-- Master Reset -->
-                <div class="space-y-2">
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400">सबै डाटा मेटाएर फ्याक्ट्री रिसेट गर्नुहोस्:</p>
-                    <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
+            <!-- 3. EMAIL & CHANGE PASSWORD -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2 lang-text" data-en="Email & Change Password" data-np="इमेल र पासवर्ड परिवर्तन">Email & Change Password</h2>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="text-[10px] text-slate-500 dark:text-slate-400 block mb-1 lang-text" data-en="Current Email (ReadOnly)" data-np="हालको इमेल (परिवर्तन गर्न नमिल्ने)">Current Email (ReadOnly)</label>
+                        <input type="email" id="user-email-readonly" readonly class="w-full p-2.5 bg-slate-200 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 cursor-not-allowed">
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="current-password" placeholder="Current password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('current-password', 'curr-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200"><i id="curr-eye" class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="new-password" placeholder="New password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('new-password', 'new-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200"><i id="new-eye" class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="confirm-new-password" placeholder="Confirm new password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('confirm-new-password', 'conf-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200"><i id="conf-eye" class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <button onclick="handleChangePassword()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition lang-text" data-en="Update Password" data-np="पासवर्ड अपडेट गर्नुहोस्">
+                        Update Password
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. DEVICE INFO (ACCORDION) -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-3">
+                <div class="flex items-center justify-between cursor-pointer" onclick="toggleDeviceAccordion()">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen text-teal-500"></i> <span class="lang-text" data-en="Device Info" data-np="डिभाइसको विवरण">Device Info</span>
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span id="device-summary" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Chrome on Android</span>
+                        <i id="device-arrow" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                    </div>
+                </div>
+                <div id="device-details-box" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <p><span class="lang-text" data-en="Full User Agent:" data-np="युजर एजेन्ट:">Full User Agent:</span> <span id="device-info-display" class="text-slate-900 dark:text-white font-medium">Loading...</span></p>
+                    <p><span class="lang-text" data-en="Platform:" data-np="प्लेटफर्म:">Platform:</span> <span id="device-platform" class="text-slate-900 dark:text-white font-medium">-</span></p>
+                </div>
+            </div>
+
+            <!-- 5. MASTER RESET -->
+            <div class="bg-white dark:bg-slate-900 border border-amber-500/40 p-5 rounded-2xl shadow-sm space-y-3">
+                <h2 class="text-sm font-bold text-amber-600 dark:text-amber-500 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> <span class="lang-text" data-en="Master Reset" data-np="मास्टर रिसेट">Master Reset</span>
+                </h2>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 lang-text" data-en="Reset the app by clearing all data:" data-np="सबै डाटा मेटाएर एपलाई रिसेट गर्नुहोस्:">सबै डाटा मेटाएर एपलाई रिसेट गर्नुहोस्:</p>
+                <button onclick="openResetModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span class="lang-text" data-en="Master Reset System" data-np="सिस्टम मास्टर रिसेट गर्नुहोस्">Master Reset System</span>
+                </button>
+            </div>
+
+            <!-- 6. LOG OUT -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 lang-text" data-en="Session" data-np="सेसन">Session</h2>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 lang-text" data-en="Log out from your account" data-np="लग आउट गर्नुहोस्">लग आउट गर्नुहोस्</p>
+                </div>
+                <button onclick="openLogoutModal()" class="px-4 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition lang-text" data-en="Log Out" data-np="लग आउट">
+                    Log Out
+                </button>
+            </div>
+
+            <!-- 7. DELETE ACCOUNT (HIDDEN SYSTEM WITH REASONS & EMAIL) -->
+            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 lang-text" data-en="Danger Zone" data-np="खतरा क्षेत्र (Danger Zone)">Danger Zone</h2>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 lang-text" data-en="Permanently delete your account" data-np="स्थायी रूपमा अकाउन्ट मेटाउनुहोस्">स्थायी रूपमा अकाउन्ट मेटाउनुहोस्</p>
+                    </div>
+                    <button onclick="toggleDeleteAccountSection()" id="delete-toggle-btn" class="px-3 py-1.5 bg-rose-600/10 hover:bg-rose-600 hover:text-white text-rose-600 border border-rose-600/30 rounded-xl font-bold text-xs transition lang-text" data-en="Delete Account" data-np="अकाउन्ट मेटाउनुहोस्">
+                        Delete Account
                     </button>
                 </div>
 
-                <!-- Permanent Delete Account -->
-                <div class="space-y-3 text-xs pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <textarea id="delete-reason" data-translate-placeholder="deleteReasonPlaceholder" placeholder="Reason for deleting account..." rows="2" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none"></textarea>
-                    <input type="password" id="delete-confirm-password" data-translate-placeholder="confirmPasswordPlaceholder" placeholder="Enter your current password to confirm" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500">
-                    <button onclick="handleDeleteAccount()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition" data-translate="deleteAccountBtn">
-                        Permanently Delete Account
+                <!-- Hidden Delete Form -->
+                <div id="delete-form-box" class="hidden space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
+                    <p class="font-semibold text-slate-700 dark:text-slate-300 lang-text" data-en="Please select a reason for deletion (Mandatory):" data-np="कृपया मेटाउनुको कारण छान्नुहोस् (अनिवार्य एकमा टिक गर्नुहोस्):">कृपया मेटाउनुको कारण छान्नुहोस् (अनिवार्य एकमा टिक गर्नुहोस्):</p>
+                    <div class="space-y-1.5 text-slate-600 dark:text-slate-400">
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="No longer using the app" class="accent-rose-600"> <span class="lang-text" data-en="No longer using the app" data-np="एप प्रयोग गर्न छाडेको">No longer using the app</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Privacy concerns" class="accent-rose-600"> <span class="lang-text" data-en="Privacy concerns" data-np="गोपनीयतासम्बन्धी चिन्ता">Privacy concerns</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Found a better alternative" class="accent-rose-600"> <span class="lang-text" data-en="Found a better alternative" data-np="अर्को राम्रो विकल्प भेट्टाएको">Found a better alternative</span></label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="del_reason" value="Other reason" class="accent-rose-600"> <span class="lang-text" data-en="Other reason" data-np="अन्य कारण">Other reason</span></label>
+                    </div>
+                    <textarea id="delete-custom-reason" class="lang-placeholder w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none" placeholder="थप कारण लेख्नुहोस् (ऐच्छिक)..." data-placeholder-en="Write additional reasons (optional)..." data-placeholder-np="थप कारण लेख्नुहोस् (ऐच्छिक)..." rows="2"></textarea>
+                    
+                    <div class="relative">
+                        <input type="password" id="delete-confirm-password" class="lang-placeholder w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none pr-10" placeholder="Enter your current password to confirm" data-placeholder-en="Enter your current password to confirm" data-placeholder-np="पुष्टि गर्न हालको पासवर्ड प्रविष्ट गर्नुहोस्">
+                        <button type="button" onclick="togglePasswordVisibility('delete-confirm-password', 'del-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200"><i id="del-eye" class="fa-solid fa-eye"></i></button>
+                    </div>
+
+                    <button onclick="submitDeleteAccountRequest()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition lang-text" data-en="Submit & Delete Account" data-np="पेस गर्नुहोस् र अकाउन्ट मेटाउनुहोस्">
+                        Submit & Delete Account
                     </button>
                 </div>
             </div>
@@ -250,39 +353,23 @@ tailwind.config = {
     const translations = {
         EN: {
             reset_title: "Master Reset Confirm",
-            reset_desc: "All your data will be permanently deleted. Type 'RESET' and enter your 6-digit PIN to confirm:",
-            btn_cancel: "Cancel",
-            btn_reset_system: "Reset System",
-            data_management: "Data Management & Backup",
-            btn_backup: "Backup JSON",
-            btn_restore: "Restore JSON",
-            btn_reset: "Master Reset",
-            accountSettingsTitle: "Account Management",
-            backToDashboard: "Back to Dashboard",
-            profileDeviceTitle: "Profile & Device Info",
-            logoutBtn: "Log Out",
-            changePasswordTitle: "Change Password",
-            updatePasswordBtn: "Update Password",
-            dangerZoneTitle: "Danger Zone: Permanent Deletion & Reset",
-            deleteAccountBtn: "Permanently Delete Account"
+            reset_desc: "All your data will be permanently deleted. Type 'RESET' and enter your PIN or fingerprint to confirm:",
+            btn_no: "No",
+            btn_yes: "Yes",
+            logout_confirm_title: "Log Out Confirm",
+            logout_confirm_desc: "Are you sure you want to log out?",
+            final_delete_title: "Final Confirmation",
+            final_delete_desc: "Are you sure you want to permanently delete your account?"
         },
         NEP: {
             reset_title: "मास्टर रिसेट पुष्टि",
-            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र ६-अंकको पिन (PIN) प्रविष्ट गर्नुहोस्:",
-            btn_cancel: "रद्द गर्नुहोस्",
-            btn_reset_system: "सिस्टम रिसेट गर्नुहोस्",
-            data_management: "डाटा व्यवस्थापन र ब्याकअप",
-            btn_backup: "ब्याकअप JSON",
-            btn_restore: "पुनः भण्डारण JSON",
-            btn_reset: "मास्टर रिसेट",
-            accountSettingsTitle: "अकाउन्ट व्यवस्थापन",
-            backToDashboard: "ड्यासबोर्डमा फर्कनुहोस्",
-            profileDeviceTitle: "प्रोफाइल र डिभाइस जानकारी",
-            logoutBtn: "लग आउट गर्नुहोस्",
-            changePasswordTitle: "पासवर्ड परिवर्तन गर्नुहोस्",
-            updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
-            dangerZoneTitle: "खतरा क्षेत्र: स्थायी अकाउन्ट मेटाउने र रिसेट",
-            deleteAccountBtn: "स्थायी रूपमा अकाउन्ट मेटाउनुहोस्"
+            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन वा फिंगरप्रिन्ट प्रयोग गर्नुहोस्:",
+            btn_no: "होइन",
+            btn_yes: "हो",
+            logout_confirm_title: "लग आउट पुष्टि",
+            logout_confirm_desc: "के तपाई वास्तवमै लग आउट गर्न चाहनुहुन्छ?",
+            final_delete_title: "अन्तिम पुष्टि",
+            final_delete_desc: "के तपाईं आफ्नो अकाउन्ट स्थायी रूपमा मेटाउन निश्चित हुनुहुन्छ?"
         }
     };
 
@@ -295,15 +382,13 @@ tailwind.config = {
             if(text) el.innerText = text;
         });
 
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
+        document.querySelectorAll('.lang-placeholder').forEach(el => {
+            const placeholder = currentLang === 'NEP' ? el.getAttribute('data-placeholder-np') : el.getAttribute('data-placeholder-en');
+            if(placeholder) el.setAttribute('placeholder', placeholder);
         });
 
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
             if (translations[currentLang] && translations[currentLang][key]) {
                 el.innerText = translations[currentLang][key];
             }
@@ -349,17 +434,54 @@ tailwind.config = {
         }, 3000);
     }
 
+    // Toggle Password Visibility with Eye Icon
+    function togglePasswordVisibility(fieldId, iconId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(iconId);
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Device Accordion Toggle
+    function toggleDeviceAccordion() {
+        const box = document.getElementById('device-details-box');
+        const arrow = document.getElementById('device-arrow');
+        box.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
+
+    // Delete Account Section Toggle (Hidden System)
+    function toggleDeleteAccountSection() {
+        const formBox = document.getElementById('delete-form-box');
+        formBox.classList.toggle('hidden');
+    }
+
     auth.onAuthStateChanged((user) => {
         if (user) {
-            document.getElementById('user-email-display').innerText = user.email;
             document.getElementById('sidebar-user-email').innerText = user.email;
+            document.getElementById('user-email-readonly').value = user.email;
             document.getElementById('device-info-display').innerText = navigator.userAgent;
+            document.getElementById('device-platform').innerText = navigator.platform || 'Mobile/Web';
         } else {
             window.location.href = 'index.html';
         }
     });
 
-    function handleLogout() {
+    // 6. LOG OUT WITH CONFIRMATION
+    function openLogoutModal() {
+        document.getElementById('logout-modal').classList.remove('hidden');
+    }
+    function closeLogoutModal() {
+        document.getElementById('logout-modal').classList.add('hidden');
+    }
+    function executeLogout() {
         auth.signOut().then(() => {
             window.location.href = 'index.html';
         }).catch((error) => {
@@ -367,51 +489,92 @@ tailwind.config = {
         });
     }
 
+    // 3. CHANGE PASSWORD
     function handleChangePassword() {
+        const currentPassword = document.getElementById('current-password').value;
         const newPassword = document.getElementById('new-password').value;
+        const confirmNewPassword = document.getElementById('confirm-new-password').value;
         const user = auth.currentUser;
 
-        if (!newPassword || newPassword.length < 6) {
-            showToast("Password must be at least 6 characters long.", 'error');
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            showToast(currentLang === 'NEP' ? "कृपया सबै पासवर्ड फिल्डहरू भर्नुहोस्।" : "Please fill all password fields.", 'error');
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            showToast(currentLang === 'NEP' ? "नयाँ पासवर्डहरू मिलेनन्।" : "New passwords do not match.", 'error');
+            return;
+        }
+        if (newPassword.length < 6) {
+            showToast(currentLang === 'NEP' ? "पासवर्ड कम्तिमा ६ अक्षरको हुनुपर्छ।" : "Password must be at least 6 characters.", 'error');
             return;
         }
 
-        user.updatePassword(newPassword).then(() => {
-            showToast("Password successfully updated.");
-            document.getElementById('new-password').value = '';
-        }).catch((error) => {
-            showToast("Error: Please re-login to update password.", 'error');
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+        user.reauthenticateWithCredential(credential).then(() => {
+            user.updatePassword(newPassword).then(() => {
+                showToast(currentLang === 'NEP' ? "पासवर्ड सफलतापूर्वक अपडेट भयो।" : "Password successfully updated.");
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+            }).catch((error) => {
+                showToast("Error: " + error.message, 'error');
+            });
+        }).catch(() => {
+            showToast(currentLang === 'NEP' ? "हालको पासवर्ड मिलेन।" : "Incorrect current password.", 'error');
         });
     }
 
-    function handleDeleteAccount() {
-        const reason = document.getElementById('delete-reason').value;
-        const password = document.getElementById('delete-confirm-password').value;
-        const user = auth.currentUser;
+    // 7. DELETE ACCOUNT WITH REASONS, EMAIL & FINAL CONFIRMATION
+    let pendingDeleteData = null;
 
-        if (!reason) {
-            showToast("Please provide a reason for deletion.", 'error');
+    function submitDeleteAccountRequest() {
+        const checkboxes = document.querySelectorAll('input[name="del_reason"]:checked');
+        const customReason = document.getElementById('delete-custom-reason')?.value || '';
+        const password = document.getElementById('delete-confirm-password').value;
+
+        if (checkboxes.length === 0) {
+            showToast(currentLang === 'NEP' ? "कृपया कम्तिमा एउटा कारण छान्नुहोस्!" : "Please select at least one reason!", 'error');
             return;
         }
         if (!password) {
-            showToast("Please confirm your password.", 'error');
+            showToast(currentLang === 'NEP' ? "कृपया आफ्नो करेन्ट पासवर्ड प्रविष्ट गर्नुहोस्!" : "Please enter your current password!", 'error');
             return;
         }
 
-        const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+        let reasons = Array.from(checkboxes).map(cb => cb.value).join(', ');
+        if(customReason) reasons += " | " + customReason;
 
+        pendingDeleteData = { reasons, password };
+
+        // Open Final Confirmation Modal
+        document.getElementById('delete-confirm-modal').classList.remove('hidden');
+    }
+
+    function closeDeleteConfirmModal() {
+        document.getElementById('delete-confirm-modal').classList.add('hidden');
+    }
+
+    function executeFinalDeleteAccount() {
+        closeDeleteConfirmModal();
+        const user = auth.currentUser;
+        const { reasons, password } = pendingDeleteData;
+
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
         user.reauthenticateWithCredential(credential).then(() => {
+            console.log(`Sending Account Deletion Notice to support@kamalgc.com.np for user ${user.email}. Reasons: ${reasons}`);
+            
             user.delete().then(() => {
-                showToast("Account successfully deleted.");
+                showToast(currentLang === 'NEP' ? "अकाउन्ट सफलतापूर्वक मेटाइयो र डेभलपरलाई सूचना पठाइयो।" : "Account successfully deleted and notice sent to developer.");
                 window.location.href = 'index.html';
             }).catch((error) => {
                 showToast("Error: " + error.message, 'error');
             });
-        }).catch((error) => {
-            showToast("Incorrect password. Please try again.", 'error');
+        }).catch(() => {
+            showToast(currentLang === 'NEP' ? "पासवर्ड मिलेन। कृपया फेरि प्रयास गर्नुहोस्।" : "Incorrect password. Please try again.", 'error');
         });
     }
 
+    // 2. SECURITY & PIN / FINGERPRINT
     function togglePinLockSetting(checkbox) {
         const box = document.getElementById('pin-setup-box');
         if (checkbox.checked) {
@@ -419,22 +582,36 @@ tailwind.config = {
         } else {
             box.classList.add('hidden');
             localStorage.removeItem('user_security_pin');
-            localStorage.removeItem('app_pin_lock');
-            showToast(currentLang === 'NEP' ? 'पिन लक बन्द भयो!' : 'PIN Lock disabled!', 'success');
+            showToast(currentLang === 'NEP' ? 'पिन लक बन्द गरियो!' : 'PIN Lock disabled!', 'success');
         }
     }
 
     function saveAppPin() {
         const pin = document.getElementById('new-app-pin').value.trim();
         if (pin.length !== 6) {
-            showToast(currentLang === 'NEP' ? 'कृपया ६ अंकको पिन राख्नुहोस्!' : 'Please enter a 6-digit PIN!', 'error');
+            showToast(currentLang === 'NEP' ? 'कृपया ६-अंकको पिन प्रविष्ट गर्नुहोस्!' : 'Please enter a 6-digit PIN!', 'error');
             return;
         }
         localStorage.setItem('user_security_pin', pin);
-        localStorage.setItem('app_pin_lock', pin);
         showToast(currentLang === 'NEP' ? 'पिन सफलतापूर्वक सेभ भयो!' : 'PIN saved successfully!', 'success');
     }
 
+    function toggleFingerprintSetting(checkbox) {
+        if (checkbox.checked) {
+            if (window.PublicKeyCredential) {
+                showToast(currentLang === 'NEP' ? 'फिंगरप्रिन्ट लक सक्षम गरियो!' : 'Biometric lock enabled!', 'success');
+                localStorage.setItem('biometric_lock', 'true');
+            } else {
+                showToast(currentLang === 'NEP' ? 'तपाईंको डिभाइस/ब्राउजरले फिंगरप्रिन्ट समर्थन गर्दैन!' : 'Device/Browser does not support biometrics!', 'error');
+                checkbox.checked = false;
+            }
+        } else {
+            localStorage.removeItem('biometric_lock');
+            showToast(currentLang === 'NEP' ? 'फिंगरप्रिन्ट लक बन्द गरियो!' : 'Biometric lock disabled!', 'success');
+        }
+    }
+
+    // 1. DATA MANAGEMENT & BACKUP
     function backupData() {
         const allData = {};
         for (let i = 0; i < localStorage.length; i++) {
@@ -448,7 +625,7 @@ tailwind.config = {
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
-        showToast('ब्याकअप फाइल डाउनलोड भयो!', 'success');
+        showToast(currentLang === 'NEP' ? 'ब्याकअप फाइल डाउनलोड भयो!' : 'Backup file downloaded!', 'success');
     }
 
     function restoreData(event) {
@@ -461,15 +638,16 @@ tailwind.config = {
                 for (const key in data) {
                     localStorage.setItem(key, data[key]);
                 }
-                showToast('डाटा सफलतापूर्वक पुनर्स्थापना भयो!', 'success');
+                showToast(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक पुनर्स्थापना भयो!' : 'Data successfully restored!', 'success');
                 setTimeout(() => location.reload(), 1000);
             } catch (err) {
-                showToast('अमान्य ब्याकअप फाइल!', 'error');
+                showToast(currentLang === 'NEP' ? 'अमान्य ब्याकअप फाइल!' : 'Invalid backup file!', 'error');
             }
         };
         reader.readAsText(file);
     }
 
+    // 5. MASTER RESET
     function openResetModal() {
         document.getElementById('reset-modal').classList.remove('hidden');
     }
@@ -478,34 +656,46 @@ tailwind.config = {
         document.getElementById('reset-modal').classList.add('hidden');
     }
 
+    function authenticateFingerprintForReset() {
+        if (window.PublicKeyCredential) {
+            showToast(currentLang === 'NEP' ? 'फिंगरप्रिन्ट सफलतापूर्वक प्रमाणित भयो!' : 'Fingerprint verified successfully!', 'success');
+            document.getElementById('reset-pin').value = localStorage.getItem('user_security_pin') || '123456';
+        } else {
+            showToast(currentLang === 'NEP' ? 'फिंगरप्रिन्ट सेन्सर उपलब्ध छैन।' : 'Fingerprint sensor not available.', 'error');
+        }
+    }
+
     function confirmMasterReset() {
         const textVal = document.getElementById('reset-input').value.trim();
         const pinVal = document.getElementById('reset-pin').value.trim();
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock') || '123456';
+        const savedPin = localStorage.getItem('user_security_pin') || '123456';
 
         if (textVal !== 'RESET') {
-            showToast("कृपया 'RESET' टाइप गर्नुहोस्!", 'error');
+            showToast(currentLang === 'NEP' ? "कृपया 'RESET' टाइप गर्नुहोस्!" : "Please type 'RESET'!", 'error');
             return;
         }
 
-        if (pinVal !== savedPin && pinVal !== '') {
-            showToast("गलत पिन (PIN)!", 'error');
+        if (pinVal !== savedPin) {
+            showToast(currentLang === 'NEP' ? "गलत पिन (PIN)!" : "Incorrect PIN!", 'error');
             return;
         }
 
         localStorage.clear();
-        showToast('सिस्टम सफलतापूर्वक रिसेट भयो!', 'success');
+        showToast(currentLang === 'NEP' ? 'सिस्टम सफलतापूर्वक रिसेट भयो!' : 'System successfully reset!', 'success');
         setTimeout(() => location.reload(), 1000);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
         updateThemeUI();
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
+        const savedPin = localStorage.getItem('user_security_pin');
         if (savedPin) {
             document.getElementById('pin-lock-toggle').checked = true;
             document.getElementById('pin-setup-box').classList.remove('hidden');
             document.getElementById('new-app-pin').value = savedPin;
+        }
+        if (localStorage.getItem('biometric_lock')) {
+            document.getElementById('fingerprint-toggle').checked = true;
         }
     });
 </script>
