@@ -76,57 +76,9 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- SECURITY LOCK SCREEN (6-DIGIT PIN & BIOMETRIC) -->
-<div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
-    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
-            🔒
-        </div>
-        <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security PIN</h2>
-            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 6-digit PIN or use Biometric</p>
-        </div>
-
-        <!-- 6 Digit Dots Display -->
-        <div class="flex justify-center gap-3 py-2">
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-0"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-1"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-2"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-3"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-4"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-5"></div>
-        </div>
-
-        <!-- Biometric Button -->
-        <div id="biometric-container" class="hidden">
-            <button onclick="triggerBiometricAuth()" class="w-full py-3 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-xl font-bold text-xs text-emerald-300 flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-fingerprint text-lg"></i> <span id="biometric-btn-text">Use Fingerprint / FaceID</span>
-            </button>
-        </div>
-
-        <!-- Numeric Keypad -->
-        <div class="grid grid-cols-3 gap-3 pt-2">
-            <button onclick="pressPinKey('1')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">1</button>
-            <button onclick="pressPinKey('2')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">2</button>
-            <button onclick="pressPinKey('3')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">3</button>
-            <button onclick="pressPinKey('4')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">4</button>
-            <button onclick="pressPinKey('5')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">5</button>
-            <button onclick="pressPinKey('6')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">6</button>
-            <button onclick="pressPinKey('7')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">7</button>
-            <button onclick="pressPinKey('8')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">8</button>
-            <button onclick="pressPinKey('9')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">9</button>
-            <button onclick="clearPinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-rose-400 transition">Clear</button>
-            <button onclick="pressPinKey('0')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">0</button>
-            <button onclick="deletePinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-300 transition">⌫</button>
-        </div>
-    </div>
-</div>
-
 <!-- MANDATORY AUTHENTICATION & LOGIN OVERLAY -->
 <div id="login-overlay" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-5 text-white">
-        
-        <!-- Glowing Animated Border Logo Container with N1024.png -->
         <div class="relative w-20 h-20 mx-auto rounded-2xl p-[2px] bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 animate-spin-slow">
             <div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden">
                 <img src="N1024.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
@@ -138,26 +90,23 @@ tailwind.config = {
             <p class="text-xs text-slate-400" data-translate="loginSubtitle">Please sign in or register to continue</p>
         </div>
 
-        <!-- Input Fields -->
         <div class="space-y-3">
-            <input type="email" id="auth-email" data-translate-placeholder="emailPlaceholder" placeholder="Enter email" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-            <input type="password" id="auth-password" data-translate-placeholder="passwordPlaceholder" placeholder="Enter password (e.g. Min 6 chars, uppercase, lowercase, number, symbol)" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="email" id="auth-email" placeholder="Enter email" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="password" id="auth-password" placeholder="Enter password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
             
             <div class="text-right">
-                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline" data-translate="forgotPasswordBtn">Forgot Password?</button>
+                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline">Forgot Password?</button>
             </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex gap-2 pt-1">
-            <button onclick="handleEmailSignUp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition" data-translate="signUpBtn">Sign Up</button>
-            <button onclick="handleEmailLogin()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="loginBtn">Login</button>
+            <button onclick="handleEmailSignUp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition">Sign Up</button>
+            <button onclick="handleEmailLogin()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition">Login</button>
         </div>
-
     </div>
 </div>
 
-<!-- 1. LANGUAGE SELECTION MODAL -->
+<!-- LANGUAGE SELECTION MODAL -->
 <div id="language-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 hidden">
     <div class="bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 w-80 text-center shadow-2xl space-y-5">
         <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400">🌐</div>
@@ -172,7 +121,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- 2. WELCOME TOAST -->
+<!-- WELCOME TOAST -->
 <div id="welcome-toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 border border-emerald-500/50 text-white px-5 py-3 rounded-xl shadow-2xl backdrop-blur-md hidden transition-all duration-500 flex items-center gap-3">
     <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">✓</div>
     <div>
@@ -181,7 +130,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- 3. ONBOARDING TOUR OVERLAY -->
+<!-- ONBOARDING TOUR OVERLAY -->
 <div id="onboarding-overlay" class="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs hidden transition-opacity duration-500">
     <div id="spotlight-box" class="absolute transition-all duration-500 ease-in-out rounded-2xl ring-4 ring-emerald-500 ring-offset-4 ring-offset-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.5)] pointer-events-none">
         <div class="absolute -inset-2 rounded-full border border-emerald-500/30 animate-pulse-slow"></div>
@@ -275,19 +224,6 @@ tailwind.config = {
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-shield text-emerald-400"></i> <span class="lang-text" data-en="Security PIN" data-np="सुरक्षा पिन">Security PIN</span>
-                </h3>
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Set 6-Digit PIN" data-np="६ अंकको पिन राख्नुहोस्">Set 6-Digit PIN</span></label>
-                    <input type="password" id="input-security-pin" maxlength="6" placeholder="Enter 6-digit PIN" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
-                </div>
-                <button onclick="saveSecurityPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
-                    <span class="lang-text" data-en="Update PIN" data-np="पिन अपडेट गर्नुहोस्">Update PIN</span>
-                </button>
-            </div>
-
-            <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
-                <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
                     <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
                 </h3>
                 <div>
@@ -355,7 +291,6 @@ tailwind.config = {
         </header>
 
         <main class="p-4 md:p-6 space-y-4 flex-1 w-full text-xs">
-            
             <div class="flex justify-between items-start px-1 py-1 text-white">
                 <div>
                     <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-emerald-500 dark:text-emerald-400 uppercase mb-1"></p>
@@ -439,7 +374,6 @@ tailwind.config = {
                     </a>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
@@ -463,7 +397,6 @@ tailwind.config = {
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Authentication State Observer
     onAuthStateChanged(auth, (user) => {
         const loginOverlay = document.getElementById('login-overlay');
         if (user) {
@@ -476,116 +409,38 @@ tailwind.config = {
     window.handleEmailSignUp = function() {
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
-        
-        if (!email || !password) {
-            showToast("Please fill in all fields.");
-            return;
-        }
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
-        if (!passwordRegex.test(password)) {
-            showToast("Password must be at least 6 chars with uppercase, lowercase, number & special char (@$!%*?&).");
-            return;
-        }
+        if (!email || !password) { showToast("Please fill in all fields."); return; }
 
         createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
+            .then(() => {
                 signOut(auth).then(() => {
-                    showToast("Account successfully created! Please login with your credentials.");
+                    showToast("Account successfully created! Please login.");
                     document.getElementById('auth-password').value = '';
                 });
             })
-            .catch((error) => {
-                showToast("Error: " + error.message);
-            });
+            .catch((error) => { showToast("Error: " + error.message); });
     }
 
     window.handleEmailLogin = function() {
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
-        
-        if (!email || !password) {
-            showToast("Please fill in all fields.");
-            return;
-        }
+        if (!email || !password) { showToast("Please fill in all fields."); return; }
 
         signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                showToast("Login successful.");
-            })
-            .catch((error) => {
-                showToast("Login failed: " + error.message);
-            });
+            .then(() => { showToast("Login successful."); })
+            .catch((error) => { showToast("Login failed: " + error.message); });
     }
 
     window.handleForgotPassword = function() {
         const email = document.getElementById('auth-email').value;
-        if (!email) {
-            showToast("Please enter your email address first.");
-            return;
-        }
-        
+        if (!email) { showToast("Please enter your email address first."); return; }
         sendPasswordResetEmail(auth, email)
-            .then(() => {
-                showToast("Password reset link sent to your email.");
-            })
-            .catch((error) => {
-                showToast("Error: " + error.message);
-            });
+            .then(() => { showToast("Password reset link sent."); })
+            .catch((error) => { showToast("Error: " + error.message); });
     }
-
-    async function backupToCloud(userId = "default_user") {
-        try {
-            const localData = {
-                notes: JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]'),
-                incomes: JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]'),
-                transactions: JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]'),
-                theme: localStorage.getItem('theme') || 'dark',
-                language: localStorage.getItem('language') || 'en',
-                updatedAt: new Date().toISOString()
-            };
-            await set(ref(db, 'users/' + userId), localData);
-            return { success: true, message: "Data successfully saved to cloud!" };
-        } catch (error) {
-            return { success: false, message: error.message };
-        }
-    }
-
-    async function restoreFromCloud(userId = "default_user") {
-        try {
-            const dbRef = ref(db);
-            const snapshot = await get(child(dbRef, `users/${userId}`));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
-                if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
-                if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
-                if (data.theme) localStorage.setItem('theme', data.theme);
-                return { success: true, message: "Data successfully synced from cloud!" };
-            } else {
-                return { success: false, message: "No backup found in cloud!" };
-            }
-        } catch (error) {
-            return { success: false, message: error.message };
-        }
-    }
-
-    window.handleCloudBackup = async function() {
-        let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
-        const result = await backupToCloud(userId);
-        showToast(result.message);
-    };
-
-    window.handleCloudRestore = async function() {
-        let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
-        const result = await restoreFromCloud(userId);
-        showToast(result.message);
-        if(result.success) location.reload();
-    };
 </script>
 
 <script>
-    // Toast Notification Handler
     function showToast(message) {
         const toast = document.getElementById('toast-notification');
         document.getElementById('toast-message').innerText = message;
@@ -597,139 +452,8 @@ tailwind.config = {
         }, 2000);
     }
 
-    // Security PIN & Biometric Logic
-    let currentEnteredPin = "";
-    
-    function checkSecurityLock() {
-        const savedPin = localStorage.getItem('user_security_pin');
-        const lockScreen = document.getElementById('security-lock-screen');
-        if (savedPin && savedPin.length === 6) {
-            lockScreen.classList.remove('hidden');
-            if (window.PublicKeyCredential) {
-                document.getElementById('biometric-container').classList.remove('hidden');
-                // Automatically attempt biometric prompt on load if supported
-                setTimeout(() => {
-                    triggerBiometricAuth();
-                }, 500);
-            }
-        } else {
-            lockScreen.classList.add('hidden');
-        }
-    }
+    // Note: Security PIN logic and Biometric authentication removed from index.html
 
-    window.saveSecurityPin = function() {
-        const pinInput = document.getElementById('input-security-pin').value;
-        if (pinInput.length !== 6 || isNaN(pinInput)) {
-            showToast("Please enter a valid 6-digit PIN.");
-            return;
-        }
-        localStorage.setItem('user_security_pin', pinInput);
-        showToast("6-digit PIN successfully saved!");
-        document.getElementById('input-security-pin').value = "";
-        checkSecurityLock();
-    }
-
-    window.pressPinKey = function(digit) {
-        if (currentEnteredPin.length < 6) {
-            currentEnteredPin += digit;
-            updatePinDots();
-            if (currentEnteredPin.length === 6) {
-                verifyEnteredPin();
-            }
-        }
-    }
-
-    window.deletePinKey = function() {
-        if (currentEnteredPin.length > 0) {
-            currentEnteredPin = currentEnteredPin.slice(0, -1);
-            updatePinDots();
-        }
-    }
-
-    window.clearPinKey = function() {
-        currentEnteredPin = "";
-        updatePinDots();
-    }
-
-    function updatePinDots() {
-        for (let i = 0; i < 6; i++) {
-            const dot = document.getElementById(`dot-${i}`);
-            if (i < currentEnteredPin.length) {
-                dot.classList.add('bg-emerald-500');
-                dot.classList.remove('bg-slate-800');
-            } else {
-                dot.classList.remove('bg-emerald-500');
-                dot.classList.add('bg-slate-800');
-            }
-        }
-    }
-
-    function verifyEnteredPin() {
-        const savedPin = localStorage.getItem('user_security_pin');
-        if (currentEnteredPin === savedPin) {
-            showToast("Unlocked successfully!");
-            document.getElementById('security-lock-screen').classList.add('hidden');
-            currentEnteredPin = "";
-            updatePinDots();
-        } else {
-            showToast("Incorrect PIN. Try again.");
-            currentEnteredPin = "";
-            updatePinDots();
-        }
-    }
-
-    window.triggerBiometricAuth = async function() {
-        try {
-            if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    const publicKey = {
-                        challenge: new Uint8Array(32),
-                        rp: { name: "Digital NoteBook" },
-                        user: {
-                            id: new Uint8Array(16),
-                            name: "user@notebook.com",
-                            displayName: "Notebook User"
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        timeout: 60000,
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        attestation: "none"
-                    };
-                    await navigator.credentials.create({ publicKey });
-                    showToast("Biometric Verified Successfully!");
-                    document.getElementById('security-lock-screen').classList.add('hidden');
-                    return;
-                }
-            }
-            // Fallback web authentication check or standard prompt simulation if standard API resolves
-            const credential = await navigator.credentials.get({
-                publicKey: {
-                    challenge: new Uint8Array(32),
-                    timeout: 60000,
-                    userVerification: "required"
-                }
-            }).catch(() => null);
-
-            if (credential) {
-                showToast("Biometric Verified Successfully!");
-                document.getElementById('security-lock-screen').classList.add('hidden');
-            } else {
-                showToast("Please use your 6-digit PIN.");
-            }
-        } catch (error) {
-            showToast("Please enter your 6-digit PIN.");
-        }
-    }
-
-    // Trigger lock screen check when app regains focus or visibility
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-            checkSecurityLock();
-        }
-    });
-
-    // Onboarding & Language Tour Data
     const translations = {
         en: {
             welcomeTitle: "Welcome to Digital Notebook!",
@@ -739,24 +463,9 @@ tailwind.config = {
             next: "Next",
             finish: "Finish",
             steps: [
-                {
-                    targetSelector: '#top-controls-area',
-                    title: "Language & Theme Control",
-                    desc: "Choose your preferred language (EN/NP), toggle themes, and manage your profile controls here.",
-                    position: "bottom"
-                },
-                {
-                    targetSelector: '#summary-cards-area',
-                    title: "Dashboard Overview",
-                    desc: "Quickly view your total income, investments, and overall financial status at a glance.",
-                    position: "bottom"
-                },
-                {
-                    targetSelector: '#quick-action-area',
-                    title: "Quick Features",
-                    desc: "Access transactions, notes, calculator, and calendar instantly from this action grid.",
-                    position: "top"
-                }
+                { targetSelector: '#top-controls-area', title: "Language & Theme Control", desc: "Choose your preferred language (EN/NP), toggle themes, and manage your profile controls here.", position: "bottom" },
+                { targetSelector: '#summary-cards-area', title: "Dashboard Overview", desc: "Quickly view your total income, investments, and overall financial status at a glance.", position: "bottom" },
+                { targetSelector: '#quick-action-area', title: "Quick Features", desc: "Access transactions, notes, calculator, and calendar instantly from this action grid.", position: "top" }
             ]
         },
         np: {
@@ -767,24 +476,9 @@ tailwind.config = {
             next: "पछिल्लो",
             finish: "सकियो",
             steps: [
-                {
-                    targetSelector: '#top-controls-area',
-                    title: "भाषा र थिम कन्ट्रोल",
-                    desc: "तपाईंलाई मनपर्ने भाषा (EN/NP) छान्नुहोस्, थिम परिवर्तन गर्नुहोस् र प्रोफाइल कन्ट्रोल गर्नुहोस्।",
-                    position: "bottom"
-                },
-                {
-                    targetSelector: '#summary-cards-area',
-                    title: "ड्यासबोर्ड ओभरभ्यू",
-                    desc: "यहाँबाट तपाईं आफ्नो दैनिक आय, लगानी र हिसाबकिताबको सम्पूर्ण वित्तीय स्थिति एकै नजरमा हेर्न सक्नुहुन्छ।",
-                    position: "bottom"
-                },
-                {
-                    targetSelector: '#quick-action-area',
-                    title: "मुख्य फिचरहरू",
-                    desc: "तपाईंको ट्रान्जेक्सन, नोट, क्याल्कुलेटर र क्यालेन्डरजस्ता सबै मुख्य कार्यहरू यहाँबाट छिटो एक्सेस गर्न सक्नुहुन्छ।",
-                    position: "top"
-                }
+                { targetSelector: '#top-controls-area', title: "भाषा र थिम कन्ट्रोल", desc: "तपाईंलाई मनपर्ने भाषा (EN/NP) छान्नुहोस्, थिम परिवर्तन गर्नुहोस् र प्रोफाइल कन्ट्रोल गर्नुहोस्।", position: "bottom" },
+                { targetSelector: '#summary-cards-area', title: "ड्यासबोर्ड ओभरभ्यू", desc: "यहाँबाट तपाईं आफ्नो दैनिक आय, लगानी र हिसाबकिताबको सम्पूर्ण वित्तीय स्थिति एकै नजरमा हेर्न सक्नुहुन्छ।", position: "bottom" },
+                { targetSelector: '#quick-action-area', title: "मुख्य फिचरहरू", desc: "तपाईंको ट्रान्जेक्सन, नोट, क्याल्कुलेटर र क्यालेन्डरजस्ता सबै मुख्य कार्यहरू यहाँबाट छिटो एक्सेस गर्न सक्नुहुन्छ।", position: "top" }
             ]
         }
     };
@@ -800,7 +494,6 @@ tailwind.config = {
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang.toUpperCase();
-
         document.querySelectorAll('.lang-text').forEach(el => {
             const text = currentLang === 'np' ? el.getAttribute('data-np') : el.getAttribute('data-en');
             if(text) el.innerText = text;
@@ -837,9 +530,7 @@ tailwind.config = {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const dateString = now.toLocaleDateString(currentLang === 'np' ? 'ne-NP' : 'en-US', options).toUpperCase();
-        
-        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+        const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
         const dateEl = document.getElementById('dynamic-date');
         if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
@@ -873,7 +564,6 @@ tailwind.config = {
                 } catch(e) {}
             }
         }
-        
         const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || item.val || item.total || item.price || 0), 0);
         if(document.getElementById('summary-income')) document.getElementById('summary-income').innerText = `Rs ${totalIncome.toLocaleString()}`;
 
@@ -910,40 +600,8 @@ tailwind.config = {
         if(document.getElementById('summary-payable')) document.getElementById('summary-payable').innerText = `Rs ${totalPayable.toLocaleString()}`;
     }
 
-    window.addEventListener('pageshow', (event) => {
-        updateSummaryCards();
-    });
-
-    window.addEventListener('focus', () => {
-        updateSummaryCards();
-    });
-
-    window.addEventListener('storage', (event) => {
-        updateSummaryCards();
-    });
-
-    window.addEventListener('dataUpdated', () => {
-        updateSummaryCards();
-    });
-
-    function saveProfileDetails() {
-        const name = document.getElementById('input-full-name').value;
-        const email = document.getElementById('input-email').value;
-        const address = document.getElementById('input-address').value;
-        const mobile = document.getElementById('input-mobile').value;
-
-        if(name) {
-            localStorage.setItem('profile_name', name);
-            localStorage.setItem('user_profile_name', name);
-        }
-        localStorage.setItem('profile_email', email);
-        localStorage.setItem('profile_address', address);
-        localStorage.setItem('profile_mobile', mobile);
-
-        loadUserData();
-        updateDynamicHeader();
-        showToast(currentLang === 'np' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
-    }
+    window.addEventListener('pageshow', () => { updateSummaryCards(); });
+    window.addEventListener('focus', () => { updateSummaryCards(); });
 
     function loadUserData() {
         const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
@@ -990,7 +648,6 @@ tailwind.config = {
         loadUserData();
         loadAvatar();
         updateSummaryCards();
-        checkSecurityLock();
 
         const text = "DIGITAL NOTEBOOK";
         const typingElement = document.getElementById("typing-title");
@@ -1008,13 +665,11 @@ tailwind.config = {
 
         let progress = 0;
         const loadingInterval = setInterval(() => {
-            progress += 2; // Increments to hit 100% within ~5 seconds (50 steps * 100ms)
+            progress += 2;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                setTimeout(() => {
-                    dismissSplash();
-                }, 400);
+                setTimeout(() => { dismissSplash(); }, 400);
             }
             progressBar.style.width = progress + '%';
             loadPercent.textContent = progress + '%';
@@ -1044,11 +699,9 @@ tailwind.config = {
         currentLang = lang;
         localStorage.setItem('userLang', lang);
         localStorage.setItem('lang', lang);
-        
         const modal = document.getElementById('language-modal');
         modal.style.opacity = '0';
         setTimeout(() => modal.classList.add('hidden'), 300);
-
         updateLanguageUI();
         updateDynamicHeader();
         showWelcomeMessage();
@@ -1058,10 +711,8 @@ tailwind.config = {
         const t = translations[currentLang];
         document.getElementById('welcome-title').textContent = t.welcomeTitle;
         document.getElementById('welcome-sub').textContent = t.welcomeSub;
-
         const toast = document.getElementById('welcome-toast');
         toast.classList.remove('hidden');
-
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => {
@@ -1084,7 +735,6 @@ tailwind.config = {
         const t = translations[currentLang];
         const step = t.steps[stepIndex];
         const targetElement = document.querySelector(step.targetSelector);
-        
         if (!targetElement) return;
 
         const rect = targetElement.getBoundingClientRect();
@@ -1113,30 +763,21 @@ tailwind.config = {
         card.classList.remove('active-card');
         let cardTop = step.position === 'bottom' ? rect.bottom + 20 : rect.top - 210;
         let cardLeft = Math.max(20, Math.min(window.innerWidth - 340, rect.left));
-        
-        if (cardTop + 220 > window.innerHeight) {
-            cardTop = window.innerHeight - 230;
-        }
+        if (cardTop + 220 > window.innerHeight) cardTop = window.innerHeight - 230;
 
         card.style.top = `${cardTop}px`;
         card.style.left = `${cardLeft}px`;
-
         setTimeout(() => { card.classList.add('active-card'); }, 50);
     }
 
     function nextStep() {
         const t = translations[currentLang];
-        if (currentStep < t.steps.length - 1)
-            currentStep++;
-        else
-            endTour();
+        if (currentStep < t.steps.length - 1) currentStep++;
+        else endTour();
     }
 
     function prevStep() {
-        if (currentStep > 0) {
-            currentStep--;
-            showStep(currentStep);
-        }
+        if (currentStep > 0) { currentStep--; showStep(currentStep); }
     }
 
     function endTour() {
