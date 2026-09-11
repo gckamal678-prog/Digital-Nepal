@@ -350,7 +350,7 @@ tailwind.config = {
         showToast(currentLang === 'NEP' ? 'तपाईंसँग नवीनतम संस्करण (Version 6.7) छ!' : 'You are running the latest version (6.7)!', 'success');
     }
 
-    // EmailJS Feedback Handler
+    // EmailJS Feedback Handler (Updated with time variable)
     function handleFeedback(event) {
         event.preventDefault();
         const name = document.getElementById('fb-name').value;
@@ -361,11 +361,15 @@ tailwind.config = {
             submitBtn.disabled = true;
             submitBtn.innerText = currentLang === 'NEP' ? 'पठाउँदैछ...' : 'Sending...';
 
+            const now = new Date();
+            const timeString = now.toLocaleString();
+
             const templateParams = {
                 name: name,
-                email: 'gckamal67@gmail.com', // वा फारममा प्रयोग भएको इमेल फिल्ড राख्न सक्नुहुन्छ
+                email: 'gckamal67@gmail.com',
                 title: 'Digital NoteBook Feedback',
-                message: msg
+                message: msg,
+                time: timeString // टेम्प्लेटको {{time}} का लागि थपिएको
             };
 
             emailjs.send('service_r144e1o', 'template_36j91tf', templateParams)
