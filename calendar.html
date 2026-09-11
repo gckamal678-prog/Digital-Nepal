@@ -30,6 +30,9 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
 
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
 <div class="flex min-h-screen w-full">
     
     <!-- SIDEBAR SECTION -->
@@ -174,6 +177,24 @@ tailwind.config = {
         updateThemeUI();
     }
 
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+        
+        toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-100 translate-y-2 opacity-0 flex items-center gap-2`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 20);
+        
+        setTimeout(() => {
+            toast.classList.add('translate-y-2', 'opacity-0');
+            setTimeout(() => toast.remove(), 100);
+        }, 1500);
+    }
+
     // पात्रोको मिति र समय अपडेट गर्ने मुख्य फंक्सन
     function updateDynamicHeader() {
         const now = new Date();
@@ -189,7 +210,6 @@ tailwind.config = {
         const monthsNp = ["वैशाख", "जेठ", "आषाढ", "श्रावण", "भाद्र", "आश्विन", "कार्तिक", "मंसिर", "पौष", "माघ", "फागुन", "चैत"];
         const monthsEn = ["Baisakh", "Jestha", "Ashadh", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"];
 
-        // नेपाली मिति गणना सिधा लजिक
         let npYear = enYear + 57;
         let npMonthIndex = (enMonth + 8) % 12;
         if(enMonth >= 4 && enDate >= 14) npYear = enYear + 57; 
@@ -225,7 +245,7 @@ tailwind.config = {
         localStorage.setItem('profile_mobile', mobile);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
+        showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
     }
 
     function loadUserData() {
