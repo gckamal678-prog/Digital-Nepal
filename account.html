@@ -84,12 +84,9 @@ tailwind.config = {
 
         <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
             <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
-                <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
-                    <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
-                    </div>
+                <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                    <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
                 </div>
-                <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                 <div>
                     <h3 id="sidebar-profile-name" class="text-white font-bold text-sm">User</h3>
                     <p class="text-[10px] text-slate-400" id="sidebar-user-email">Local User</p>
@@ -139,7 +136,23 @@ tailwind.config = {
                 <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white" data-translate="backToDashboard">Back to Dashboard</a>
             </div>
 
-            <!-- 1. Profile & Device Info Card -->
+            <!-- 1. BACKUP & DATA MANAGEMENT SECTION (Moved Up) -->
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+                        <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
+                    </button>
+                    <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
+                        <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2. Profile & Device Info Card -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
                 <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="profileDeviceTitle">Profile & Device Info</h2>
                 <div class="space-y-2 text-xs">
@@ -151,7 +164,7 @@ tailwind.config = {
                 </button>
             </div>
 
-            <!-- 2. Change Password Card -->
+            <!-- 3. Change Password Card -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
                 <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="changePasswordTitle">Change Password</h2>
                 <div class="space-y-3">
@@ -162,7 +175,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- SECURITY LOCK SETTINGS (6-DIGIT PIN & BIOMETRIC) -->
+            <!-- 4. SECURITY LOCK SETTINGS (6-DIGIT PIN) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span class="lang-text" data-en="Security & Lock Settings" data-np="सुरक्षा र लक सेटिंग्स">Security & Lock Settings</span>
@@ -187,29 +200,20 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- BACKUP & DATA MANAGEMENT SECTION -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
-                    </button>
-                    <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
-                        <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
-                    </label>
+            <!-- 5. DANGER ZONE (Master Reset & Delete Account - Moved to Bottom) -->
+            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone</h2>
+                
+                <!-- Master Reset -->
+                <div class="space-y-2">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">सबै डाटा मेटाएर फ्याक्ट्री रिसेट गर्नुहोस्:</p>
                     <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
                         <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
                     </button>
                 </div>
-            </div>
 
-            <!-- 3. Delete Account Card -->
-            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone: Permanent Account Deletion</h2>
-                <div class="space-y-3 text-xs">
+                <!-- Permanent Delete Account -->
+                <div class="space-y-3 text-xs pt-3 border-t border-slate-200 dark:border-slate-800">
                     <textarea id="delete-reason" data-translate-placeholder="deleteReasonPlaceholder" placeholder="Reason for deleting account..." rows="2" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 resize-none"></textarea>
                     <input type="password" id="delete-confirm-password" data-translate-placeholder="confirmPasswordPlaceholder" placeholder="Enter your current password to confirm" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-rose-500">
                     <button onclick="handleDeleteAccount()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition" data-translate="deleteAccountBtn">
@@ -223,15 +227,14 @@ tailwind.config = {
 </div>
 
 <script>
-    // Firebase Initialization (तपाईंको Firebase Config यहाँ राख्नुहोला)
     const firebaseConfig = {
-  apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
-  authDomain: "digital-a2552.firebaseapp.com",
-  projectId: "digital-a2552",
-  storageBucket: "digital-a2552.firebasestorage.app",
-  messagingSenderId: "218135618179",
-  appId: "1:218135618179:web:821b76920d3e5669ac31b6"
-};
+      apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
+      authDomain: "digital-a2552.firebaseapp.com",
+      projectId: "digital-a2552",
+      storageBucket: "digital-a2552.firebasestorage.app",
+      messagingSenderId: "218135618179",
+      appId: "1:218135618179:web:821b76920d3e5669ac31b6"
+    };
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -260,7 +263,7 @@ tailwind.config = {
             logoutBtn: "Log Out",
             changePasswordTitle: "Change Password",
             updatePasswordBtn: "Update Password",
-            dangerZoneTitle: "Danger Zone: Permanent Account Deletion",
+            dangerZoneTitle: "Danger Zone: Permanent Deletion & Reset",
             deleteAccountBtn: "Permanently Delete Account"
         },
         NEP: {
@@ -278,7 +281,7 @@ tailwind.config = {
             logoutBtn: "लग आउट गर्नुहोस्",
             changePasswordTitle: "पासवर्ड परिवर्तन गर्नुहोस्",
             updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
-            dangerZoneTitle: "खतरा क्षेत्र: स्थायी अकाउन्ट मेटाउने",
+            dangerZoneTitle: "खतरा क्षेत्र: स्थायी अकाउन्ट मेटाउने र रिसेट",
             deleteAccountBtn: "स्थायी रूपमा अकाउन्ट मेटाउनुहोस्"
         }
     };
@@ -346,7 +349,6 @@ tailwind.config = {
         }, 3000);
     }
 
-    // Firebase Auth States & Actions
     auth.onAuthStateChanged((user) => {
         if (user) {
             document.getElementById('user-email-display').innerText = user.email;
