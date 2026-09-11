@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook - Settings & Preferences</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+    (function(){
+        emailjs.init("K1o1WC9jydWnUnUl7");
+    })();
+</script>
 <script>
 tailwind.config = {
     darkMode: 'class',
@@ -47,19 +54,6 @@ tailwind.config = {
     .more-text.show {
         display: block;
         overflow: visible;
-    }
-    /* Dynamic text effects (Shadow removed completely) */
-    .effect-outline {
-        -webkit-text-stroke: 1px currentColor;
-    }
-    .effect-background {
-        background-color: rgba(16, 185, 129, 0.2);
-        padding: 0.1rem 0.3rem;
-        border-radius: 0.25rem;
-    }
-    .effect-hollow {
-        color: transparent;
-        -webkit-text-stroke: 1px currentColor;
     }
 </style>
 </head>
@@ -172,47 +166,6 @@ tailwind.config = {
             <!-- SETTINGS & STYLING SECTION -->
             <div class="space-y-4 w-full max-w-5xl mx-auto">
                 
-                <!-- Typography & Layout Style -->
-                <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-font text-emerald-500"></i> <span data-i18n="typography_title">Typography & Layout Style</span>
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_size">Font Size</label>
-                            <select id="font-size-select" onchange="changeFontSize(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                                <option value="small">Small</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="large">Large</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_family">Font Family</label>
-                            <select id="font-family-select" onchange="changeFontFamily(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                                <option value="Poppins">Poppins</option>
-                                <option value="Inter">Inter</option>
-                                <option value="Srikhand">Srikhand</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="font_style">Font Style</label>
-                            <select id="font-style-select" onchange="changeFontStyle(this.value)" class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none">
-                                <option value="normal">Normal</option>
-                                <option value="bold">Bold</option>
-                                <option value="italic">Italic</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="pt-2 w-full">
-                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="text_effects">Text Effects</label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 w-full">
-                            <button onclick="setTextEffect('outline')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition" data-i18n="effect_outline">Outline</button>
-                            <button onclick="setTextEffect('background')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition" data-i18n="effect_background">Background</button>
-                            <button onclick="setTextEffect('hollow')" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-xl text-xs font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition" data-i18n="effect_hollow">Hollow</button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Policy, Terms & About Section -->
                 <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl shadow-sm space-y-4 border border-slate-200 dark:border-slate-800 transition-colors duration-300 w-full">
                     <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-3" data-i18n="policy_title">ℹ️ Policy, Terms & About</h4>
@@ -255,7 +208,7 @@ tailwind.config = {
                             <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1" data-i18n="your_message">सुझाव वा प्रतिक्रिया / Message or Feedback:</label>
                             <textarea id="fb-msg" rows="3" required placeholder="Write your feedback..." class="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-2.5 rounded-xl text-xs outline-none"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition" data-i18n="btn_submit">पठाउनुहोस् (Submit)</button>
+                        <button type="submit" id="fb-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition" data-i18n="btn_submit">पठाउनुहोस् (Submit)</button>
                     </form>
                 </div>
             </div>
@@ -274,14 +227,6 @@ tailwind.config = {
 
     const translations = {
         EN: {
-            typography_title: "Typography & Layout Style",
-            font_size: "Font Size",
-            font_family: "Font Family",
-            font_style: "Font Style",
-            text_effects: "Text Effects",
-            effect_outline: "Outline",
-            effect_background: "Background",
-            effect_hollow: "Hollow",
             policy_title: "ℹ️ Policy, Terms & About",
             policy_main_title: "Policy, Terms & Overview",
             policy_main_desc: "Your financial records are secured in Firebase cloud. Third-party data sharing is restricted, and users retain complete control over their accounts.",
@@ -294,14 +239,6 @@ tailwind.config = {
             btn_submit: "Submit"
         },
         NEP: {
-            typography_title: "टाइपोग्राफी र लेआउट शैली",
-            font_size: "फन्ट साइज",
-            font_family: "फन्ट परिवार",
-            font_style: "फन्ट शैली",
-            text_effects: "टेक्स्ट इफेक्ट्स",
-            effect_outline: "आउटलाइन",
-            effect_background: "ब्याकग्राउन्ड",
-            effect_hollow: "खोक्रो (Hollow)",
             policy_title: "ℹ️ नीति, सर्तहरू र बारेमा",
             policy_main_title: "गोपनीयता नीति र सर्तहरू",
             policy_main_desc: "तपाईँका हिसाब-किताब फायरबेस क्लाउडमा सुरक्षित छन्। तेस्रो पक्षलाई डाटा共享 गरिंदैन।",
@@ -395,51 +332,6 @@ tailwind.config = {
         }, 1500);
     }
 
-    // Typography and Styling Functions (Font size functionality fixed globally using root font-size scaling)
-    function changeFontSize(size) {
-        let scaleSize = '12px';
-        if (size === 'small') scaleSize = '11px';
-        else if (size === 'medium') scaleSize = '13px';
-        else if (size === 'large') scaleSize = '15px';
-
-        document.documentElement.style.fontSize = scaleSize;
-        localStorage.setItem('pref_font_size', size);
-        showToast(currentLang === 'NEP' ? 'फन्ट साइज परिवर्तन भयो!' : 'Font size updated!', 'success');
-    }
-
-    function changeFontFamily(family) {
-        document.body.style.fontFamily = `'${family}', sans-serif`;
-        localStorage.setItem('pref_font_family', family);
-        showToast(currentLang === 'NEP' ? 'फन्ट परिवार परिवर्तन भयो!' : 'Font family updated!', 'success');
-    }
-
-    function changeFontStyle(style) {
-        if (style === 'bold') {
-            document.body.style.fontWeight = 'bold';
-            document.body.style.fontStyle = 'normal';
-        } else if (style === 'italic') {
-            document.body.style.fontWeight = 'normal';
-            document.body.style.fontStyle = 'italic';
-        } else {
-            document.body.style.fontWeight = 'normal';
-            document.body.style.fontStyle = 'normal';
-        }
-        localStorage.setItem('pref_font_style', style);
-        showToast(currentLang === 'NEP' ? 'फन्ट शैली परिवर्तन भयो!' : 'Font style updated!', 'success');
-    }
-
-    function setTextEffect(effect) {
-        const mainBody = document.getElementById('main-body');
-        mainBody.classList.remove('effect-outline', 'effect-background', 'effect-hollow');
-        if (effect) {
-            mainBody.classList.add(`effect-${effect}`);
-            localStorage.setItem('pref_text_effect', effect);
-            showToast(currentLang === 'NEP' ? 'टेक्स्ट इफेक्ट लागू भयो!' : 'Text effect applied!', 'success');
-        } else {
-            localStorage.removeItem('pref_text_effect');
-        }
-    }
-
     function toggleText(id) {
         const el = document.getElementById(`more-${id}`);
         const btn = document.getElementById(`toggle-btn-${id}`);
@@ -458,13 +350,36 @@ tailwind.config = {
         showToast(currentLang === 'NEP' ? 'तपाईंसँग नवीनतम संस्करण (Version 6.7) छ!' : 'You are running the latest version (6.7)!', 'success');
     }
 
+    // EmailJS Feedback Handler
     function handleFeedback(event) {
         event.preventDefault();
         const name = document.getElementById('fb-name').value;
         const msg = document.getElementById('fb-msg').value;
+        const submitBtn = document.getElementById('fb-submit-btn');
+
         if(name && msg) {
-            showToast(currentLang === 'NEP' ? 'तपाईको प्रतिक्रियाको लागि धन्यवाद!' : 'Thank you for your feedback!', 'success');
-            document.getElementById('feedback-form').reset();
+            submitBtn.disabled = true;
+            submitBtn.innerText = currentLang === 'NEP' ? 'पठाउँदैछ...' : 'Sending...';
+
+            const templateParams = {
+                name: name,
+                email: 'gckamal67@gmail.com', // वा फारममा प्रयोग भएको इमेल फिल्ড राख्न सक्नुहुन्छ
+                title: 'Digital NoteBook Feedback',
+                message: msg
+            };
+
+            emailjs.send('service_r144e1o', 'template_36j91tf', templateParams)
+                .then(function(response) {
+                    showToast(currentLang === 'NEP' ? 'तपाईको प्रतिक्रिया सफलतापूर्वक पठाइयो!' : 'Feedback sent successfully!', 'success');
+                    document.getElementById('feedback-form').reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = currentLang === 'NEP' ? 'पठाउनुहोस् (Submit)' : 'Submit';
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    showToast(currentLang === 'NEP' ? 'इमेल पठाउन असफल भयो।' : 'Failed to send email.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = currentLang === 'NEP' ? 'पठाउनुहोस् (Submit)' : 'Submit';
+                });
         }
     }
 
@@ -516,48 +431,12 @@ tailwind.config = {
         });
     }
 
-    function loadSavedPreferences() {
-    const savedSize = localStorage.getItem('pref_font_size');
-    if (savedSize) {
-        let scaleSize = '12px';
-        if (savedSize === 'small') scaleSize = '11px';
-        else if (savedSize === 'medium') scaleSize = '13px';
-        else if (savedSize === 'large') scaleSize = '15px';
-        document.documentElement.style.fontSize = scaleSize;
-        const selectEl = document.getElementById('font-size-select');
-        if(selectEl) selectEl.value = savedSize;
-    }
-    const savedFamily = localStorage.getItem('pref_font_family');
-    if (savedFamily) {
-        document.body.style.fontFamily = `'${savedFamily}', sans-serif`;
-        const familyEl = document.getElementById('font-family-select');
-        if(familyEl) familyEl.value = savedFamily;
-    }
-    const savedStyle = localStorage.getItem('pref_font_style');
-    if (savedStyle) {
-        if (savedStyle === 'bold') {
-            document.body.style.fontWeight = 'bold';
-            document.body.style.fontStyle = 'normal';
-        } else if (savedStyle === 'italic') {
-            document.body.style.fontWeight = 'normal';
-            document.body.style.fontStyle = 'italic';
-        }
-        const styleEl = document.getElementById('font-style-select');
-        if(styleEl) styleEl.value = savedStyle;
-    }
-    const savedEffect = localStorage.getItem('pref_text_effect');
-    if (savedEffect) {
-        setTextEffect(savedEffect);
-    }
-}
-
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
         updateThemeUI();
         updateDynamicHeader();
         loadUserData();
         loadAvatar();
-        loadSavedPreferences();
     });
 </script>
 </body>
