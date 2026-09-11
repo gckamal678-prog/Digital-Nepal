@@ -180,7 +180,7 @@ tailwind.config = {
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
                 <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="changePasswordTitle">Change Password</h2>
                 <div class="space-y-3">
-                    <input type="password" id="new-password" data-translate-placeholder="newPasswordPlaceholder" placeholder="Enter new password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
+                    <input type="password" id="new-password" placeholder="Enter new password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
                     <button onclick="handleChangePassword()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="updatePasswordBtn">
                         Update Password
                     </button>
@@ -535,7 +535,7 @@ tailwind.config = {
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
         updateThemeUI();
-        checkAppPinLock(); // Check and prompt PIN lock on startup if enabled
+        checkAppPinLock();
         
         const savedPin = localStorage.getItem('app_pin_lock');
         if (savedPin) {
