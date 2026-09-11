@@ -441,6 +441,22 @@ tailwind.config = {
 </script>
 
 <script>
+    // index.html को सुरुमा पिन वा बायोमेट्रिक लकर चेक गर्ने कोड
+    window.addEventListener('DOMContentLoaded', () => {
+        const isPinLockEnabled = localStorage.getItem('app_pin_lock_enabled') === 'true';
+        const isBiometricEnabled = localStorage.getItem('app_biometric_lock_enabled') === 'true';
+        
+        if (isPinLockEnabled || isBiometricEnabled) {
+            const enteredPin = prompt("App is locked. Enter your 6-digit PIN to open Dashboard:");
+            const savedPin = localStorage.getItem('user_security_pin');
+            
+            if (enteredPin !== savedPin) {
+                alert("Incorrect PIN! Access denied.");
+                window.location.href = 'account.html'; // गलत भए फिर्ता पठाउने
+            }
+        }
+    });
+
     function showToast(message) {
         const toast = document.getElementById('toast-notification');
         document.getElementById('toast-message').innerText = message;
@@ -451,8 +467,6 @@ tailwind.config = {
             toast.classList.add('opacity-0', 'pointer-events-none');
         }, 2000);
     }
-
-    // Note: Security PIN logic and Biometric authentication removed from index.html
 
     const translations = {
         en: {
