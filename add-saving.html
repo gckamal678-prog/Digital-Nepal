@@ -135,6 +135,11 @@ tailwind.config = {
             </div>
 
             <div class="flex items-center space-x-2">
+                <!-- Top Right Total Saving Icon & Total Display -->
+                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-emerald-400">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                    <span id="header-total-savings">Rs 0.00</span>
+                </div>
                 <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition">ENG</button>
                 <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
                 <div class="relative cursor-pointer" onclick="toggleSidebar()">
@@ -404,6 +409,7 @@ tailwind.config = {
     function renderSavings() {
         const container = document.getElementById('savings-list-container');
         const totalTableEl = document.getElementById('savings-table-total');
+        const headerTotalEl = document.getElementById('header-total-savings');
         const searchQuery = document.getElementById('search-savings').value.toLowerCase();
         const sortOption = document.getElementById('sort-savings').value;
         if(!container) return;
@@ -414,6 +420,7 @@ tailwind.config = {
         if (savings.length === 0) {
             container.innerHTML = `<p class="text-slate-400 text-center py-3">${currentLang === 'NEP' ? 'कुनै रेकर्ड फेला परेन।' : 'No savings records found.'}</p>`;
             if(totalTableEl) totalTableEl.innerText = 'Rs 0.00';
+            if(headerTotalEl) headerTotalEl.innerText = 'Rs 0.00';
             return;
         }
 
@@ -498,6 +505,7 @@ tailwind.config = {
         });
 
         if(totalTableEl) totalTableEl.innerText = `Rs ${grandTotal.toFixed(2)}`;
+        if(headerTotalEl) headerTotalEl.innerText = `Rs ${grandTotal.toFixed(2)}`;
     }
 
     function toggleGroupLedger(gIdx) {
