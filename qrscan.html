@@ -290,14 +290,14 @@
             if(name) localStorage.setItem('profile_name', name);
             if(pin) {
                 if(pin.length !== 6) {
-                    alert('पिन (PIN) अनिवार्य रूपमा ६ अंकको हुनुपर्छ!');
+                    alert('PIN must be 6 digits!');
                     return;
                 }
                 localStorage.setItem('security_pin', pin);
                 set(ref(db, `users/${CURRENT_USER_ID}/settings`), { pin: pin });
             }
             loadUserData();
-            alert('विस्तृत जानकारी र पिन सफलतापूर्वक सेभ भयो!');
+            alert('Profile details and PIN saved successfully!');
         };
 
         window.loadUserData = function() {
@@ -416,7 +416,6 @@
             }
         };
 
-        // सच्याइएको मुख्य ह्यान्डलर (यहाँ पहिले पिन प्रमाणीकरण हुन्छ)
         async function handleScanSuccess(text) {
             if (typeof text !== 'string') return;
 
@@ -429,20 +428,19 @@
 
             if (targetUserId === CURRENT_USER_ID) {
                 playBeep(false);
-                showFeedback("तपाईंले आफ्नै QR स्क्यान गर्न मिल्दैन!", "error");
+                showFeedback("Cannot scan your own QR code!", "error");
                 return;
             }
 
-            const enteredPin = prompt("सुरक्षाको लागि ६-अंकको पिन (PIN) कोड प्रविष्ट गर्नुहोस्:");
+            const enteredPin = prompt("Enter 6-digit security PIN code:");
             if (!enteredPin || enteredPin.length !== 6) {
-                showFeedback("६ अंकको पिन अनिवार्य छ!", "error");
+                showFeedback("6-digit PIN is required!", "error");
                 return;
             }
 
-            showFeedback("पिन जाँच गरिँदैछ...", "success");
+            showFeedback("Checking PIN...", "success");
 
             try {
-                // १. मास्टर (सेन्डर) को सही पिन फायरबेसबाट तान्ने
                 const dbRef = ref(db);
                 const snapshot = await get(child(dbRef, `users/${targetUserId}/settings/pin`));
                 
@@ -451,17 +449,15 @@
                     masterPin = snapshot.val();
                 }
 
-                // २. यदि पिन मिलेन भने सिधै रोक्ने र डाटाबेसमा अनुरोध नपठाउने
                 if (masterPin && masterPin !== enteredPin) {
                     playBeep(false);
-                    showFeedback("गलत पिन! अनुरोध पठाइएन।", "error");
-                    alert("तपाईंले गलत सेक्युरिटी पिन राख्नुभयो!");
+                    showFeedback("Incorrect PIN! Request not sent.", "error");
+                    alert("You entered an incorrect security PIN!");
                     return; 
                 }
 
-                // ३. पिन मिलेको खण्डमा मात्र अनुरोध पठाउने
                 playBeep(true);
-                showFeedback("अनुमतिको लागि अनुरोध पठाइयो...", "success");
+                showFeedback("Request sent for approval...", "success");
 
                 const requestRef = ref(db, `sync_requests/${targetUserId}`);
                 await set(requestRef, {
@@ -471,25 +467,25 @@
                     status: 'pending'
                 });
 
-                alert("मास्टर डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
+                alert("Waiting for master device approval...");
                 
                 onValue(requestRef, (snapshot) => {
                     const reqData = snapshot.val();
                     if (reqData && reqData.status === 'approved') {
-                        showFeedback("अनुमति मिल्यो! डाटा सिङ्क हुँदैछ...", "success");
+                        showFeedback("Permission granted! Syncing data...", "success");
                         window.restoreFromCloud(targetUserId).then(res => {
                             if (res.success) {
-                                alert("डाटा सफलतापूर्वक सिङ्क भयो!");
+                                alert("Data synced successfully!");
                                 window.location.href = "index.html";
                             }
                         });
                     } else if (reqData && reqData.status === 'rejected') {
-                        showFeedback("मालिकले अनुमति अस्वीकार गर्नुभयो!", "error");
+                        showFeedback("Master rejected the permission!", "error");
                     }
                 }, { onlyOnce: true });
 
             } catch (error) {
-                showFeedback("त्रुटि देखियो: " + error.message, "error");
+                showFeedback("Error occurred: " + error.message, "error");
             }
         }
 
@@ -499,7 +495,7 @@
                 const data = snapshot.val();
                 if (data && data.status === 'pending') {
                     const userPin = data.pin;
-                    const confirmSync = confirm(`कसैले तपाईंको डेटा सिङ्क गर्न खोज्दैछ!\nउनीहरूले हालेको पिन: ${userPin}\nके तपाईं अनुमति दिनुहुन्छ?`);
+                    const confirmSync = confirm(`Someone is trying to sync your data!\nEntered PIN: ${userPin}\nDo you want to allow this?`);
                     if (confirmSync) {
                         update(myRequestRef, { status: 'approved' });
                     } else {
