@@ -148,6 +148,7 @@
                     <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="scanImageFromFile(event)">
 
                     <div class="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-2 text-center relative overflow-hidden min-h-[260px] flex flex-col justify-center items-center shadow-sm">
+                        <!-- क्यामेरा देखाउने फिक्स गरिएको div container -->
                         <div id="reader" class="w-full rounded-xl overflow-hidden"></div>
                         <div id="scannerLoading" class="text-emerald-500 text-xs font-medium animate-pulse mt-2">Camera active & scanning...</div>
                     </div>
@@ -224,7 +225,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Family Sharing Key Setup (SHARED_USER_ID ले दुवै डिभाइसलाई एउटै डाटाबेसमा जोड्छ)
         let CURRENT_USER_ID = localStorage.getItem('my_unique_userid');
         if (!CURRENT_USER_ID) {
             CURRENT_USER_ID = "user_" + Math.random().toString(36).substring(2, 8);
@@ -247,8 +247,10 @@
             loadAvatar();
             generateSecureQRToken();
             listenForSyncRequests();
-            setupLiveRealtimeSync(); // एउटै घरको लागि लाइभ सिङ्क चालु गर्ने
-            setTimeout(() => { startRealScanner(); }, 500);
+            setupLiveRealtimeSync();
+            
+            // क्यामेरा तुरुन्त लोड गराउन
+            setTimeout(() => { startRealScanner(); }, 800);
         };
 
         window.toggleSidebar = function() {
@@ -310,7 +312,7 @@
         };
 
         window.loadUserData = function() {
-            const savedName = localStorage.getItem('profile_name'] || '';
+            const savedName = localStorage.getItem('profile_name') || '';
             const savedAddress = localStorage.getItem('profile_address') || '';
             const savedMobile = localStorage.getItem('profile_mobile') || '';
             if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
@@ -371,7 +373,6 @@
             const uniqueHash = Math.random().toString(36).substring(2, 8);
             tokenExpiryTimestamp = Date.now() + (5 * 60 * 1000); 
             
-            // एउटै मास्टर युजर आईडी (FAMILY ID) को रूपमा काम गर्ने लिङ्क
             const secureToken = `https://gckamal678-prog.github.io/index.html?sync=${CURRENT_USER_ID}_${tokenExpiryTimestamp}_${uniqueHash}`;
             lastGeneratedToken = secureToken;
 
@@ -441,7 +442,6 @@
             }
         };
 
-        // क्लाउडबाट मास्टर युजरको डाटा तानेर श्रीमतीको मोबाइलमा लिंक गर्ने
         window.restoreFromCloud = async function(masterUserId) {
             try {
                 const dbRef = ref(db);
@@ -452,7 +452,6 @@
                     if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
                     if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
                     
-                    // पारिवारिक सेयरिङको लागि master_user_id लाई श्रीमतीको लोकल स्टोरेजमा स्थायी रूपमा सेभ गरिदिने
                     localStorage.setItem('linked_master_user_id', masterUserId);
                     return { success: true, message: "Family data linked successfully!" };
                 } else {
@@ -463,7 +462,6 @@
             }
         };
 
-        // एउटै घरको लागि लाइभ सिङ्क (श्रीमान वा श्रीमती जो-कोहीले थप्दा वा एडिट गर्दा अपडेट हुने)
         function setupLiveRealtimeSync() {
             const activeMasterId = localStorage.getItem('linked_master_user_id') || CURRENT_USER_ID;
             const userRootRef = ref(db, `users/${activeMasterId}`);
@@ -614,20 +612,43 @@
             html5QrCode.applyVideoConstraints({ advanced: [{ torch: torchOn }] }).catch(err => {});
         };
 
+        // क्यामेरा राम्ररी खोल्न र कालो स्क्रिन नआउने बनाइएको फंक्शन
         window.startRealScanner = function() {
             const spinner = document.getElementById('scannerLoading');
             if (spinner) spinner.classList.remove('hidden');
-            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
 
             if (!html5QrCode.isScanning) {
+                const config = { fps: 10, qrbox: { width: 200, height: 200 } };
+                
+                // पछाडिको मुख्य क्यामेरा प्रयोग गर्न कन्फिगर गरिएको
                 html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 170, height: 170 } },
-                    (decodedText) => { handleScanSuccess(decodedText); },
-                    () => {}
-                ).catch((err) => {
+                    { facingMode: "environment" }, 
+                    config,
+                    (decodedText) => { 
+                        handleScanSuccess(decodedText); 
+                    },
+                    (errorMessage) => {
+                        // स्क्यानिङ भइरहेको बेला आउने सामान्य एररहरू इग्नोर गर्ने
+                    }
+                ).then(() => {
                     if (spinner) spinner.classList.add('hidden');
-                    showFeedback("क्यामेरा अनुमति आवश्यक छ।", "error");
+                }).catch((err) => {
+                    // यदि पछाडिको क्या메라 फेला परेन भने जेनेरिक क्यामेरामा स्विच गर्ने
+                    html5QrCode.start(
+                        { facingMode: "user" },
+                        config,
+                        (decodedText) => { handleScanSuccess(decodedText); },
+                        (err) => {}
+                    ).then(() => {
+                        if (spinner) spinner.classList.add('hidden');
+                    }).catch(error => {
+                        if (spinner) spinner.classList.add('hidden');
+                        showFeedback("क्यामेरा अनुमति मिलेन वा उपलब्ध छैन।", "error");
+                    });
                 });
             }
         };
