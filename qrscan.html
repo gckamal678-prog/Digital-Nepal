@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital NoteBook - QR Scan & Share</title>
+    <title>Digital NoteBook - Family Sharing & QR Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
     tailwind.config = {
@@ -39,6 +39,7 @@
 
     <div class="flex min-h-screen w-full">
         
+        <!-- Sidebar -->
         <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
             <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
                 <div class="flex items-center space-x-2.5">
@@ -93,6 +94,7 @@
             </div>
         </div>
 
+        <!-- Main Content Area -->
         <div class="flex-1 flex flex-col w-full h-full overflow-hidden">
             <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
                 <div class="flex items-center space-x-2.5">
@@ -125,10 +127,11 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-1 rounded-xl flex border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <button onclick="switchTab('scan')" id="scanTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow">Scan QR</button>
-                    <button onclick="switchTab('share')" id="shareTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400">Share QR</button>
+                    <button onclick="switchTab('scan')" id="scanTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow">Scan QR (श्रीमतीको लागि)</button>
+                    <button onclick="switchTab('share')" id="shareTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400">Share QR (मुख्य युजर)</button>
                 </div>
 
+                <!-- Scan Tab View -->
                 <div id="scanView" class="space-y-3">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex justify-around items-center shadow-sm">
                         <button onclick="toggleTorch()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition">
@@ -150,7 +153,7 @@
                     </div>
 
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 space-y-2 shadow-sm">
-                        <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Code Manual Entry</label>
+                        <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Code Manual Entry (परिवार सेयरिङ कोड)</label>
                         <div class="flex gap-2">
                             <input type="text" id="manualTokenInput" placeholder="Paste sync token or link..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-white text-xs focus:outline-none focus:border-emerald-500">
                             <button onclick="submitManualToken()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-white rounded-xl font-bold text-xs transition shadow-md">Sync</button>
@@ -158,23 +161,23 @@
                     </div>
                 </div>
 
+                <!-- Share Tab View -->
                 <div id="shareView" class="space-y-3 hidden">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl p-4 shadow-sm flex justify-between items-center">
                         <div>
                             <div class="flex items-center gap-2">
                                 <h3 id="profileName" class="text-sm font-bold tracking-tight"></h3>
-                                <span class="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Active User</span>
+                                <span class="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Primary Account</span>
                             </div>
-                            <p id="profilePhone" class="text-[11px] text-slate-400 mt-0.5">Digital NoteBook ID</p>
+                            <p id="profilePhone" class="text-[11px] text-slate-400 mt-0.5">Family Sharing Enabled</p>
                         </div>
                         <button onclick="openNativeShareSheet()" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition text-slate-700 dark:text-slate-200 flex items-center gap-1.5 font-bold">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                            Share QR & Token
+                            Share QR
                         </button>
                     </div>
 
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center space-y-3">
-                        <!-- QR Wrapper with High Correction level and centered logo overlay -->
                         <div id="qrcodeWrapper" class="relative inline-block p-3 bg-white rounded-xl shadow-inner">
                             <div id="qrcode"></div>
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -183,14 +186,15 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[11px] text-slate-400">Scan this QR code within <span id="expiryCountdown" class="text-amber-400 font-bold">5:00 minutes</span> to securely sync data.</p>
-                        <button onclick="generateSecureQRToken()" class="text-emerald-500 hover:underline text-[11px] font-semibold">Generate New QR</button>
+                        <p class="text-[11px] text-slate-400">यो QR कोड स्क्यान गरेर श्रीमतीले तपाईंको हिसाब आफ्नो मोबाइलमा हेर्न र चलाउन सक्छिन् (<span id="expiryCountdown" class="text-amber-400 font-bold">5:00 minutes</span>).</p>
+                        <button onclick="generateSecureQRToken()" class="text-emerald-500 hover:underline text-[11px] font-semibold">नयाँ QR बनाउनुहोस्</button>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- Cropper Modal -->
     <div id="cropperModal" style="display:none;" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl max-w-sm w-full text-slate-800 dark:text-white shadow-2xl space-y-3">
             <h3 class="text-xs font-bold text-emerald-500">Crop & Zoom QR Code</h3>
@@ -220,6 +224,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Family Sharing Key Setup (SHARED_USER_ID ले दुवै डिभाइसलाई एउटै डाटाबेसमा जोड्छ)
         let CURRENT_USER_ID = localStorage.getItem('my_unique_userid');
         if (!CURRENT_USER_ID) {
             CURRENT_USER_ID = "user_" + Math.random().toString(36).substring(2, 8);
@@ -242,6 +247,7 @@
             loadAvatar();
             generateSecureQRToken();
             listenForSyncRequests();
+            setupLiveRealtimeSync(); // एउटै घरको लागि लाइभ सिङ्क चालु गर्ने
             setTimeout(() => { startRealScanner(); }, 500);
         };
 
@@ -300,11 +306,11 @@
             localStorage.setItem('profile_address', address);
             localStorage.setItem('profile_mobile', mobile);
             loadUserData();
-            alert('Details saved successfully!');
+            showFeedback('विवरण सफलतापूर्वक सुरक्षित भयो!', 'success');
         };
 
         window.loadUserData = function() {
-            const savedName = localStorage.getItem('profile_name') || '';
+            const savedName = localStorage.getItem('profile_name'] || '';
             const savedAddress = localStorage.getItem('profile_address') || '';
             const savedMobile = localStorage.getItem('profile_mobile') || '';
             if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
@@ -313,7 +319,7 @@
             const nameEl = document.getElementById('sidebar-profile-name');
             if(nameEl) nameEl.innerText = savedName;
             const profileNameEl = document.getElementById('profileName');
-            if(profileNameEl) profileNameEl.innerText = savedName || 'User Name';
+            if(profileNameEl) profileNameEl.innerText = savedName || 'Primary User';
         };
 
         window.handleAvatarUpload = function(event) {
@@ -365,11 +371,11 @@
             const uniqueHash = Math.random().toString(36).substring(2, 8);
             tokenExpiryTimestamp = Date.now() + (5 * 60 * 1000); 
             
+            // एउटै मास्टर युजर आईडी (FAMILY ID) को रूपमा काम गर्ने लिङ्क
             const secureToken = `https://gckamal678-prog.github.io/index.html?sync=${CURRENT_USER_ID}_${tokenExpiryTimestamp}_${uniqueHash}`;
             lastGeneratedToken = secureToken;
 
             if (typeof QRCode !== 'undefined') {
-                // CorrectLevel.H प्रयोग गरिएको छ ताकि लोगो राख्दा पनि बाहिरी एपले स्क्यान गर्न सकोस्
                 new QRCode(qrcodeContainer, {
                     text: secureToken,
                     width: 150,
@@ -391,7 +397,7 @@
                     clearInterval(qrTimerInterval);
                     if (timerBadge) timerBadge.textContent = "Expired";
                     if (expiryCountdown) expiryCountdown.textContent = "Expired!";
-                    document.getElementById('qrcode').innerHTML = '<p class="text-rose-500 text-[11px] font-bold p-4">QR Expired!<br>Generate new.</p>';
+                    document.getElementById('qrcode').innerHTML = '<p class="text-rose-500 text-[11px] font-bold p-4">QR Expired!<br>नयाँ जेनेरेट गर्नुहोस्।</p>';
                 } else {
                     const mins = Math.floor(secondsLeft / 60);
                     const secs = secondsLeft % 60;
@@ -405,7 +411,7 @@
         window.openNativeShareSheet = async function() {
             if (!lastGeneratedToken) generateSecureQRToken();
             if (Date.now() > tokenExpiryTimestamp) {
-                showFeedback("QR expired! Generate a new one.", "error");
+                showFeedback("QR को समय सकियो! नयाँ बनाउनुहोस्।", "error");
                 return;
             }
 
@@ -414,44 +420,66 @@
                 if (window.html2canvas) {
                     html2canvas(wrapper, { backgroundColor: '#ffffff', scale: 2 }).then(async (canvas) => {
                         canvas.toBlob(async (blob) => {
-                            const file = new File([blob], "digital-notebook-qr.png", { type: "image/png" });
+                            const file = new File([blob], "family-sharing-qr.png", { type: "image/png" });
                             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                                 await navigator.share({
-                                    title: 'Digital NoteBook QR Sync',
-                                    text: `Secure Sync Link: ${lastGeneratedToken}`,
+                                    title: 'Digital NoteBook Family Share',
+                                    text: `Family Sync Link: ${lastGeneratedToken}`,
                                     files: [file]
                                 });
                             } else if (navigator.share) {
                                 await navigator.share({
-                                    title: 'Digital NoteBook QR Sync',
-                                    text: `Secure Sync Link: ${lastGeneratedToken}`
+                                    title: 'Digital NoteBook Family Share',
+                                    text: `Family Sync Link: ${lastGeneratedToken}`
                                 });
                             }
                         }, 'image/png');
                     });
                 }
             } catch (err) {
-                showFeedback("Sharing failed or cancelled!", "error");
+                showFeedback("सेयर गर्न सकिएन!", "error");
             }
         };
 
-        window.restoreFromCloud = async function(userIdToFetch) {
+        // क्लाउडबाट मास्टर युजरको डाटा तानेर श्रीमतीको मोबाइलमा लिंक गर्ने
+        window.restoreFromCloud = async function(masterUserId) {
             try {
                 const dbRef = ref(db);
-                const snapshot = await get(child(dbRef, `users/${userIdToFetch}`));
+                const snapshot = await get(child(dbRef, `users/${masterUserId}`));
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
                     if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
                     if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
-                    return { success: true, message: "Synced successfully!" };
+                    
+                    // पारिवारिक सेयरिङको लागि master_user_id लाई श्रीमतीको लोकल स्टोरेजमा स्थायी रूपमा सेभ गरिदिने
+                    localStorage.setItem('linked_master_user_id', masterUserId);
+                    return { success: true, message: "Family data linked successfully!" };
                 } else {
-                    return { success: false, message: "No cloud backup found!" };
+                    return { success: false, message: "क्लाउडमा डाटा फेला परेन!" };
                 }
             } catch (error) {
                 return { success: false, message: error.message };
             }
         };
+
+        // एउटै घरको लागि लाइभ सिङ्क (श्रीमान वा श्रीमती जो-कोहीले थप्दा वा एडिट गर्दा अपडेट हुने)
+        function setupLiveRealtimeSync() {
+            const activeMasterId = localStorage.getItem('linked_master_user_id') || CURRENT_USER_ID;
+            const userRootRef = ref(db, `users/${activeMasterId}`);
+            
+            onValue(userRootRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const cloudData = snapshot.val();
+                    if (cloudData.transactions) {
+                        localStorage.setItem('digital_notebook_transactions', JSON.stringify(cloudData.transactions));
+                    }
+                    if (cloudData.notes) {
+                        localStorage.setItem('advanced_notebook_notes', JSON.stringify(cloudData.notes));
+                    }
+                }
+            });
+        }
 
         function handleScanSuccess(text) {
             if (typeof text !== 'string') return;
@@ -482,7 +510,7 @@
                     }
 
                     playBeep(true);
-                    showFeedback("अनुमतिको लागि अनुरोध पठाइयो...", "success");
+                    showFeedback("मुख्य युजरलाई अनुमतिको लागि पठाइयो...", "success");
 
                     const requestRef = ref(db, `sync_requests/${targetUserId}`);
                     set(requestRef, {
@@ -491,19 +519,19 @@
                         timestamp: Date.now(),
                         status: 'pending'
                     }).then(() => {
-                        alert("डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
+                        alert("मुख्य डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
                         onValue(requestRef, (snapshot) => {
                             const reqData = snapshot.val();
                             if (reqData && reqData.status === 'approved') {
-                                showFeedback("अनुमति मिल्यो! डाटा सिङ्क हुँदैछ...", "success");
+                                showFeedback("अनुमति मिल्यो! हिसाब जोडिँदैछ...", "success");
                                 window.restoreFromCloud(targetUserId).then(res => {
                                     if (res.success) {
-                                        alert("डाटा सफलतापूर्वक सिङ्क भयो!");
+                                        alert("सफलतापूर्वक परिवारको लेनदेन जोडियो!");
                                         window.location.href = "index.html";
                                     }
                                 });
                             } else if (reqData && reqData.status === 'rejected') {
-                                showFeedback("मालिकले अनुमति अस्वीकार गर्नुभयो!", "error");
+                                showFeedback("अनुमति अस्वीकार गरियो!", "error");
                             }
                         }, { onlyOnce: true });
                     });
@@ -518,7 +546,7 @@
             }
 
             playBeep(false);
-            showFeedback("अज्ञात QR कोड वा टेक्स्ट फेला पर्‍यो!", "error");
+            showFeedback("अज्ञात QR कोड फेला पर्‍यो!", "error");
         }
 
         function listenForSyncRequests() {
@@ -527,11 +555,13 @@
                 const data = snapshot.val();
                 if (data && data.status === 'pending') {
                     const userPin = data.pin;
-                    const confirmSync = confirm(`कसैले तपाईंको डेटा सिङ्क गर्न खोज्दैछ!\nउनीहरूले हालेको पिन: ${userPin}\nके तपाईं अनुमति दिनुहुन्छ?`);
+                    const confirmSync = confirm(`कसैले तपाईंको लेनदेन हिसाब (Family Sharing) मा जोिन खोज्दैछ!\nउनीहरूले हालेको पिन: ${userPin}\nके तपाईं अनुमति दिनुहुन्छ?`);
                     if (confirmSync) {
                         update(myRequestRef, { status: 'approved' });
+                        showFeedback("अनुमति स्वीकृत गरियो!", "success");
                     } else {
                         update(myRequestRef, { status: 'rejected' });
+                        showFeedback("अनुमति अस्वीकार गरियो!", "error");
                     }
                 }
             });
@@ -540,7 +570,7 @@
         window.submitManualToken = function() {
             const token = document.getElementById('manualTokenInput').value.trim();
             if(!token) {
-                showFeedback("Please enter a token or link!", "error");
+                showFeedback("कृपया टोकन वा लिङ्क राख्नुहोस्!", "error");
                 return;
             }
             handleScanSuccess(token);
@@ -574,7 +604,7 @@
                 const html5QrCodeFromFile = new Html5Qrcode("reader");
                 html5QrCodeFromFile.scanFile(blob, true)
                     .then(decodedText => { handleScanSuccess(decodedText); })
-                    .catch(err => { showFeedback("No valid QR found in cropped area!", "error"); });
+                    .catch(err => { showFeedback("QR फेला परेन!", "error"); });
             }, 'image/png');
         };
 
@@ -597,7 +627,7 @@
                     () => {}
                 ).catch((err) => {
                     if (spinner) spinner.classList.add('hidden');
-                    showFeedback("Camera permission needed.", "error");
+                    showFeedback("क्यामेरा अनुमति आवश्यक छ।", "error");
                 });
             }
         };
