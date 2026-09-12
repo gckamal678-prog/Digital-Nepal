@@ -294,7 +294,6 @@
                     return;
                 }
                 localStorage.setItem('security_pin', pin);
-                // फायरबेसमा पनि मास्टरको पिन सुरक्षित राख्ने
                 set(ref(db, `users/${CURRENT_USER_ID}/settings`), { pin: pin });
             }
             loadUserData();
@@ -353,7 +352,6 @@
             }
         };
 
-        // स्थायी र कहिल्यै नबदलिने QR (Permanent QR Token) - टाइमरको झन्झट सधैँका लागि समाप्त
         window.generatePermanentQR = function() {
             const qrcodeContainer = document.getElementById('qrcode');
             if (!qrcodeContainer) return;
@@ -418,7 +416,8 @@
             }
         };
 
-        function handleScanSuccess(text) {
+        // सच्याइएको मुख्य ह्यान्डलर (यहाँ पहिले पिन प्रमाणीकरण हुन्छ)
+        async function handleScanSuccess(text) {
             if (typeof text !== 'string') return;
 
             let targetUserId = "";
@@ -440,17 +439,40 @@
                 return;
             }
 
-            playBeep(true);
-            showFeedback("अनुमतिको लागि अनुरोध पठाइयो...", "success");
+            showFeedback("पिन जाँच गरिँदैछ...", "success");
 
-            const requestRef = ref(db, `sync_requests/${targetUserId}`);
-            set(requestRef, {
-                requesterId: CURRENT_USER_ID,
-                pin: enteredPin,
-                timestamp: Date.now(),
-                status: 'pending'
-            }).then(() => {
-                alert("डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
+            try {
+                // १. मास्टर (सेन्डर) को सही पिन फायरबेसबाट तान्ने
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, `users/${targetUserId}/settings/pin`));
+                
+                let masterPin = "";
+                if (snapshot.exists()) {
+                    masterPin = snapshot.val();
+                }
+
+                // २. यदि पिन मिलेन भने सिधै रोक्ने र डाटाबेसमा अनुरोध नपठाउने
+                if (masterPin && masterPin !== enteredPin) {
+                    playBeep(false);
+                    showFeedback("गलत पिन! अनुरोध पठाइएन।", "error");
+                    alert("तपाईंले गलत सेक्युरिटी पिन राख्नुभयो!");
+                    return; 
+                }
+
+                // ३. पिन मिलेको खण्डमा मात्र अनुरोध पठाउने
+                playBeep(true);
+                showFeedback("अनुमतिको लागि अनुरोध पठाइयो...", "success");
+
+                const requestRef = ref(db, `sync_requests/${targetUserId}`);
+                await set(requestRef, {
+                    requesterId: CURRENT_USER_ID,
+                    pin: enteredPin,
+                    timestamp: Date.now(),
+                    status: 'pending'
+                });
+
+                alert("मास्टर डिभाइसमा अनुमति (Approval) को प्रतीक्षा गर्दैछ...");
+                
                 onValue(requestRef, (snapshot) => {
                     const reqData = snapshot.val();
                     if (reqData && reqData.status === 'approved') {
@@ -465,7 +487,10 @@
                         showFeedback("मालिकले अनुमति अस्वीकार गर्नुभयो!", "error");
                     }
                 }, { onlyOnce: true });
-            });
+
+            } catch (error) {
+                showFeedback("त्रुटि देखियो: " + error.message, "error");
+            }
         }
 
         function listenForSyncRequests() {
