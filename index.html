@@ -205,7 +205,7 @@ tailwind.config = {
 
 <div class="flex min-h-screen w-full">
     
-    <!-- SIDEBAR SECTION (PIN Lock controls completely removed from here) -->
+    <!-- SIDEBAR SECTION -->
     <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
@@ -324,27 +324,32 @@ tailwind.config = {
                 </a>
             </div>
 
-            <!-- ROW 1: Financial Summaries -->
-            <div id="summary-cards-area" class="grid grid-cols-4 gap-2 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                <div class="flex flex-col items-center p-1">
+            <!-- ROW 1: Financial Summaries (Updated to 5 columns including Total Saving) -->
+            <div id="summary-cards-area" class="grid grid-cols-5 gap-1.5 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
+                <div class="flex flex-col items-center p-0.5">
                     <span class="text-base mb-0.5">💵</span>
-                    <span class="text-[10px] font-semibold text-emerald-500 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="कुल आम्दानी">Total Income</span></span>
-                    <span id="summary-income" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                    <span class="text-[9px] font-semibold text-emerald-500 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="कुल आम्दानी">Total Income</span></span>
+                    <span id="summary-income" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
+                <div class="flex flex-col items-center p-0.5">
                     <span class="text-base mb-0.5">📈</span>
-                    <span class="text-[10px] font-semibold text-teal-500 truncate w-full"><span class="lang-text" data-en="Total Invest" data-np="कुल लगानी">Total Invest</span></span>
-                    <span id="summary-expenses" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                    <span class="text-[9px] font-semibold text-teal-500 truncate w-full"><span class="lang-text" data-en="Total Invest" data-np="कुल लगानी">Total Invest</span></span>
+                    <span id="summary-expenses" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-base mb-0.5">🏦</span>
+                    <span class="text-[9px] font-semibold text-amber-500 truncate w-full"><span class="lang-text" data-en="Total Saving" data-np="कुल बचत">Total Saving</span></span>
+                    <span id="summary-saving" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-0.5">
                     <span class="text-base mb-0.5">📥</span>
-                    <span class="text-[10px] font-semibold text-cyan-500 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="पाउनुपर्ने रकम">Total Receivable</span></span>
-                    <span id="summary-receivable" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                    <span class="text-[9px] font-semibold text-cyan-500 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="पाउनुपर्ने">Total Receivable</span></span>
+                    <span id="summary-receivable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
+                <div class="flex flex-col items-center p-0.5">
                     <span class="text-base mb-0.5">📤</span>
-                    <span class="text-[10px] font-semibold text-rose-500 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="दिनुपर्ने रकम">Total Giveble</span></span>
-                    <span id="summary-payable" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                    <span class="text-[9px] font-semibold text-rose-500 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="दिनुपर्ने">Total Giveble</span></span>
+                    <span id="summary-payable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
             </div>
 
@@ -487,6 +492,7 @@ tailwind.config = {
             const localData = {
                 notes: JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]'),
                 incomes: JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]'),
+                savings: JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || localStorage.getItem('saving_data') || '[]'),
                 transactions: JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]'),
                 theme: localStorage.getItem('theme') || 'dark',
                 language: localStorage.getItem('language') || 'en',
@@ -507,6 +513,7 @@ tailwind.config = {
                 const data = snapshot.val();
                 if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
                 if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
+                if (data.savings) localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
                 if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
                 if (data.theme) localStorage.setItem('theme', data.theme);
                 return { success: true, message: "Data successfully synced from cloud!" };
@@ -530,6 +537,24 @@ tailwind.config = {
         showToast(result.message);
         if(result.success) location.reload();
     };
+
+    // Automatic background cloud backup whenever data changes or periodically when logged in
+    async function triggerAutomaticCloudBackup() {
+        let userId = auth.currentUser ? auth.currentUser.uid : localStorage.getItem('my_unique_userid');
+        if (userId && auth.currentUser) {
+            await backupToCloud(userId);
+        }
+    }
+
+    // Hook auto backup on storage changes and regular intervals
+    window.addEventListener('storage', () => {
+        triggerAutomaticCloudBackup();
+    });
+    setInterval(() => {
+        if (auth.currentUser) {
+            triggerAutomaticCloudBackup();
+        }
+    }, 60000); // Auto backup every 1 minute if user is logged in
 </script>
 
 <script>
@@ -544,7 +569,7 @@ tailwind.config = {
         }, 2000);
     }
 
-    // Security PIN & Biometric Verification Logic (Dashboard Guard with 2-Minute Expiry)
+    // Security PIN & Biometric Verification Logic
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
@@ -556,7 +581,6 @@ tailwind.config = {
             const currentTime = new Date().getTime();
             const twoMinutes = 2 * 60 * 1000;
 
-            // Check if 2 minutes have elapsed since last active time
             if (!lastActiveTime || (currentTime - parseInt(lastActiveTime)) > twoMinutes) {
                 lockScreen.classList.remove('hidden');
                 if (window.PublicKeyCredential) {
@@ -573,7 +597,6 @@ tailwind.config = {
         }
     }
 
-    // Update timestamp on user interaction to keep session alive
     function updateActiveTimestamp() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
         if (savedPin && savedPin.length === 6) {
@@ -758,6 +781,7 @@ tailwind.config = {
     setInterval(updateDynamicHeader, 1000);
 
     function updateSummaryCards() {
+        // Total Income Calculation
         const incomeKeys = ['digital_notebook_incomes', 'incomes', 'income_data', 'add_income_list'];
         let incomes = [];
         for (let key of incomeKeys) {
@@ -769,10 +793,25 @@ tailwind.config = {
                 } catch(e) {}
             }
         }
-        
         const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || item.val || item.total || item.price || 0), 0);
         if(document.getElementById('summary-income')) document.getElementById('summary-income').innerText = `Rs ${totalIncome.toLocaleString()}`;
 
+        // Total Saving Calculation (from saving.html data stores)
+        const savingKeys = ['digital_notebook_savings', 'savings', 'saving_data', 'add_saving_list'];
+        let savings = [];
+        for (let key of savingKeys) {
+            const data = localStorage.getItem(key);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed) && parsed.length > 0) { savings = parsed; break; }
+                } catch(e) {}
+            }
+        }
+        const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || item.val || item.total || item.price || 0), 0);
+        if(document.getElementById('summary-saving')) document.getElementById('summary-saving').innerText = `Rs ${totalSaving.toLocaleString()}`;
+
+        // Transactions Calculation (Invest, Receivable, Payable)
         const txKeys = ['digital_notebook_transactions', 'transactions', 'advanced_notebook_notes', 'notes', 'transaction_list'];
         let transactions = [];
         for (let key of txKeys) {
