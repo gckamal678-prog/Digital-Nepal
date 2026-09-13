@@ -195,7 +195,13 @@ tailwind.config = {
         }, 1500);
     }
 
-    // पात्रोको मिति र समय अपडेट गर्ने मुख्य फंक्सन
+    // अंग्रेजी अंकलाई नेपाली अंकमा बदल्ने सानो फंक्सन
+    function convertToNepaliNumber(num) {
+        const numbers = { '0': '०', '1': '१', '2': '२', '3': '३', '4': '४', '5': '५', '6': '६', '7': '७', '8': '८', '9': '९' };
+        return num.toString().replace(/[0-9]/g, w => numbers[w]);
+    }
+
+    // पात्रोको मिति र समय अपडेट गर्ने मुख्य फंक्सन (नेपाली र अंग्रेजी दुवै समर्थन गर्ने)
     function updateDynamicHeader() {
         const now = new Date();
         
@@ -218,11 +224,16 @@ tailwind.config = {
         if(npDate <= 0) npDate = 1;
 
         const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+        let timeString = now.toLocaleTimeString('en-US', timeOptions);
 
         let dateString = "";
         if (currentLang === 'NEP') {
-            dateString = `${daysNp[dayOfWeek]}, ${monthsNp[npMonthIndex]} ${npDate} गते, ${npYear} | ${timeString}`;
+            // समयको अंकलाई पनि नेपालीमा रूपान्तरण गर्न
+            let nepaliTime = convertToNepaliNumber(timeString)
+                .replace('AM', 'पूर्वाह्न')
+                .replace('PM', 'अपराह्न');
+
+            dateString = `${daysNp[dayOfWeek]}, ${monthsNp[npMonthIndex]} ${convertToNepaliNumber(npDate)} गते, ${convertToNepaliNumber(npYear)} | ${nepaliTime}`;
         } else {
             dateString = `${daysEn[dayOfWeek]}, ${monthsEn[npMonthIndex]} ${npDate}, ${npYear} | ${timeString}`;
         }
