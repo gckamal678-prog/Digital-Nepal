@@ -131,39 +131,24 @@ tailwind.config = {
         </div>
 
         <div class="text-center space-y-1">
-            <h2 class="text-base font-bold text-emerald-400" data-translate="loginTitle">Digital NoteBook</h2>
-            <p class="text-xs text-slate-400" data-translate="loginSubtitle">Please sign in or register to continue</p>
+            <h2 class="text-base font-bold text-emerald-400">Digital NoteBook</h2>
+            <p class="text-xs text-slate-400">Please sign in or register to continue</p>
         </div>
 
         <div class="space-y-3">
-            <input type="email" id="auth-email" data-translate-placeholder="emailPlaceholder" placeholder="Enter email" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-            <input type="password" id="auth-password" data-translate-placeholder="passwordPlaceholder" placeholder="Enter password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="email" id="auth-email" placeholder="Enter email" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="password" id="auth-password" placeholder="Enter password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
             
             <div class="text-right">
-                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline" data-translate="forgotPasswordBtn">Forgot Password?</button>
+                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline">Forgot Password?</button>
             </div>
         </div>
 
         <div class="flex gap-2 pt-1">
-            <button onclick="handleEmailSignUp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition" data-translate="signUpBtn">Sign Up</button>
-            <button onclick="handleEmailLogin()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="loginBtn">Login</button>
+            <button onclick="handleEmailSignUp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition">Sign Up</button>
+            <button onclick="handleEmailLogin()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition">Login</button>
         </div>
 
-    </div>
-</div>
-
-<!-- 1. LANGUAGE SELECTION MODAL -->
-<div id="language-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 hidden">
-    <div class="bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 w-80 text-center shadow-2xl space-y-5">
-        <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400">🌐</div>
-        <div class="space-y-1">
-            <h3 class="text-base font-bold text-white">Select Your Language</h3>
-            <p class="text-xs text-slate-400">Select preferred language</p>
-        </div>
-        <div class="grid grid-cols-2 gap-3 pt-2">
-            <button onclick="setLanguage('en')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">English 🇬🇧</button>
-            <button onclick="setLanguage('np')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">Nepali 🇳🇵</button>
-        </div>
     </div>
 </div>
 
@@ -234,45 +219,45 @@ tailwind.config = {
             </div>
 
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="Overview">Overview</span></a>
-                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span class="lang-text" data-en="Account & Backup" data-np="Account & Backup">Account & Backup</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span>Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span>Account & Backup</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="Personal Info">Personal Info</span>
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span>Personal Info</span>
                 </h3>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="Full Name">Full Name</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Full Name</span></label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="Email">Email</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Email</span></label>
                     <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="Address">Address</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Address</span></label>
                     <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="Mobile Number">Mobile Number</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
-                    <span class="lang-text" data-en="Save Info" data-np="Save Info">Save Info</span>
+                    <span>Save Info</span>
                 </button>
             </div>
 
             <div class="space-y-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-cloud text-emerald-400"></i> <span class="lang-text" data-en="Cloud Sync (Manual Only)" data-np="Cloud Sync (Manual Only)">Cloud Sync (Manual Only)</span>
+                    <i class="fa-solid fa-cloud text-emerald-400"></i> <span>Cloud Sync (Manual Only)</span>
                 </h3>
                 <div class="flex gap-2">
                     <button onclick="handleCloudBackup()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-[10px]">
-                        <span class="lang-text" data-en="Backup Now" data-np="Backup Now">Backup Now</span>
+                        <span>Backup Now</span>
                     </button>
                     <button onclick="handleCloudRestore()" class="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition text-[10px]">
-                        <span class="lang-text" data-en="Restore" data-np="Restore">Restore</span>
+                        <span>Restore</span>
                     </button>
                 </div>
             </div>
@@ -312,41 +297,41 @@ tailwind.config = {
                 <div>
                     <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-emerald-500 dark:text-emerald-400 uppercase mb-1"></p>
                     <h2 id="dynamic-greeting" class="text-base md:text-lg font-bold text-slate-800 dark:text-white tracking-tight"></h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span class="lang-text" data-en="Here is what is happening with your money today." data-np="Here is what is happening with your money today.">Here is what is happening with your money today.</span></p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span>Here is what is happening with your money today.</span></p>
                 </div>
                 <a href="qrscan.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition">
                     <div class="w-12 h-12 bg-white flex items-center justify-center p-0.5 rounded">
                         <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
-                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="QR Scan">QR Scan</span></span>
+                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span>QR Scan</span></span>
                 </a>
             </div>
 
-            <!-- ROW 1: Financial Summaries (5 Items: Income, Invest, Receivable, Payable, Saving) -->
+            <!-- ROW 1: Financial Summaries -->
             <div id="summary-cards-area" class="grid grid-cols-5 gap-1.5 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-sm mb-0.5">💵</span>
-                    <span class="text-[9px] font-semibold text-emerald-500 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="Total Income">Total Income</span></span>
+                    <span class="text-[9px] font-semibold text-emerald-500 truncate w-full"><span>Total Income</span></span>
                     <span id="summary-income" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-sm mb-0.5">📈</span>
-                    <span class="text-[9px] font-semibold text-teal-500 truncate w-full"><span class="lang-text" data-en="Total Invest" data-np="Total Invest">Total Invest</span></span>
+                    <span class="text-[9px] font-semibold text-teal-500 truncate w-full"><span>Total Invest</span></span>
                     <span id="summary-expenses" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-sm mb-0.5">📥</span>
-                    <span class="text-[9px] font-semibold text-cyan-500 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="Total Receivable">Total Receivable</span></span>
+                    <span class="text-[9px] font-semibold text-cyan-500 truncate w-full"><span>Total Receivable</span></span>
                     <span id="summary-receivable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-sm mb-0.5">📤</span>
-                    <span class="text-[9px] font-semibold text-rose-500 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="Total Giveble">Total Giveble</span></span>
+                    <span class="text-[9px] font-semibold text-rose-500 truncate w-full"><span>Total Giveble</span></span>
                     <span id="summary-payable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-sm mb-0.5">🏦</span>
-                    <span class="text-[9px] font-semibold text-amber-500 truncate w-full"><span class="lang-text" data-en="Total Saving" data-np="Total Saving">Total Saving</span></span>
+                    <span class="text-[9px] font-semibold text-amber-500 truncate w-full"><span>Total Saving</span></span>
                     <span id="summary-saving" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
             </div>
@@ -358,41 +343,41 @@ tailwind.config = {
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="add-transaction.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">💳</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add transaction" data-np="Add transaction">Add transaction</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>Add transaction</span></span>
                     </a>
                     <a href="add-income.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">💰</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Income" data-np="Add Income">Add Income</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>Add Income</span></span>
                     </a>
                     <a href="add-saving.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">🏦</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Saving" data-np="Add Saving">Add Saving</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>Add Saving</span></span>
                     </a>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="calculate.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">🧮</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calculate" data-np="calculate">calculate</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>calculate</span></span>
                     </a>
                     <a href="notebook.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📓</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Notebook" data-np="Notebook">Notebook</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>Notebook</span></span>
                     </a>
                     <a href="calendar.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📅</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calendar" data-np="calendar">calendar</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>calendar</span></span>
                     </a>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 text-center">
                     <a href="setting.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">⚙️</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Setting" data-np="Setting">Setting</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>Setting</span></span>
                     </a>
                     <a href="account.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">👤</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="account" data-np="account">account</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span>account</span></span>
                     </a>
                 </div>
             </div>
@@ -721,11 +706,6 @@ tailwind.config = {
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang.toUpperCase();
-
-        document.querySelectorAll('.lang-text').forEach(el => {
-            const text = currentLang === 'np' ? el.getAttribute('data-np') : el.getAttribute('data-en');
-            if(text) el.innerText = text;
-        });
     }
 
     function toggleLanguage() {
