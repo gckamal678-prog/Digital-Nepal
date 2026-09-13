@@ -76,25 +76,23 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- SECURITY LOCK SCREEN (DASHBOARD ENTRY LOCK) -->
+<!-- SECURITY LOCK SCREEN (DASHBOARD ENTRY LOCK - 4 DIGIT MPIN) -->
 <div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
             🔒
         </div>
         <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security PIN</h2>
-            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 6-digit PIN to access Dashboard</p>
+            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security MPIN</h2>
+            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN to access Dashboard</p>
         </div>
 
-        <!-- 6 Digit Dots Display -->
-        <div class="flex justify-center gap-3 py-2">
+        <!-- 4 Digit Dots Display -->
+        <div class="flex justify-center gap-4 py-2">
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-0"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-1"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-2"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-3"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-4"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-5"></div>
         </div>
 
         <!-- Biometric Button -->
@@ -160,11 +158,11 @@ tailwind.config = {
         <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400">🌐</div>
         <div class="space-y-1">
             <h3 class="text-base font-bold text-white">Select Your Language</h3>
-            <p class="text-xs text-slate-400">तपाईंलाई मनपर्ने भाषा छान्नुहोस्</p>
+            <p class="text-xs text-slate-400">Select preferred language</p>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-2">
             <button onclick="setLanguage('en')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">English 🇬🇧</button>
-            <button onclick="setLanguage('np')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">नेपाली 🇳🇵</button>
+            <button onclick="setLanguage('np')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">Nepali 🇳🇵</button>
         </div>
     </div>
 </div>
@@ -205,7 +203,7 @@ tailwind.config = {
 
 <div class="flex min-h-screen w-full">
     
-    <!-- SIDEBAR SECTION (PIN Lock controls completely removed from here) -->
+    <!-- SIDEBAR SECTION -->
     <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
@@ -236,45 +234,45 @@ tailwind.config = {
             </div>
 
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="Overview">Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span class="lang-text" data-en="Account & Backup" data-np="Account & Backup">Account & Backup</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="Personal Info">Personal Info</span>
                 </h3>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="Full Name">Full Name</span></label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="इमेल">Email</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="Email">Email</span></label>
                     <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="Address">Address</span></label>
                     <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="Mobile Number">Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
-                    <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
+                    <span class="lang-text" data-en="Save Info" data-np="Save Info">Save Info</span>
                 </button>
             </div>
 
             <div class="space-y-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-cloud text-emerald-400"></i> <span class="lang-text" data-en="Cloud Sync" data-np="क्लाउड सिंक">Cloud Sync</span>
+                    <i class="fa-solid fa-cloud text-emerald-400"></i> <span class="lang-text" data-en="Cloud Sync (Manual Only)" data-np="Cloud Sync (Manual Only)">Cloud Sync (Manual Only)</span>
                 </h3>
                 <div class="flex gap-2">
                     <button onclick="handleCloudBackup()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-[10px]">
-                        <span class="lang-text" data-en="Backup" data-np="ब्याकअप">Backup</span>
+                        <span class="lang-text" data-en="Backup Now" data-np="Backup Now">Backup Now</span>
                     </button>
                     <button onclick="handleCloudRestore()" class="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition text-[10px]">
-                        <span class="lang-text" data-en="Restore" data-np="पुनः भण्डारण">Restore</span>
+                        <span class="lang-text" data-en="Restore" data-np="Restore">Restore</span>
                     </button>
                 </div>
             </div>
@@ -314,37 +312,42 @@ tailwind.config = {
                 <div>
                     <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-emerald-500 dark:text-emerald-400 uppercase mb-1"></p>
                     <h2 id="dynamic-greeting" class="text-base md:text-lg font-bold text-slate-800 dark:text-white tracking-tight"></h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span class="lang-text" data-en="Here is what is happening with your money today." data-np="आज तपाईंको पैसाको स्थिति यहाँ छ।">Here is what is happening with your money today.</span></p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span class="lang-text" data-en="Here is what is happening with your money today." data-np="Here is what is happening with your money today.">Here is what is happening with your money today.</span></p>
                 </div>
                 <a href="qrscan.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition">
                     <div class="w-12 h-12 bg-white flex items-center justify-center p-0.5 rounded">
                         <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
-                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="क्यूआर स्क्यान">QR Scan</span></span>
+                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="QR Scan">QR Scan</span></span>
                 </a>
             </div>
 
-            <!-- ROW 1: Financial Summaries -->
-            <div id="summary-cards-area" class="grid grid-cols-4 gap-2 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                <div class="flex flex-col items-center p-1">
-                    <span class="text-base mb-0.5">💵</span>
-                    <span class="text-[10px] font-semibold text-emerald-500 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="कुल आम्दानी">Total Income</span></span>
-                    <span id="summary-income" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+            <!-- ROW 1: Financial Summaries (5 Items: Income, Invest, Receivable, Payable, Saving) -->
+            <div id="summary-cards-area" class="grid grid-cols-5 gap-1.5 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-sm mb-0.5">💵</span>
+                    <span class="text-[9px] font-semibold text-emerald-500 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="Total Income">Total Income</span></span>
+                    <span id="summary-income" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
-                    <span class="text-base mb-0.5">📈</span>
-                    <span class="text-[10px] font-semibold text-teal-500 truncate w-full"><span class="lang-text" data-en="Total Invest" data-np="कुल लगानी">Total Invest</span></span>
-                    <span id="summary-expenses" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-sm mb-0.5">📈</span>
+                    <span class="text-[9px] font-semibold text-teal-500 truncate w-full"><span class="lang-text" data-en="Total Invest" data-np="Total Invest">Total Invest</span></span>
+                    <span id="summary-expenses" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
-                    <span class="text-base mb-0.5">📥</span>
-                    <span class="text-[10px] font-semibold text-cyan-500 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="पाउनुपर्ने रकम">Total Receivable</span></span>
-                    <span id="summary-receivable" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-sm mb-0.5">📥</span>
+                    <span class="text-[9px] font-semibold text-cyan-500 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="Total Receivable">Total Receivable</span></span>
+                    <span id="summary-receivable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
-                <div class="flex flex-col items-center p-1">
-                    <span class="text-base mb-0.5">📤</span>
-                    <span class="text-[10px] font-semibold text-rose-500 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="दिनुपर्ने रकम">Total Giveble</span></span>
-                    <span id="summary-payable" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-sm mb-0.5">📤</span>
+                    <span class="text-[9px] font-semibold text-rose-500 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="Total Giveble">Total Giveble</span></span>
+                    <span id="summary-payable" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-0.5">
+                    <span class="text-sm mb-0.5">🏦</span>
+                    <span class="text-[9px] font-semibold text-amber-500 truncate w-full"><span class="lang-text" data-en="Total Saving" data-np="Total Saving">Total Saving</span></span>
+                    <span id="summary-saving" class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
                 </div>
             </div>
 
@@ -355,41 +358,41 @@ tailwind.config = {
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="add-transaction.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">💳</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add transaction" data-np="कारोबार थप्नुहोस्">Add transaction</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add transaction" data-np="Add transaction">Add transaction</span></span>
                     </a>
                     <a href="add-income.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">💰</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Income" data-np="आम्दानी थप्नुहोस्">Add Income</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Income" data-np="Add Income">Add Income</span></span>
                     </a>
                     <a href="add-saving.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">🏦</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Saving" data-np="बचत थप्नुहोस्">Add Saving</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Saving" data-np="Add Saving">Add Saving</span></span>
                     </a>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="calculate.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">🧮</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calculate" data-np="हिसाब गर्नुहोस्">calculate</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calculate" data-np="calculate">calculate</span></span>
                     </a>
                     <a href="notebook.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📓</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Notebook" data-np="नोटबुक">Notebook</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Notebook" data-np="Notebook">Notebook</span></span>
                     </a>
                     <a href="calendar.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📅</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calendar" data-np="पात्रो">calendar</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calendar" data-np="calendar">calendar</span></span>
                     </a>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 text-center">
                     <a href="setting.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">⚙️</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Setting" data-np="सेटिङ">Setting</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Setting" data-np="Setting">Setting</span></span>
                     </a>
                     <a href="account.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">👤</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="account" data-np="खाता">account</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="account" data-np="account">account</span></span>
                     </a>
                 </div>
             </div>
@@ -482,24 +485,30 @@ tailwind.config = {
             });
     }
 
-    async function backupToCloud(userId = "default_user") {
+    async function backupToCloud(userId) {
         try {
             const localData = {
                 notes: JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]'),
                 incomes: JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]'),
                 transactions: JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]'),
+                savings: JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]'),
+                profileName: localStorage.getItem('profile_name') || '',
+                profileEmail: localStorage.getItem('profile_email') || '',
+                profileAddress: localStorage.getItem('profile_address') || '',
+                profileMobile: localStorage.getItem('profile_mobile') || '',
+                profileAvatar: localStorage.getItem('profile_avatar') || '',
                 theme: localStorage.getItem('theme') || 'dark',
                 language: localStorage.getItem('language') || 'en',
                 updatedAt: new Date().toISOString()
             };
             await set(ref(db, 'users/' + userId), localData);
-            return { success: true, message: "Data successfully saved to cloud!" };
+            return { success: true, message: "100% Autocratic Backup Successful!" };
         } catch (error) {
             return { success: false, message: error.message };
         }
     }
 
-    async function restoreFromCloud(userId = "default_user") {
+    async function restoreFromCloud(userId) {
         try {
             const dbRef = ref(db);
             const snapshot = await get(child(dbRef, `users/${userId}`));
@@ -508,8 +517,18 @@ tailwind.config = {
                 if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
                 if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
                 if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
+                if (data.savings) localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
+                if (data.profileName) localStorage.setItem('profile_name', data.profileName);
+                if (data.profileEmail) localStorage.setItem('profile_email', data.profileEmail);
+                if (data.profileAddress) localStorage.setItem('profile_address', data.profileAddress);
+                if (data.profileMobile) localStorage.setItem('profile_mobile', data.profileMobile);
+                if (data.profileAvatar) localStorage.setItem('profile_avatar', data.profileAvatar);
                 if (data.theme) localStorage.setItem('theme', data.theme);
-                return { success: true, message: "Data successfully synced from cloud!" };
+                if (data.language) {
+                    localStorage.setItem('language', data.language);
+                    localStorage.setItem('userLang', data.language);
+                }
+                return { success: true, message: "100% Autocratic Restore Successful!" };
             } else {
                 return { success: false, message: "No backup found in cloud!" };
             }
@@ -519,13 +538,21 @@ tailwind.config = {
     }
 
     window.handleCloudBackup = async function() {
-        let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
+        let userId = auth.currentUser ? auth.currentUser.uid : null;
+        if (!userId) {
+            showToast("Please login first for 100% cloud backup!");
+            return;
+        }
         const result = await backupToCloud(userId);
         showToast(result.message);
     };
 
     window.handleCloudRestore = async function() {
-        let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
+        let userId = auth.currentUser ? auth.currentUser.uid : null;
+        if (!userId) {
+            showToast("Please login first for 100% cloud restore!");
+            return;
+        }
         const result = await restoreFromCloud(userId);
         showToast(result.message);
         if(result.success) location.reload();
@@ -544,19 +571,18 @@ tailwind.config = {
         }, 2000);
     }
 
-    // Security PIN & Biometric Verification Logic (Dashboard Guard with 2-Minute Expiry)
+    // Security PIN & Biometric Verification Logic (Dashboard Guard with 4-Digit MPIN and 2-Minute Expiry)
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
         const lockScreen = document.getElementById('security-lock-screen');
         
-        if (savedPin && savedPin.length === 6) {
+        if (savedPin && savedPin.length === 4) {
             const lastActiveTime = localStorage.getItem('last_active_timestamp');
             const currentTime = new Date().getTime();
             const twoMinutes = 2 * 60 * 1000;
 
-            // Check if 2 minutes have elapsed since last active time
             if (!lastActiveTime || (currentTime - parseInt(lastActiveTime)) > twoMinutes) {
                 lockScreen.classList.remove('hidden');
                 if (window.PublicKeyCredential) {
@@ -573,10 +599,9 @@ tailwind.config = {
         }
     }
 
-    // Update timestamp on user interaction to keep session alive
     function updateActiveTimestamp() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
-        if (savedPin && savedPin.length === 6) {
+        if (savedPin && savedPin.length === 4) {
             localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
         }
     }
@@ -586,10 +611,10 @@ tailwind.config = {
     });
 
     window.pressPinKey = function(digit) {
-        if (currentEnteredPin.length < 6) {
+        if (currentEnteredPin.length < 4) {
             currentEnteredPin += digit;
             updatePinDots();
-            if (currentEnteredPin.length === 6) {
+            if (currentEnteredPin.length === 4) {
                 verifyEnteredPin();
             }
         }
@@ -608,7 +633,7 @@ tailwind.config = {
     }
 
     function updatePinDots() {
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 4; i++) {
             const dot = document.getElementById(`dot-${i}`);
             if (i < currentEnteredPin.length) {
                 dot.classList.add('bg-emerald-500');
@@ -629,7 +654,7 @@ tailwind.config = {
             currentEnteredPin = "";
             updatePinDots();
         } else {
-            showToast("Incorrect PIN. Try again.");
+            showToast("Incorrect MPIN. Try again.");
             currentEnteredPin = "";
             updatePinDots();
         }
@@ -673,10 +698,10 @@ tailwind.config = {
                 document.getElementById('security-lock-screen').classList.add('hidden');
                 localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             } else {
-                showToast("Please use your 6-digit PIN.");
+                showToast("Please use your 4-digit MPIN.");
             }
         } catch (error) {
-            showToast("Please use your 6-digit PIN.");
+            showToast("Please use your 4-digit MPIN.");
         }
     }
 
@@ -686,7 +711,7 @@ tailwind.config = {
         }
     });
 
-    let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'np';
+    let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'en';
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
@@ -707,6 +732,7 @@ tailwind.config = {
         currentLang = currentLang === 'en' ? 'np' : 'en';
         localStorage.setItem('userLang', currentLang);
         localStorage.setItem('lang', currentLang);
+        localStorage.setItem('language', currentLang);
         updateLanguageUI();
         updateDynamicHeader();
     }
@@ -741,11 +767,11 @@ tailwind.config = {
         if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
 
         const hours = now.getHours();
-        let greetingText = currentLang === 'np' ? 'शुभ प्रभात' : 'Good morning';
+        let greetingText = 'Good morning';
         if (hours >= 12 && hours < 17) {
-            greetingText = currentLang === 'np' ? 'शुभ दिन' : 'Good afternoon';
+            greetingText = 'Good afternoon';
         } else if (hours >= 17) {
-            greetingText = currentLang === 'np' ? 'शुभ साँझ' : 'Good evening';
+            greetingText = 'Good evening';
         }
 
         const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
@@ -801,9 +827,23 @@ tailwind.config = {
             }
         });
 
+        const savingKeys = ['digital_notebook_savings', 'savings', 'saving_data'];
+        let savings = [];
+        for (let key of savingKeys) {
+            const data = localStorage.getItem(key);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed) && parsed.length > 0) { savings = parsed; break; }
+                } catch(e) {}
+            }
+        }
+        const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || item.val || item.total || 0), 0);
+
         if(document.getElementById('summary-expenses')) document.getElementById('summary-expenses').innerText = `Rs ${totalInvest.toLocaleString()}`;
         if(document.getElementById('summary-receivable')) document.getElementById('summary-receivable').innerText = `Rs ${totalReceivable.toLocaleString()}`;
         if(document.getElementById('summary-payable')) document.getElementById('summary-payable').innerText = `Rs ${totalPayable.toLocaleString()}`;
+        if(document.getElementById('summary-saving')) document.getElementById('summary-saving').innerText = `Rs ${totalSaving.toLocaleString()}`;
     }
 
     window.addEventListener('pageshow', (event) => { updateSummaryCards(); });
@@ -826,7 +866,7 @@ tailwind.config = {
 
         loadUserData();
         updateDynamicHeader();
-        showToast(currentLang === 'np' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
+        showToast('Details saved successfully!');
     }
 
     function loadUserData() {
