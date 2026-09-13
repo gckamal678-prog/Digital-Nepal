@@ -3,19 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Digital NoteBook - Dashboard</title>
+<title>Digital NoteBook - Account Management</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Firebase App (core) and Firebase Auth -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script>
 tailwind.config = {
     darkMode: 'class',
-    theme: {
-        extend: {
-            fontFamily: { sans: ['Poppins', 'sans-serif'] }
-        }
-    }
+    theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] } } }
 }
 </script>
 <script>
@@ -28,53 +23,25 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
 
-<!-- APP LOCK SCREEN OVERLAY (BANK STYLE) -->
-<div id="app-lock-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 hidden">
-    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-6">
-        <div class="w-16 h-16 bg-emerald-600/20 border border-emerald-500/50 rounded-2xl mx-auto flex items-center justify-center text-emerald-400 text-2xl shadow-inner">
-            <i class="fa-solid fa-lock"></i>
-        </div>
-        <div>
-            <h2 class="text-base font-bold text-white" id="lock-title">Enter App MPIN</h2>
-            <p class="text-[11px] text-slate-400 mt-1" id="lock-subtitle">Please enter your 4-digit MPIN to unlock</p>
-        </div>
-        <!-- PIN Dots Indicator -->
-        <div class="flex justify-center gap-3 my-2">
-            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-0"></div>
-            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-1"></div>
-            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-2"></div>
-            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-3"></div>
-        </div>
-        <!-- Number Pad -->
-        <div class="grid grid-cols-3 gap-3 pt-2">
-            <button onclick="pressPin('1')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">1</button>
-            <button onclick="pressPin('2')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">2</button>
-            <button onclick="pressPin('3')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">3</button>
-            <button onclick="pressPin('4')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">4</button>
-            <button onclick="pressPin('5')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">5</button>
-            <button onclick="pressPin('6')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">6</button>
-            <button onclick="pressPin('7')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">7</button>
-            <button onclick="pressPin('8')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">8</button>
-            <button onclick="pressPin('9')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">9</button>
-            <button onclick="useBiometric()" id="bio-btn" class="py-3.5 bg-slate-800/50 hover:bg-slate-700 rounded-2xl text-emerald-400 font-bold text-sm transition flex items-center justify-center"><i class="fa-solid fa-fingerprint text-lg"></i></button>
-            <button onclick="pressPin('0')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">0</button>
-            <button onclick="clearPin()" class="py-3.5 bg-slate-800/50 hover:bg-slate-700 rounded-2xl text-rose-400 font-bold text-xs transition"><i class="fa-solid fa-delete-left"></i></button>
-        </div>
-        <div class="pt-2">
-            <button onclick="executeLogoutFromLock()" class="text-[11px] text-rose-500 hover:underline font-semibold">Sign Out / Switch Account</button>
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
+
+<!-- LOGOUT MODAL -->
+<div id="logout-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Are you sure you want to log out?</h3>
+        <div class="flex gap-2 justify-center pt-2">
+            <button onclick="closeLogoutModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl">No</button>
+            <button onclick="executeLogout()" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700">Yes</button>
         </div>
     </div>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
-
 <div class="flex min-h-screen w-full">
     <!-- SIDEBAR -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center overflow-hidden">
                     <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
                 </div>
                 <h1 class="text-sm font-extrabold tracking-wide text-white">Digital <span class="text-emerald-400">NoteBook</span></h1>
@@ -82,49 +49,69 @@ tailwind.config = {
             <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg">✕</button>
         </div>
         <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
-            <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden">
-                    <img src="N1024.png" alt="Profile" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h3 id="sidebar-profile-name" class="text-white font-bold text-sm">User</h3>
-                    <p class="text-[10px] text-slate-400" id="sidebar-user-email">Loading...</p>
-                </div>
-            </div>
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20"><span>📊</span> <span>Overview</span></a>
-                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>⚙️</span> <span>Account & Backup</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span>Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md"><span>⚙️</span> <span>Account & Backup</span></a>
             </nav>
         </div>
     </div>
 
     <div class="flex-1 flex flex-col w-full">
-        <!-- HEADER -->
-        <header class="sticky top-0 z-30 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+        <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
             <div class="flex items-center space-x-2.5">
-                <button onclick="toggleSidebar()" class="text-white text-xl hover:text-emerald-400 transition">☰</button>
-                <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center overflow-hidden">
-                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
-                    </div>
-                    <span class="text-xs md:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Digital NoteBook</span>
-                </div>
+                <button onclick="toggleSidebar()" class="text-white text-xl hover:text-emerald-400">☰</button>
+                <span class="text-xs md:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Digital NoteBook</span>
             </div>
             <div class="flex items-center space-x-2">
                 <button onclick="toggleTheme()" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm">🌛</button>
-                <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center overflow-hidden cursor-pointer" onclick="window.location.href='account.html'">
-                    <img src="N1024.png" alt="Profile" class="w-full h-full object-cover">
-                </div>
             </div>
         </header>
 
-        <!-- DASHBOARD MAIN CONTENT -->
         <main class="p-4 space-y-4 flex-1 w-full max-w-xl mx-auto overflow-y-auto">
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm text-center space-y-3">
-                <h1 class="text-lg font-bold text-emerald-600 dark:text-emerald-400">Welcome to Dashboard</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Your secure digital notebook is active and synchronized.</p>
-                <div class="pt-2">
-                    <a href="account.html" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-md inline-block">Go to Account & Security Settings</a>
+            <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+                <h1 class="text-base font-bold text-emerald-600 dark:text-emerald-400">Account Management</h1>
+                <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white">Back to Dashboard</a>
+            </div>
+
+            <!-- SECURITY & LOCK SETTINGS -->
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span>Security & Lock Settings</span>
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-xs text-slate-800 dark:text-white">App 4-Digit MPIN Lock</h4>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="pin-lock-toggle" onchange="togglePinLockSetting(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-300 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:bg-emerald-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div id="pin-setup-box" class="hidden space-y-3 pt-2">
+                        <input type="password" id="new-app-pin" placeholder="Enter 4-digit MPIN" maxlength="4" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+                        <div class="flex gap-2">
+                            <button onclick="saveAppPin()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold">Save MPIN</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-xs text-slate-800 dark:text-white">Biometric (Fingerprint) Lock</h4>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="biometric-lock-toggle" onchange="toggleBiometricSetting(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-300 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:bg-emerald-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DANGER ZONE -->
+            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2">Danger Zone</h2>
+                <div class="space-y-3">
+                    <button onclick="lockApp()" class="w-full py-2.5 bg-amber-600/20 hover:bg-amber-600 text-amber-600 hover:text-white border border-amber-600/30 rounded-xl font-bold text-xs transition">
+                        Lock App Now
+                    </button>
+                    <button onclick="openLogoutModal()" class="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition">
+                        Sign Out
+                    </button>
                 </div>
             </div>
         </main>
@@ -144,21 +131,12 @@ tailwind.config = {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('-translate-x-full');
-    }
-
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
     function toggleTheme() {
         const html = document.documentElement;
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        }
+        if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
+        else { html.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
     }
-
     function showToast(msg, type = 'success') {
         const c = document.getElementById('toast-container');
         if(!c) return;
@@ -169,90 +147,48 @@ tailwind.config = {
         setTimeout(() => t.remove(), 3000);
     }
 
-    // LOCK SCREEN LOGIC
-    let enteredPin = "";
-    function checkAppLockState() {
-        const isLocked = localStorage.getItem('app_locked') === 'true';
-        const savedPin = localStorage.getItem('app_pin_lock');
-        const lockScreen = document.getElementById('app-lock-screen');
-        
-        if (isLocked && savedPin) {
-            lockScreen.classList.remove('hidden');
-            updatePinDots();
-            if (localStorage.getItem('biometric_lock') === 'true') {
-                useBiometric();
-            }
-        } else {
-            lockScreen.classList.add('hidden');
-        }
+    function togglePinLockSetting(cb) {
+        const box = document.getElementById('pin-setup-box');
+        if (cb.checked) box.classList.remove('hidden');
+        else { box.classList.add('hidden'); localStorage.removeItem('app_pin_lock'); showToast('MPIN Lock disabled!'); }
     }
 
-    function pressPin(num) {
-        if (enteredPin.length < 4) {
-            enteredPin += num;
-            updatePinDots();
-            if (enteredPin.length === 4) {
-                verifyPin();
-            }
-        }
+    function saveAppPin() {
+        const pin = document.getElementById('new-app-pin').value.trim();
+        if (pin.length !== 4) { showToast('Please enter a 4-digit MPIN!', 'error'); return; }
+        localStorage.setItem('app_pin_lock', pin);
+        showToast('MPIN saved successfully!');
     }
 
-    function clearPin() {
-        enteredPin = "";
-        updatePinDots();
+    function toggleBiometricSetting(cb) {
+        if (cb.checked) { localStorage.setItem('biometric_lock', 'true'); showToast('Biometric Enabled!'); }
+        else { localStorage.removeItem('biometric_lock'); showToast('Biometric Disabled!'); }
     }
 
-    function updatePinDots() {
-        for (let i = 0; i < 4; i++) {
-            const dot = document.getElementById(`dot-${i}`);
-            if (i < enteredPin.length) {
-                dot.classList.remove('bg-slate-800', 'border-slate-700');
-                dot.classList.add('bg-emerald-500', 'border-emerald-400');
-            } else {
-                dot.classList.remove('bg-emerald-500', 'border-emerald-400');
-                dot.classList.add('bg-slate-800', 'border-slate-700');
-            }
-        }
+    function lockApp() {
+        localStorage.setItem('app_locked', 'true');
+        showToast('App locked successfully!');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     }
 
-    function verifyPin() {
-        const savedPin = localStorage.getItem('app_pin_lock') || '1234';
-        if (enteredPin === savedPin) {
-            localStorage.removeItem('app_locked');
-            document.getElementById('app-lock-screen').classList.add('hidden');
-            enteredPin = "";
-            showToast("App Unlocked Successfully!");
-        } else {
-            showToast("Incorrect MPIN!", "error");
-            setTimeout(clearPin, 500);
-        }
-    }
-
-    function useBiometric() {
-        if (window.PublicKeyCredential) {
-            showToast("Biometric verification simulated successfully!");
-            localStorage.removeItem('app_locked');
-            document.getElementById('app-lock-screen').classList.add('hidden');
-        } else {
-            showToast("Biometric not supported on this browser.", "error");
-        }
-    }
-
-    function executeLogoutFromLock() {
+    function openLogoutModal() { document.getElementById('logout-modal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.add('hidden'); }
+    function executeLogout() {
         auth.signOut().then(() => {
-            localStorage.removeItem('app_locked');
+            localStorage.setItem('app_locked', 'true');
             window.location.href = 'index.html';
         });
     }
 
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            document.getElementById('sidebar-user-email').innerText = user.email;
-            document.getElementById('sidebar-profile-name').innerText = user.displayName || "User";
-            checkAppLockState();
-        } else {
-            // यदि लगइन छैन भने लगइन वा स्वागत पेजमा पठाउन सकिन्छ
-            document.getElementById('sidebar-user-email').innerText = "Not Logged In";
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedPin = localStorage.getItem('app_pin_lock');
+        if (savedPin) {
+            document.getElementById('pin-lock-toggle').checked = true;
+            document.getElementById('pin-setup-box').classList.remove('hidden');
+            document.getElementById('new-app-pin').value = savedPin;
+        }
+        if (localStorage.getItem('biometric_lock')) {
+            document.getElementById('biometric-lock-toggle').checked = true;
         }
     });
 </script>
