@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Digital NoteBook - Account & Data Management</title>
+<title>Digital NoteBook - Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Firebase App (core) and Firebase Auth -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -13,261 +13,120 @@ tailwind.config = {
     darkMode: 'class',
     theme: {
         extend: {
-            fontFamily: {
-                sans: ['Poppins', 'sans-serif'],
-            }
+            fontFamily: { sans: ['Poppins', 'sans-serif'] }
         }
     }
 }
 </script>
 <script>
     const savedTheme = localStorage.getItem('theme') || 'dark';
-    if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark');
-    } else {
-        document.documentElement.classList.add('dark');
-    }
+    if (savedTheme === 'light') document.documentElement.classList.remove('dark');
+    else document.documentElement.classList.add('dark');
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    @keyframes pulseGlow {
-        0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
-        50% { opacity: 0.8; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8)); }
-    }
-    .animated-title { animation: pulseGlow 3s infinite ease-in-out; }
-</style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
 
-<!-- TOAST NOTIFICATION CONTAINER -->
+<!-- APP LOCK SCREEN OVERLAY (BANK STYLE) -->
+<div id="app-lock-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 hidden">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-6">
+        <div class="w-16 h-16 bg-emerald-600/20 border border-emerald-500/50 rounded-2xl mx-auto flex items-center justify-center text-emerald-400 text-2xl shadow-inner">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <div>
+            <h2 class="text-base font-bold text-white" id="lock-title">Enter App MPIN</h2>
+            <p class="text-[11px] text-slate-400 mt-1" id="lock-subtitle">Please enter your 4-digit MPIN to unlock</p>
+        </div>
+        <!-- PIN Dots Indicator -->
+        <div class="flex justify-center gap-3 my-2">
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-0"></div>
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-1"></div>
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-2"></div>
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-700 pin-dot" id="dot-3"></div>
+        </div>
+        <!-- Number Pad -->
+        <div class="grid grid-cols-3 gap-3 pt-2">
+            <button onclick="pressPin('1')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">1</button>
+            <button onclick="pressPin('2')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">2</button>
+            <button onclick="pressPin('3')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">3</button>
+            <button onclick="pressPin('4')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">4</button>
+            <button onclick="pressPin('5')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">5</button>
+            <button onclick="pressPin('6')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">6</button>
+            <button onclick="pressPin('7')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">7</button>
+            <button onclick="pressPin('8')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">8</button>
+            <button onclick="pressPin('9')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">9</button>
+            <button onclick="useBiometric()" id="bio-btn" class="py-3.5 bg-slate-800/50 hover:bg-slate-700 rounded-2xl text-emerald-400 font-bold text-sm transition flex items-center justify-center"><i class="fa-solid fa-fingerprint text-lg"></i></button>
+            <button onclick="pressPin('0')" class="py-3.5 bg-slate-800/80 hover:bg-slate-700 rounded-2xl text-white font-bold text-base transition">0</button>
+            <button onclick="clearPin()" class="py-3.5 bg-slate-800/50 hover:bg-slate-700 rounded-2xl text-rose-400 font-bold text-xs transition"><i class="fa-solid fa-delete-left"></i></button>
+        </div>
+        <div class="pt-2">
+            <button onclick="executeLogoutFromLock()" class="text-[11px] text-rose-500 hover:underline font-semibold">Sign Out / Switch Account</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
 <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
 
-<!-- LOGOUT CONFIRMATION MODAL -->
-<div id="logout-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white" data-i18n="logout_confirm_title">Are you sure you want to log out?</h3>
-        <div class="flex gap-2 justify-center pt-2">
-            <button onclick="closeLogoutModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_no">No</button>
-            <button onclick="executeLogout()" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700" data-i18n="btn_yes">Yes</button>
-        </div>
-    </div>
-</div>
-
-<!-- MASTER RESET MODAL -->
-<div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
-        <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
-        </h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
-            All your data will be deleted. Type 'RESET' and enter MPIN to confirm:
-        </p>
-        <div class="space-y-3">
-            <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-            <input type="password" id="reset-pin" placeholder="Enter 4-digit MPIN" maxlength="4" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-        </div>
-        <div class="flex gap-2 justify-end pt-2">
-            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_cancel">Cancel</button>
-            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700" data-i18n="btn_reset_system">Reset System</button>
-        </div>
-    </div>
-</div>
-
 <div class="flex min-h-screen w-full">
-    
-    <!-- SIDEBAR SECTION -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
-        
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
                     <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
                 </div>
-                <div>
-                    <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-cyan-500">
-                        Digital <span class="text-emerald-400">NoteBook</span>
-                    </h1>
-                </div>
+                <h1 class="text-sm font-extrabold tracking-wide text-white">Digital <span class="text-emerald-400">NoteBook</span></h1>
             </div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">✕</button>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg">✕</button>
         </div>
-
         <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
             <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                    <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden">
+                    <img src="N1024.png" alt="Profile" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 id="sidebar-profile-name" class="text-white font-bold text-sm">User</h3>
-                    <p class="text-[10px] text-slate-400" id="sidebar-user-email">Local User</p>
+                    <p class="text-[10px] text-slate-400" id="sidebar-user-email">Loading...</p>
                 </div>
             </div>
-
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>⚙️</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20"><span>📊</span> <span>Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>⚙️</span> <span>Account & Backup</span></a>
             </nav>
         </div>
     </div>
 
     <div class="flex-1 flex flex-col w-full">
-        
-        <!-- HEADER SECTION -->
-        <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+        <!-- HEADER -->
+        <header class="sticky top-0 z-30 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
             <div class="flex items-center space-x-2.5">
-                <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
+                <button onclick="toggleSidebar()" class="text-white text-xl hover:text-emerald-400 transition">☰</button>
                 <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center overflow-hidden">
                         <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
                     </div>
-                    <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-                        Digital NoteBook
-                    </span>
+                    <span class="text-xs md:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Digital NoteBook</span>
                 </div>
             </div>
-
             <div class="flex items-center space-x-2">
-                <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition">ENG</button>
-                <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
-                <div class="relative cursor-pointer" onclick="toggleSidebar()">
-                    <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
-                    </div>
+                <button onclick="toggleTheme()" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm">🌛</button>
+                <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center overflow-hidden cursor-pointer" onclick="window.location.href='account.html'">
+                    <img src="N1024.png" alt="Profile" class="w-full h-full object-cover">
                 </div>
             </div>
         </header>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- DASHBOARD MAIN CONTENT -->
         <main class="p-4 space-y-4 flex-1 w-full max-w-xl mx-auto overflow-y-auto">
-            
-            <!-- Header & Back Button -->
-            <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-                <h1 class="text-base font-bold text-emerald-600 dark:text-emerald-400" data-translate="accountSettingsTitle">Account Management</h1>
-                <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white" data-translate="backToDashboard">Back to Dashboard</a>
-            </div>
-
-            <!-- 1. BACKUP & DATA MANAGEMENT SECTION -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
-                    </button>
-                    <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
-                        <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
-                    </label>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm text-center space-y-3">
+                <h1 class="text-lg font-bold text-emerald-600 dark:text-emerald-400">Welcome to Dashboard</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Your secure digital notebook is active and synchronized.</p>
+                <div class="pt-2">
+                    <a href="account.html" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-md inline-block">Go to Account & Security Settings</a>
                 </div>
             </div>
-
-            <!-- 2. SECURITY & LOCK SETTINGS -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span data-i18n="security_title">Security & Lock Settings</span>
-                </h3>
-                <div class="space-y-3">
-                    <!-- 4-Digit MPIN Settings -->
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="pin_lock_label">App 4-Digit MPIN Lock</h4>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="pin-lock-toggle" onchange="togglePinLockSetting(this)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                        </label>
-                    </div>
-                    <div id="pin-setup-box" class="hidden space-y-3 pt-2">
-                        <div class="relative">
-                            <input type="password" id="new-app-pin" placeholder="Enter 4-digit MPIN" maxlength="4" class="w-full p-2.5 pr-10 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-                            <button type="button" onclick="togglePinVisibility('new-app-pin', 'pin-eye-icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                                <i id="pin-eye-icon" class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveAppPin()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save MPIN</button>
-                            <button onclick="changeAppPin()" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_change_pin">Change MPIN</button>
-                        </div>
-                    </div>
-
-                    <!-- Biometric Lock Settings -->
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-                        <div>
-                            <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="biometric_lock_label">Biometric (Fingerprint) Lock</h4>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="biometric-lock-toggle" onchange="toggleBiometricSetting(this)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. EMAIL & CHANGE PASSWORD -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-i18n="email_password_title">Email & Change Password</h2>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1" data-i18n="current_email_label">Current Email</label>
-                        <input type="email" id="user-email-display" readonly class="w-full p-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-500 dark:text-slate-400 cursor-not-allowed">
-                    </div>
-                    <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <div class="relative">
-                            <input type="password" id="current-password" placeholder="Current Password" class="w-full p-2.5 pr-10 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none">
-                            <button type="button" onclick="togglePinVisibility('current-password', 'curr-pass-eye')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                <i id="curr-pass-eye" class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="relative">
-                            <input type="password" id="new-password" placeholder="New Password" class="w-full p-2.5 pr-10 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none">
-                            <button type="button" onclick="togglePinVisibility('new-password', 'new-pass-eye')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                <i id="new-pass-eye" class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="relative">
-                            <input type="password" id="confirm-password" placeholder="Confirm Password" class="w-full p-2.5 pr-10 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none">
-                            <button type="button" onclick="togglePinVisibility('confirm-password', 'conf-pass-eye')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">
-                                <i id="conf-pass-eye" class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <button onclick="handleChangePassword()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-i18n="updatePasswordBtn">
-                            Update Password
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. DEVICE INFO -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-3">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-i18n="device_info_title">Device Info</h2>
-                <div class="flex items-center justify-between text-xs py-1">
-                    <span id="device-short-display" class="font-medium text-slate-900 dark:text-white">Chrome on Android</span>
-                    <button onclick="toggleDeviceDetails()" class="text-emerald-500 font-semibold hover:underline" id="device-toggle-btn" data-i18n="view_full_details">View Full Details</button>
-                </div>
-                <div id="device-full-details" class="hidden pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 break-all">
-                    <span id="device-info-display">Loading...</span>
-                </div>
-            </div>
-
-            <!-- 5. DANGER ZONE (LOG OUT, LOCK APP & MASTER RESET) -->
-            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-i18n="dangerZoneTitle">Danger Zone</h2>
-                
-                <div class="space-y-3">
-                    <button onclick="lockApp()" class="w-full py-2.5 bg-amber-600/20 hover:bg-amber-600 text-amber-600 hover:text-white border border-amber-600/30 rounded-xl font-bold text-xs transition" data-i18n="lockAppBtn">
-                        Lock App
-                    </button>
-                    <button onclick="openLogoutModal()" class="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition" data-i18n="logoutBtn">
-                        Sign Out
-                    </button>
-                    <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
-                    </button>
-                </div>
-            </div>
-
         </main>
     </div>
 </div>
@@ -282,351 +141,118 @@ tailwind.config = {
       messagingSenderId: "218135618179",
       appId: "1:218135618179:web:821b76920d3e5669ac31b6"
     };
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.toggle('-translate-x-full');
-    }
-
-    let currentLang = localStorage.getItem('lang') || 'EN';
-
-    const translations = {
-        EN: {
-            reset_title: "Master Reset Confirm",
-            reset_desc: "All your data will be deleted. Type 'RESET' and enter MPIN to confirm:",
-            btn_cancel: "Cancel",
-            btn_reset_system: "Reset System",
-            data_management: "Data Management & Backup",
-            btn_backup: "Backup JSON",
-            btn_restore: "Restore JSON",
-            btn_reset: "Master Reset",
-            accountSettingsTitle: "Account Management",
-            backToDashboard: "Back to Dashboard",
-            logoutBtn: "Sign Out",
-            lockAppBtn: "Lock App",
-            updatePasswordBtn: "Update Password",
-            dangerZoneTitle: "Danger Zone",
-            security_title: "Security & Lock Settings",
-            pin_lock_label: "App 4-Digit MPIN Lock",
-            biometric_lock_label: "Biometric (Fingerprint) Lock",
-            btn_save_pin: "Save MPIN",
-            btn_change_pin: "Change MPIN",
-            email_password_title: "Email & Change Password",
-            current_email_label: "Current Email",
-            device_info_title: "Device Info",
-            view_full_details: "View Full Details",
-            hide_full_details: "Hide Details",
-            logout_confirm_title: "Are you sure you want to log out?",
-            btn_yes: "Yes",
-            btn_no: "No"
-        },
-        NEP: {
-            reset_title: "मास्टर रिसेट पुष्टि",
-            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र MPIN प्रविष्ट गर्नुहोस्:",
-            btn_cancel: "रद्द गर्नुहोस्",
-            btn_reset_system: "सिस्टम रिसेट गर्नुहोस्",
-            data_management: "डाटा व्यवस्थापन र ब्याकअप",
-            btn_backup: "ब्याकअप JSON",
-            btn_restore: "पुनः भण्डारण JSON",
-            btn_reset: "मास्टर रिसेट",
-            accountSettingsTitle: "अकाउन्ट व्यवस्थापन",
-            backToDashboard: "ड्यासबोर्डमा फर्कनुहोस्",
-            logoutBtn: "लग आउट गर्नुहोस्",
-            lockAppBtn: "एप लक गर्नुहोस्",
-            updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
-            dangerZoneTitle: "खतरा क्षेत्र",
-            security_title: "सुरक्षा र लक सेटिंग्स",
-            pin_lock_label: "एप ४-अंकको MPIN लक",
-            biometric_lock_label: "बायोमेट्रिक (फिंगरप्रिन्ट) लक",
-            btn_save_pin: "MPIN सेभ गर्नुहोस्",
-            btn_change_pin: "MPIN परिवर्तन गर्नुहोस्",
-            email_password_title: "इमेल र पासवर्ड परिवर्तन",
-            current_email_label: "हालको इमेल",
-            device_info_title: "डिभाइस जानकारी",
-            view_full_details: "पुरा विवरण हेर्नुहोस्",
-            hide_full_details: "विवरण लुकाउनुहोस्",
-            logout_confirm_title: "के तपाईं लग आउट गर्न निश्चित हुनुहुन्छ?",
-            btn_yes: "हो",
-            btn_no: "होइन"
-        }
-    };
-
-    function updateLanguageUI() {
-        const btn = document.getElementById('lang-toggle-btn');
-        if(btn) btn.innerText = currentLang;
-
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
-        });
-
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
-        });
-    }
-
-    function toggleLanguage() {
-        currentLang = currentLang === 'EN' ? 'NEP' : 'EN';
-        localStorage.setItem('lang', currentLang);
-        updateLanguageUI();
-    }
-
-    function updateThemeUI() {
-        const isDark = document.documentElement.classList.contains('dark');
-        const themeBtn = document.getElementById('theme-toggle-btn');
-        if(themeBtn) themeBtn.innerText = isDark ? '🌛' : '🌞';
+        document.getElementById('sidebar').classList.toggle('-translate-x-full');
     }
 
     function toggleTheme() {
-        const htmlEl = document.documentElement;
-        if (htmlEl.classList.contains('dark')) {
-            htmlEl.classList.remove('dark');
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
             localStorage.setItem('theme', 'light');
         } else {
-            htmlEl.classList.add('dark');
+            html.classList.add('dark');
             localStorage.setItem('theme', 'dark');
         }
-        updateThemeUI();
     }
 
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        if(!container) return;
-        const toast = document.createElement('div');
-        const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
-        toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2`;
-        toast.innerHTML = `<span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
-        setTimeout(() => {
-            toast.classList.add('translate-y-2', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+    function showToast(msg, type = 'success') {
+        const c = document.getElementById('toast-container');
+        if(!c) return;
+        const t = document.createElement('div');
+        t.className = `${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold`;
+        t.innerText = msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
     }
 
-    function togglePinVisibility(inputId, iconId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
+    // LOCK SCREEN LOGIC
+    let enteredPin = "";
+    function checkAppLockState() {
+        const isLocked = localStorage.getItem('app_locked') === 'true';
+        const savedPin = localStorage.getItem('app_pin_lock');
+        const lockScreen = document.getElementById('app-lock-screen');
+        
+        if (isLocked && savedPin) {
+            lockScreen.classList.remove('hidden');
+            updatePinDots();
+            if (localStorage.getItem('biometric_lock') === 'true') {
+                useBiometric();
+            }
         } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
+            lockScreen.classList.add('hidden');
         }
     }
 
-    function toggleDeviceDetails() {
-        const details = document.getElementById('device-full-details');
-        const btn = document.getElementById('device-toggle-btn');
-        if (details.classList.contains('hidden')) {
-            details.classList.remove('hidden');
-            btn.innerText = currentLang === 'NEP' ? translations.NEP.hide_full_details : translations.EN.hide_full_details;
-        } else {
-            details.classList.add('hidden');
-            btn.innerText = currentLang === 'NEP' ? translations.NEP.view_full_details : translations.EN.view_full_details;
+    function pressPin(num) {
+        if (enteredPin.length < 4) {
+            enteredPin += num;
+            updatePinDots();
+            if (enteredPin.length === 4) {
+                verifyPin();
+            }
         }
+    }
+
+    function clearPin() {
+        enteredPin = "";
+        updatePinDots();
+    }
+
+    function updatePinDots() {
+        for (let i = 0; i < 4; i++) {
+            const dot = document.getElementById(`dot-${i}`);
+            if (i < enteredPin.length) {
+                dot.classList.remove('bg-slate-800', 'border-slate-700');
+                dot.classList.add('bg-emerald-500', 'border-emerald-400');
+            } else {
+                dot.classList.remove('bg-emerald-500', 'border-emerald-400');
+                dot.classList.add('bg-slate-800', 'border-slate-700');
+            }
+        }
+    }
+
+    function verifyPin() {
+        const savedPin = localStorage.getItem('app_pin_lock') || '1234';
+        if (enteredPin === savedPin) {
+            localStorage.removeItem('app_locked');
+            document.getElementById('app-lock-screen').classList.add('hidden');
+            enteredPin = "";
+            showToast("App Unlocked Successfully!");
+        } else {
+            showToast("Incorrect MPIN!", "error");
+            setTimeout(clearPin, 500);
+        }
+    }
+
+    function useBiometric() {
+        if (window.PublicKeyCredential) {
+            showToast("Biometric verification simulated successfully!");
+            localStorage.removeItem('app_locked');
+            document.getElementById('app-lock-screen').classList.add('hidden');
+        } else {
+            showToast("Biometric not supported on this browser.", "error");
+        }
+    }
+
+    function executeLogoutFromLock() {
+        auth.signOut().then(() => {
+            localStorage.removeItem('app_locked');
+            window.location.href = 'index.html';
+        });
     }
 
     auth.onAuthStateChanged((user) => {
         if (user) {
-            document.getElementById('user-email-display').value = user.email;
             document.getElementById('sidebar-user-email').innerText = user.email;
-            document.getElementById('device-info-display').innerText = navigator.userAgent;
-            
-            let shortName = "Mobile App / Web Browser";
-            const ua = navigator.userAgent;
-            if (ua.includes("Chrome") && ua.includes("Android")) shortName = "Chrome on Android";
-            else if (ua.includes("iPhone")) shortName = "Safari on iPhone";
-            else if (ua.includes("Windows")) shortName = "Browser on Windows";
-            document.getElementById('device-short-display').innerText = shortName;
+            document.getElementById('sidebar-profile-name').innerText = user.displayName || "User";
+            checkAppLockState();
         } else {
-            window.location.href = 'index.html';
-        }
-    });
-
-    function openLogoutModal() {
-        document.getElementById('logout-modal').classList.remove('hidden');
-    }
-
-    function closeLogoutModal() {
-        document.getElementById('logout-modal').classList.add('hidden');
-    }
-
-    function executeLogout() {
-        auth.signOut().then(() => {
-            localStorage.setItem('app_locked', 'true');
-            window.location.href = 'index.html';
-        }).catch((error) => {
-            showToast("Error: " + error.message, 'error');
-        });
-    }
-
-    function lockApp() {
-        localStorage.setItem('app_locked', 'true');
-        showToast(currentLang === 'NEP' ? 'एप लक गरिएको छ!' : 'App locked successfully!', 'success');
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 1000);
-    }
-
-    function handleChangePassword() {
-        const currentPassword = document.getElementById('current-password').value;
-        const newPassword = document.getElementById('new-password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        const user = auth.currentUser;
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            showToast(currentLang === 'NEP' ? 'कृपया सबै फिल्डहरू भर्नुहोस्!' : 'Please fill all password fields!', 'error');
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            showToast(currentLang === 'NEP' ? 'नयाँ पासवर्ड मिलेन!' : 'New passwords do not match!', 'error');
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            showToast(currentLang === 'NEP' ? 'पासवर्ड कम्तिमा ६ अक्षरको हुनुपर्छ!' : 'Password must be at least 6 characters long.', 'error');
-            return;
-        }
-
-        const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
-        user.reauthenticateWithCredential(credential).then(() => {
-            user.updatePassword(newPassword).then(() => {
-                showToast(currentLang === 'NEP' ? 'पासवर्ड सफलतापूर्वक परिवर्तन भयो!' : 'Password successfully updated.');
-                document.getElementById('current-password').value = '';
-                document.getElementById('new-password').value = '';
-                document.getElementById('confirm-password').value = '';
-            }).catch((error) => {
-                showToast("Error: " + error.message, 'error');
-            });
-        }).catch((error) => {
-            showToast(currentLang === 'NEP' ? 'हालको पासवर्ड मिलेन!' : 'Incorrect current password!', 'error');
-        });
-    }
-
-    function togglePinLockSetting(checkbox) {
-        const box = document.getElementById('pin-setup-box');
-        if (checkbox.checked) {
-            box.classList.remove('hidden');
-        } else {
-            box.classList.add('hidden');
-            localStorage.removeItem('app_pin_lock');
-            showToast(currentLang === 'NEP' ? 'MPIN लक बन्द भयो!' : 'MPIN Lock disabled!', 'success');
-        }
-    }
-
-    function saveAppPin() {
-        const pin = document.getElementById('new-app-pin').value.trim();
-        if (pin.length !== 4) {
-            showToast(currentLang === 'NEP' ? 'कृपया ४ अंकको MPIN राख्नुहोस्!' : 'Please enter a 4-digit MPIN!', 'error');
-            return;
-        }
-        localStorage.setItem('app_pin_lock', pin);
-        showToast(currentLang === 'NEP' ? 'MPIN सफलतापूर्वक सेभ भयो!' : 'MPIN saved successfully!', 'success');
-    }
-
-    function changeAppPin() {
-        saveAppPin();
-    }
-
-    function toggleBiometricSetting(checkbox) {
-        if (checkbox.checked) {
-            localStorage.setItem('biometric_lock', 'true');
-            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक इनेबल भयो!' : 'Biometric Lock enabled!', 'success');
-        } else {
-            localStorage.removeItem('biometric_lock');
-            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक डिसाबल भयो!' : 'Biometric Lock disabled!', 'success');
-        }
-    }
-
-    function backupData() {
-        const allData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            allData[key] = localStorage.getItem(key);
-        }
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `digital_notebook_backup_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        showToast(currentLang === 'NEP' ? 'ब्याकअप फाइल डाउनलोड भयो!' : 'Backup file downloaded!', 'success');
-    }
-
-    function restoreData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                for (const key in data) {
-                    localStorage.setItem(key, data[key]);
-                }
-                showToast(currentLang === 'NEP' ? 'डाटा सफलतापूर्वक पुनर्स्थापना भयो!' : 'Data successfully restored!', 'success');
-                setTimeout(() => location.reload(), 1000);
-            } catch (err) {
-                showToast(currentLang === 'NEP' ? 'अमान्य ब्याकअप फाइल!' : 'Invalid backup file!', 'error');
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    function openResetModal() {
-        document.getElementById('reset-modal').classList.remove('hidden');
-    }
-
-    function closeResetModal() {
-        document.getElementById('reset-modal').classList.add('hidden');
-    }
-
-    function confirmMasterReset() {
-        const textVal = document.getElementById('reset-input').value.trim();
-        const pinVal = document.getElementById('reset-pin').value.trim();
-        const savedPin = localStorage.getItem('app_pin_lock') || '1234';
-
-        if (textVal !== 'RESET') {
-            showToast(currentLang === 'NEP' ? "कृपया 'RESET' टाइप गर्नुहोस्!" : "Please type 'RESET'!", 'error');
-            return;
-        }
-
-        if (pinVal !== savedPin && pinVal !== '') {
-            showToast(currentLang === 'NEP' ? "गलत MPIN!" : "Incorrect MPIN!", 'error');
-            return;
-        }
-
-        localStorage.clear();
-        showToast(currentLang === 'NEP' ? 'सिस्टम सफलतापूर्वक रिसेट भयो!' : 'System successfully reset!', 'success');
-        setTimeout(() => location.reload(), 1000);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        updateLanguageUI();
-        updateThemeUI();
-        const savedPin = localStorage.getItem('app_pin_lock');
-        if (savedPin) {
-            document.getElementById('pin-lock-toggle').checked = true;
-            document.getElementById('pin-setup-box').classList.remove('hidden');
-            document.getElementById('new-app-pin').value = savedPin;
-        }
-        const savedBiometric = localStorage.getItem('biometric_lock');
-        if (savedBiometric) {
-            document.getElementById('biometric-lock-toggle').checked = true;
+            // यदि लगइन छैन भने लगइन वा स्वागत पेजमा पठाउन सकिन्छ
+            document.getElementById('sidebar-user-email').innerText = "Not Logged In";
         }
     });
 </script>
