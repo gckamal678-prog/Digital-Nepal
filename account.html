@@ -61,11 +61,11 @@ tailwind.config = {
             <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
         </h3>
         <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
-            All your data will be deleted. Type 'RESET' and enter PIN to confirm:
+            All your data will be deleted. Type 'RESET' and enter MPIN to confirm:
         </p>
         <div class="space-y-3">
             <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-            <input type="password" id="reset-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+            <input type="password" id="reset-pin" placeholder="Enter 4-digit MPIN" maxlength="4" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
         </div>
         <div class="flex gap-2 justify-end pt-2">
             <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_cancel">Cancel</button>
@@ -171,7 +171,7 @@ tailwind.config = {
                 <div class="space-y-3">
                     <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
                         <div>
-                            <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="pin_lock_label">App 6-Digit PIN Lock</h4>
+                            <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="pin_lock_label">App 4-Digit MPIN Lock</h4>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="pin-lock-toggle" onchange="togglePinLockSetting(this)" class="sr-only peer">
@@ -180,12 +180,12 @@ tailwind.config = {
                     </div>
                     <div id="pin-setup-box" class="hidden space-y-3 pt-2">
                         <div class="relative">
-                            <input type="password" id="new-app-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 pr-10 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+                            <input type="password" id="new-app-pin" placeholder="Enter 4-digit MPIN" maxlength="4" class="w-full p-2.5 pr-10 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
                             <button type="button" onclick="togglePinVisibility('new-app-pin', 'pin-eye-icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                 <i id="pin-eye-icon" class="fa-solid fa-eye"></i>
                             </button>
                         </div>
-                        <button onclick="saveAppPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save PIN</button>
+                        <button onclick="saveAppPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save MPIN</button>
                     </div>
                 </div>
             </div>
@@ -279,7 +279,7 @@ tailwind.config = {
     const translations = {
         EN: {
             reset_title: "Master Reset Confirm",
-            reset_desc: "All your data will be deleted. Type 'RESET' and enter PIN to confirm:",
+            reset_desc: "All your data will be deleted. Type 'RESET' and enter MPIN to confirm:",
             btn_cancel: "Cancel",
             btn_reset_system: "Reset System",
             data_management: "Data Management & Backup",
@@ -292,8 +292,8 @@ tailwind.config = {
             updatePasswordBtn: "Update Password",
             dangerZoneTitle: "Danger Zone",
             security_title: "Security & Lock Settings",
-            pin_lock_label: "App 6-Digit PIN Lock",
-            btn_save_pin: "Save PIN",
+            pin_lock_label: "App 4-Digit MPIN Lock",
+            btn_save_pin: "Save MPIN",
             email_password_title: "Email & Change Password",
             current_email_label: "Current Email",
             device_info_title: "Device Info",
@@ -305,7 +305,7 @@ tailwind.config = {
         },
         NEP: {
             reset_title: "मास्टर रिसेट पुष्टि",
-            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) प्रविष्ट गर्नुहोस्:",
+            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र MPIN प्रविष्ट गर्नुहोस्:",
             btn_cancel: "रद्द गर्नुहोस्",
             btn_reset_system: "सिस्टम रिसेट गर्नुहोस्",
             data_management: "डाटा व्यवस्थापन र ब्याकअप",
@@ -318,8 +318,8 @@ tailwind.config = {
             updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
             dangerZoneTitle: "खतरा क्षेत्र",
             security_title: "सुरक्षा र लक सेटिंग्स",
-            pin_lock_label: "एप ६-अंकको पिन लक",
-            btn_save_pin: "पिन सेभ गर्नुहोस्",
+            pin_lock_label: "एप ४-अंकको MPIN लक",
+            btn_save_pin: "MPIN सेभ गर्नुहोस्",
             email_password_title: "इमेल र पासवर्ड परिवर्तन",
             current_email_label: "हालको इमेल",
             device_info_title: "डिभाइस जानकारी",
@@ -491,18 +491,18 @@ tailwind.config = {
         } else {
             box.classList.add('hidden');
             localStorage.removeItem('app_pin_lock');
-            showToast(currentLang === 'NEP' ? 'पिन लक बन्द भयो!' : 'PIN Lock disabled!', 'success');
+            showToast(currentLang === 'NEP' ? 'MPIN लक बन्द भयो!' : 'MPIN Lock disabled!', 'success');
         }
     }
 
     function saveAppPin() {
         const pin = document.getElementById('new-app-pin').value.trim();
-        if (pin.length !== 6) {
-            showToast(currentLang === 'NEP' ? 'कृपया ६ अंकको पिन राख्नुहोस्!' : 'Please enter a 6-digit PIN!', 'error');
+        if (pin.length !== 4) {
+            showToast(currentLang === 'NEP' ? 'कृपया ४ अंकको MPIN राख्नुहोस्!' : 'Please enter a 4-digit MPIN!', 'error');
             return;
         }
         localStorage.setItem('app_pin_lock', pin);
-        showToast(currentLang === 'NEP' ? 'पिन सफलतापूर्वक सेभ भयो!' : 'PIN saved successfully!', 'success');
+        showToast(currentLang === 'NEP' ? 'MPIN सफलतापूर्वक सेभ भयो!' : 'MPIN saved successfully!', 'success');
     }
 
     function backupData() {
@@ -551,7 +551,7 @@ tailwind.config = {
     function confirmMasterReset() {
         const textVal = document.getElementById('reset-input').value.trim();
         const pinVal = document.getElementById('reset-pin').value.trim();
-        const savedPin = localStorage.getItem('app_pin_lock') || '123456';
+        const savedPin = localStorage.getItem('app_pin_lock') || '1234';
 
         if (textVal !== 'RESET') {
             showToast(currentLang === 'NEP' ? "कृपया 'RESET' टाइप गर्नुहोस्!" : "Please type 'RESET'!", 'error');
@@ -559,7 +559,7 @@ tailwind.config = {
         }
 
         if (pinVal !== savedPin && pinVal !== '') {
-            showToast(currentLang === 'NEP' ? "गलत पिन!" : "Incorrect PIN!", 'error');
+            showToast(currentLang === 'NEP' ? "गलत MPIN!" : "Incorrect MPIN!", 'error');
             return;
         }
 
