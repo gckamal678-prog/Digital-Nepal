@@ -169,6 +169,7 @@ tailwind.config = {
                     <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span data-i18n="security_title">Security & Lock Settings</span>
                 </h3>
                 <div class="space-y-3">
+                    <!-- 4-Digit MPIN Settings -->
                     <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
                         <div>
                             <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="pin_lock_label">App 4-Digit MPIN Lock</h4>
@@ -185,7 +186,21 @@ tailwind.config = {
                                 <i id="pin-eye-icon" class="fa-solid fa-eye"></i>
                             </button>
                         </div>
-                        <button onclick="saveAppPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save MPIN</button>
+                        <div class="flex gap-2">
+                            <button onclick="saveAppPin()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save MPIN</button>
+                            <button onclick="changeAppPin()" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_change_pin">Change MPIN</button>
+                        </div>
+                    </div>
+
+                    <!-- Biometric Lock Settings -->
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="biometric_lock_label">Biometric (Fingerprint) Lock</h4>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="biometric-lock-toggle" onchange="toggleBiometricSetting(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -236,13 +251,16 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 5. DANGER ZONE (LOG OUT & MASTER RESET) -->
+            <!-- 5. DANGER ZONE (LOG OUT, LOCK APP & MASTER RESET) -->
             <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
                 <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-i18n="dangerZoneTitle">Danger Zone</h2>
                 
                 <div class="space-y-3">
+                    <button onclick="lockApp()" class="w-full py-2.5 bg-amber-600/20 hover:bg-amber-600 text-amber-600 hover:text-white border border-amber-600/30 rounded-xl font-bold text-xs transition" data-i18n="lockAppBtn">
+                        Lock App
+                    </button>
                     <button onclick="openLogoutModal()" class="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition" data-i18n="logoutBtn">
-                        Log Out
+                        Sign Out
                     </button>
                     <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
                         <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
@@ -288,12 +306,15 @@ tailwind.config = {
             btn_reset: "Master Reset",
             accountSettingsTitle: "Account Management",
             backToDashboard: "Back to Dashboard",
-            logoutBtn: "Log Out",
+            logoutBtn: "Sign Out",
+            lockAppBtn: "Lock App",
             updatePasswordBtn: "Update Password",
             dangerZoneTitle: "Danger Zone",
             security_title: "Security & Lock Settings",
             pin_lock_label: "App 4-Digit MPIN Lock",
+            biometric_lock_label: "Biometric (Fingerprint) Lock",
             btn_save_pin: "Save MPIN",
+            btn_change_pin: "Change MPIN",
             email_password_title: "Email & Change Password",
             current_email_label: "Current Email",
             device_info_title: "Device Info",
@@ -315,11 +336,14 @@ tailwind.config = {
             accountSettingsTitle: "अकाउन्ट व्यवस्थापन",
             backToDashboard: "ड्यासबोर्डमा फर्कनुहोस्",
             logoutBtn: "लग आउट गर्नुहोस्",
+            lockAppBtn: "एप लक गर्नुहोस्",
             updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
             dangerZoneTitle: "खतरा क्षेत्र",
             security_title: "सुरक्षा र लक सेटिंग्स",
             pin_lock_label: "एप ४-अंकको MPIN लक",
+            biometric_lock_label: "बायोमेट्रिक (फिंगरप्रिन्ट) लक",
             btn_save_pin: "MPIN सेभ गर्नुहोस्",
+            btn_change_pin: "MPIN परिवर्तन गर्नुहोस्",
             email_password_title: "इमेल र पासवर्ड परिवर्तन",
             current_email_label: "हालको इमेल",
             device_info_title: "डिभाइस जानकारी",
@@ -380,7 +404,7 @@ tailwind.config = {
         const toast = document.createElement('div');
         const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
         toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2`;
-        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        toast.innerHTML = `<span>${message}</span>`;
         container.appendChild(toast);
         setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
         setTimeout(() => {
@@ -442,10 +466,19 @@ tailwind.config = {
 
     function executeLogout() {
         auth.signOut().then(() => {
+            localStorage.setItem('app_locked', 'true');
             window.location.href = 'index.html';
         }).catch((error) => {
             showToast("Error: " + error.message, 'error');
         });
+    }
+
+    function lockApp() {
+        localStorage.setItem('app_locked', 'true');
+        showToast(currentLang === 'NEP' ? 'एप लक गरिएको छ!' : 'App locked successfully!', 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
     }
 
     function handleChangePassword() {
@@ -503,6 +536,20 @@ tailwind.config = {
         }
         localStorage.setItem('app_pin_lock', pin);
         showToast(currentLang === 'NEP' ? 'MPIN सफलतापूर्वक सेभ भयो!' : 'MPIN saved successfully!', 'success');
+    }
+
+    function changeAppPin() {
+        saveAppPin();
+    }
+
+    function toggleBiometricSetting(checkbox) {
+        if (checkbox.checked) {
+            localStorage.setItem('biometric_lock', 'true');
+            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक इनेबल भयो!' : 'Biometric Lock enabled!', 'success');
+        } else {
+            localStorage.removeItem('biometric_lock');
+            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक डिसाबल भयो!' : 'Biometric Lock disabled!', 'success');
+        }
     }
 
     function backupData() {
@@ -576,6 +623,10 @@ tailwind.config = {
             document.getElementById('pin-lock-toggle').checked = true;
             document.getElementById('pin-setup-box').classList.remove('hidden');
             document.getElementById('new-app-pin').value = savedPin;
+        }
+        const savedBiometric = localStorage.getItem('biometric_lock');
+        if (savedBiometric) {
+            document.getElementById('biometric-lock-toggle').checked = true;
         }
     });
 </script>
