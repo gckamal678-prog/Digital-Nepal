@@ -221,7 +221,7 @@
         let cropperInstance = null;
         let torchOn = false;
         let currentLang = localStorage.getItem('lang') || 'EN';
-        let isProcessingScan = false; // झ्याप्झ्याप हुन नदिन रोक लगाउने व्हेरिएबल
+        let isProcessingScan = false;
 
         window.onload = function() {
             updateLanguageUI();
@@ -230,17 +230,18 @@
             loadUserData();
             loadAvatar();
             generatePermanentQR();
-            autoUploadMyDataToCloud(); // एप खुल्नेबित्तिकै आफ्नो डाटा क्लाउडमा ब्याकअप गर्ने
+            autoUploadMyDataToCloud();
             setTimeout(() => { startRealScanner(); }, 500);
         };
 
-        // स्थानीय डाटालाई Firebase मा सेभ गर्ने फंक्सन
+        // सबै किसिमका लोकल स्टोरेज की (Keys) हरू चेक गरेर क्लाउडमा पठाउने फंक्सन
         async function autoUploadMyDataToCloud() {
             try {
-                const notes = JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]');
+                const notes = JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || localStorage.getItem('digital_notebook_notes') || '[]');
                 const incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]');
                 const transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]');
                 const savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]');
+                const investments = JSON.parse(localStorage.getItem('digital_notebook_investments') || localStorage.getItem('investments') || '[]');
 
                 const userRef = ref(db, `users/${CURRENT_USER_ID}`);
                 await set(userRef, {
@@ -248,8 +249,10 @@
                     incomes: incomes,
                     transactions: transactions,
                     savings: savings,
+                    investments: investments,
                     updatedAt: Date.now()
                 });
+                console.log("Cloud backup updated successfully for ID:", CURRENT_USER_ID);
             } catch (e) {
                 console.error("Auto upload error:", e);
             }
@@ -356,6 +359,7 @@
                 shareView.classList.remove('hidden');
                 scanView.classList.add('hidden');
                 stopRealScanner();
+                autoUploadMyDataToCloud(); // सेयर ट्याबमा जाँदा पनि डाटा क्लाउडमा ब्याकअप गराउने
             }
         };
 
@@ -379,7 +383,7 @@
 
         window.openNativeShareSheet = async function() {
             if (!lastGeneratedToken) generatePermanentQR();
-            await autoUploadMyDataToCloud(); // सेयर गर्नु अगाडि पनि डाटा क्लाउडमा पक्का सेभ गराउने
+            await autoUploadMyDataToCloud();
             try {
                 const wrapper = document.getElementById('qrcodeWrapper');
                 if (window.html2canvas) {
@@ -429,9 +433,12 @@
                         localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
                         localStorage.setItem('savings', JSON.stringify(data.savings));
                     }
+                    if (data.investments) {
+                        localStorage.setItem('digital_notebook_investments', JSON.stringify(data.investments));
+                        localStorage.setItem('investments', JSON.stringify(data.investments));
+                    }
 
                     window.dispatchEvent(new Event('storage'));
-
                     return { success: true, message: "Data synced successfully!" };
                 } else {
                     return { success: false, message: "No cloud backup found for this ID!" };
@@ -443,7 +450,7 @@
 
         async function handleScanSuccess(text) {
             if (isProcessingScan || typeof text !== 'string') return;
-            isProcessingScan = true; // बारम्बार स्क्यान हुनबाट रोक्ने
+            isProcessingScan = true;
 
             let targetUserId = "";
             if (text.startsWith('NOTEBOOK_SYNC_')) {
@@ -461,7 +468,6 @@
 
             playBeep(true);
             showFeedback("Syncing data from cloud...", "success");
-
             stopRealScanner();
 
             const res = await window.restoreFromCloud(targetUserId);
