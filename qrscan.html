@@ -404,9 +404,26 @@
                 const snapshot = await get(child(dbRef, `users/${userIdToFetch}`));
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
-                    if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
-                    if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
+                    
+                    if (data.notes) {
+                        localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
+                        localStorage.setItem('notes', JSON.stringify(data.notes));
+                    }
+                    if (data.incomes) {
+                        localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
+                        localStorage.setItem('incomes', JSON.stringify(data.incomes));
+                    }
+                    if (data.transactions) {
+                        localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
+                        localStorage.setItem('transactions', JSON.stringify(data.transactions));
+                    }
+                    if (data.savings) {
+                        localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
+                        localStorage.setItem('savings', JSON.stringify(data.savings));
+                    }
+
+                    window.dispatchEvent(new Event('storage'));
+
                     return { success: true, message: "Synced successfully!" };
                 } else {
                     return { success: false, message: "No cloud backup found!" };
