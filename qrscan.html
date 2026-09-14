@@ -74,17 +74,13 @@
 
                 <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                     <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                        <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal & Security PIN" data-np="व्यक्तिगत विवरण र पिन">Personal & Security PIN</span>
+                        <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Details" data-np="व्यक्तिगत विवरण">Personal Details</span>
                     </h3>
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Full Name</label>
                         <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Security PIN (6 Digits)</label>
-                        <input type="password" id="input-security-pin" maxlength="6" placeholder="Enter 6-digit PIN" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Info & PIN</button>
+                    <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">Save Info</button>
                 </div>
             </div>
         </div>
@@ -200,7 +196,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, child, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
@@ -233,7 +229,6 @@
             loadUserData();
             loadAvatar();
             generatePermanentQR();
-            listenForSyncRequests();
             setTimeout(() => { startRealScanner(); }, 500);
         };
 
@@ -286,25 +281,14 @@
 
         window.saveProfileDetails = function() {
             const name = document.getElementById('input-full-name').value;
-            const pin = document.getElementById('input-security-pin').value;
             if(name) localStorage.setItem('profile_name', name);
-            if(pin) {
-                if(pin.length !== 6) {
-                    alert('PIN must be 6 digits!');
-                    return;
-                }
-                localStorage.setItem('security_pin', pin);
-                set(ref(db, `users/${CURRENT_USER_ID}/settings`), { pin: pin });
-            }
             loadUserData();
-            alert('Profile details and PIN saved successfully!');
+            alert('Profile details saved successfully!');
         };
 
         window.loadUserData = function() {
             const savedName = localStorage.getItem('profile_name') || '';
-            const savedPin = localStorage.getItem('security_pin') || '';
             if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
-            if(document.getElementById('input-security-pin')) document.getElementById('input-security-pin').value = savedPin;
             const nameEl = document.getElementById('sidebar-profile-name');
             if(nameEl) nameEl.innerText = savedName;
             const profileNameEl = document.getElementById('profileName');
@@ -449,75 +433,15 @@
                 return;
             }
 
-            const enteredPin = prompt("Enter 6-digit security PIN code:");
-            if (!enteredPin || enteredPin.length !== 6) {
-                showFeedback("6-digit PIN is required!", "error");
-                return;
-            }
+            playBeep(true);
+            showFeedback("Fetching data...", "success");
 
-            showFeedback("Checking PIN...", "success");
-
-            try {
-                const dbRef = ref(db);
-                const snapshot = await get(child(dbRef, `users/${targetUserId}/settings/pin`));
-                
-                let masterPin = "";
-                if (snapshot.exists()) {
-                    masterPin = snapshot.val();
-                }
-
-                if (masterPin && masterPin !== enteredPin) {
-                    playBeep(false);
-                    showFeedback("Incorrect PIN! Request not sent.", "error");
-                    alert("You entered an incorrect security PIN!");
-                    return; 
-                }
-
-                playBeep(true);
-                showFeedback("Request sent for approval...", "success");
-
-                const requestRef = ref(db, `sync_requests/${targetUserId}`);
-                await set(requestRef, {
-                    requesterId: CURRENT_USER_ID,
-                    pin: enteredPin,
-                    timestamp: Date.now(),
-                    status: 'pending'
-                });
-
-                alert("Waiting for master device approval...");
-                
-                onValue(requestRef, (snapshot) => {
-                    const reqData = snapshot.val();
-                    if (reqData && reqData.status === 'approved') {
-                        showFeedback("Permission granted! Syncing data...", "success");
-                        window.restoreFromCloud(targetUserId).then(res => {
-                            if (res.success) {
-                                alert("Data synced successfully!");
-                                window.location.href = "index.html";
-                            }
-                        });
-                    } else if (reqData && reqData.status === 'rejected') {
-                        showFeedback("Master rejected the permission!", "error");
-                    }
-                }, { onlyOnce: true });
-
-            } catch (error) {
-                showFeedback("Error occurred: " + error.message, "error");
-            }
-        }
-
-        function listenForSyncRequests() {
-            const myRequestRef = ref(db, `sync_requests/${CURRENT_USER_ID}`);
-            onValue(myRequestRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.status === 'pending') {
-                    const userPin = data.pin;
-                    const confirmSync = confirm(`Someone is trying to sync your data!\nEntered PIN: ${userPin}\nDo you want to allow this?`);
-                    if (confirmSync) {
-                        update(myRequestRef, { status: 'approved' });
-                    } else {
-                        update(myRequestRef, { status: 'rejected' });
-                    }
+            window.restoreFromCloud(targetUserId).then(res => {
+                if (res.success) {
+                    alert("Data synced successfully!");
+                    window.location.href = "index.html";
+                } else {
+                    showFeedback(res.message, "error");
                 }
             });
         }
