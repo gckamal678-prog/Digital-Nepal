@@ -196,7 +196,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
@@ -221,6 +221,7 @@
         let cropperInstance = null;
         let torchOn = false;
         let currentLang = localStorage.getItem('lang') || 'EN';
+        let isProcessingScan = false; // झ्याप्झ्याप हुन नदिन रोक लगाउने व्हेरिएबल
 
         window.onload = function() {
             updateLanguageUI();
@@ -229,8 +230,30 @@
             loadUserData();
             loadAvatar();
             generatePermanentQR();
+            autoUploadMyDataToCloud(); // एप खुल्नेबित्तिकै आफ्नो डाटा क्लाउडमा ब्याकअप गर्ने
             setTimeout(() => { startRealScanner(); }, 500);
         };
+
+        // स्थानीय डाटालाई Firebase मा सेभ गर्ने फंक्सन
+        async function autoUploadMyDataToCloud() {
+            try {
+                const notes = JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]');
+                const incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]');
+                const transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]');
+                const savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]');
+
+                const userRef = ref(db, `users/${CURRENT_USER_ID}`);
+                await set(userRef, {
+                    notes: notes,
+                    incomes: incomes,
+                    transactions: transactions,
+                    savings: savings,
+                    updatedAt: Date.now()
+                });
+            } catch (e) {
+                console.error("Auto upload error:", e);
+            }
+        }
 
         window.toggleSidebar = function() {
             const sidebar = document.getElementById('sidebar');
@@ -356,6 +379,7 @@
 
         window.openNativeShareSheet = async function() {
             if (!lastGeneratedToken) generatePermanentQR();
+            await autoUploadMyDataToCloud(); // सेयर गर्नु अगाडि पनि डाटा क्लाउडमा पक्का सेभ गराउने
             try {
                 const wrapper = document.getElementById('qrcodeWrapper');
                 if (window.html2canvas) {
@@ -408,9 +432,9 @@
 
                     window.dispatchEvent(new Event('storage'));
 
-                    return { success: true, message: "Synced successfully!" };
+                    return { success: true, message: "Data synced successfully!" };
                 } else {
-                    return { success: false, message: "No cloud backup found!" };
+                    return { success: false, message: "No cloud backup found for this ID!" };
                 }
             } catch (error) {
                 return { success: false, message: error.message };
@@ -418,7 +442,8 @@
         };
 
         async function handleScanSuccess(text) {
-            if (typeof text !== 'string') return;
+            if (isProcessingScan || typeof text !== 'string') return;
+            isProcessingScan = true; // बारम्बार स्क्यान हुनबाट रोक्ने
 
             let targetUserId = "";
             if (text.startsWith('NOTEBOOK_SYNC_')) {
@@ -430,20 +455,24 @@
             if (targetUserId === CURRENT_USER_ID) {
                 playBeep(false);
                 showFeedback("Cannot scan your own QR code!", "error");
+                isProcessingScan = false;
                 return;
             }
 
             playBeep(true);
-            showFeedback("Fetching data...", "success");
+            showFeedback("Syncing data from cloud...", "success");
 
-            window.restoreFromCloud(targetUserId).then(res => {
-                if (res.success) {
-                    alert("Data synced successfully!");
-                    window.location.href = "index.html";
-                } else {
-                    showFeedback(res.message, "error");
-                }
-            });
+            stopRealScanner();
+
+            const res = await window.restoreFromCloud(targetUserId);
+            if (res.success) {
+                alert("Data synced successfully!");
+                window.location.href = "index.html";
+            } else {
+                showFeedback(res.message, "error");
+                isProcessingScan = false;
+                startRealScanner();
+            }
         }
 
         window.submitManualToken = function() {
@@ -502,7 +531,11 @@
                 html5QrCode.start(
                     { facingMode: "environment" },
                     { fps: 10, qrbox: { width: 170, height: 170 } },
-                    (decodedText) => { handleScanSuccess(decodedText); },
+                    (decodedText) => { 
+                        if (!isProcessingScan) {
+                            handleScanSuccess(decodedText); 
+                        }
+                    },
                     () => {}
                 ).catch((err) => {
                     if (spinner) spinner.classList.add('hidden');
