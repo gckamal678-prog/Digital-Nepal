@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digital NoteBook - Secure Sync</title>
+    <title>Digital NoteBook - Digital Card QR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
     tailwind.config = {
@@ -28,10 +28,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
 
@@ -98,7 +95,7 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <span id="timerBadge" class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800/50 px-2 py-0.5 rounded-full font-mono">Secure</span>
+                    <span id="timerBadge" class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800/50 px-2 py-0.5 rounded-full font-mono">Card QR</span>
                     <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200">ENG</button>
                     <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm">🌛</button>
                     <div class="relative cursor-pointer" onclick="toggleSidebar()">
@@ -116,52 +113,19 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-slate-900 p-1 rounded-xl flex border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <button onclick="switchTab('scan')" id="scanTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow">Scan QR</button>
-                    <button onclick="switchTab('share')" id="shareTabBtn" class="flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400">Share QR</button>
-                </div>
-
-                <div id="scanView" class="space-y-3">
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex justify-around items-center shadow-sm">
-                        <button onclick="toggleTorch()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span class="text-[10px]">Flash</span>
-                        </button>
-                        <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
-                        <button onclick="document.getElementById('fileInput').click()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span class="text-[10px]">Gallery</span>
-                        </button>
-                    </div>
-
-                    <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="scanImageFromFile(event)">
-
-                    <div class="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-2 text-center relative overflow-hidden min-h-[260px] flex flex-col justify-center items-center shadow-sm">
-                        <div id="reader" class="w-full rounded-xl overflow-hidden"></div>
-                        <div id="scannerLoading" class="text-emerald-500 text-xs font-medium animate-pulse mt-2">Camera active & scanning...</div>
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 space-y-2 shadow-sm">
-                        <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Code Manual Entry</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="manualTokenInput" placeholder="Paste sync token or user ID..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-slate-800 dark:text-white text-xs focus:outline-none focus:border-emerald-500">
-                            <button onclick="submitManualToken()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-white rounded-xl font-bold text-xs transition shadow-md">Sync</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="shareView" class="space-y-3 hidden">
+                <!-- QR Share View Only -->
+                <div id="shareView" class="space-y-3">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl p-4 shadow-sm flex justify-between items-center">
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 id="profileName" class="text-sm font-bold tracking-tight"></h3>
-                                <span class="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Active Master</span>
+                                <h3 id="profileName" class="text-sm font-bold tracking-tight">KAMAL G.C.</h3>
+                                <span class="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">VIP Card</span>
                             </div>
-                            <p id="profilePhone" class="text-[11px] text-slate-400 mt-0.5">Permanent Sync QR</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">info.kamalgc.com.np</p>
                         </div>
                         <button onclick="openNativeShareSheet()" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition text-slate-700 dark:text-slate-200 flex items-center gap-1.5 font-bold">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                            Share QR
+                            Share Card
                         </button>
                     </div>
 
@@ -174,54 +138,16 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[11px] text-slate-400">Scan this QR code anytime to securely sync data with your device.</p>
+                        <p class="text-[11px] text-slate-400">Scan this QR code to visit <span class="text-emerald-500 font-bold">info.kamalgc.com.np</span></p>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <div id="cropperModal" style="display:none;" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl max-w-sm w-full text-slate-800 dark:text-white shadow-2xl space-y-3">
-            <h3 class="text-xs font-bold text-emerald-500">Crop & Zoom QR Code</h3>
-            <div class="max-h-64 overflow-hidden bg-black rounded-xl flex justify-center items-center">
-                <img id="imageToCrop" src="" class="max-w-full">
-            </div>
-            <div class="flex gap-2">
-                <button onclick="closeCropper()" class="w-1/2 bg-slate-100 dark:bg-slate-800 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="performCroppedScan()" class="w-1/2 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold">Crop & Scan</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
-          authDomain: "digital-a2552.firebaseapp.com",
-          projectId: "digital-a2552",
-          storageBucket: "digital-a2552.firebasestorage.app",
-          messagingSenderId: "218135618179",
-          appId: "1:218135618179:web:821b76920d3e5669ac31b6"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let CURRENT_USER_ID = localStorage.getItem('my_unique_userid');
-        if (!CURRENT_USER_ID) {
-            CURRENT_USER_ID = "user_" + Math.random().toString(36).substring(2, 8);
-            localStorage.setItem('my_unique_userid', CURRENT_USER_ID);
-        }
-
-        let html5QrCode = null;
-        let lastGeneratedToken = "";
-        let cropperInstance = null;
-        let torchOn = false;
+    <script>
         let currentLang = localStorage.getItem('lang') || 'EN';
-        let isProcessingScan = false;
+        const cardUrl = "https://info.kamalgc.com.np";
 
         window.onload = function() {
             updateLanguageUI();
@@ -229,34 +155,8 @@
             updateDynamicHeader();
             loadUserData();
             loadAvatar();
-            generatePermanentQR();
-            autoUploadMyDataToCloud();
-            setTimeout(() => { startRealScanner(); }, 500);
+            generateCardQR();
         };
-
-        // सबै किसिमका लोकल स्टोरेज की (Keys) हरू चेक गरेर क्लाउडमा पठाउने फंक्सन
-        async function autoUploadMyDataToCloud() {
-            try {
-                const notes = JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || localStorage.getItem('digital_notebook_notes') || '[]');
-                const incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]');
-                const transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]');
-                const savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]');
-                const investments = JSON.parse(localStorage.getItem('digital_notebook_investments') || localStorage.getItem('investments') || '[]');
-
-                const userRef = ref(db, `users/${CURRENT_USER_ID}`);
-                await set(userRef, {
-                    notes: notes,
-                    incomes: incomes,
-                    transactions: transactions,
-                    savings: savings,
-                    investments: investments,
-                    updatedAt: Date.now()
-                });
-                console.log("Cloud backup updated successfully for ID:", CURRENT_USER_ID);
-            } catch (e) {
-                console.error("Auto upload error:", e);
-            }
-        }
 
         window.toggleSidebar = function() {
             const sidebar = document.getElementById('sidebar');
@@ -309,16 +209,16 @@
             const name = document.getElementById('input-full-name').value;
             if(name) localStorage.setItem('profile_name', name);
             loadUserData();
-            alert('Profile details saved successfully!');
+            showFeedback('Profile saved successfully!', 'success');
         };
 
         window.loadUserData = function() {
-            const savedName = localStorage.getItem('profile_name') || '';
+            const savedName = localStorage.getItem('profile_name') || 'KAMAL G.C.';
             if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
             const nameEl = document.getElementById('sidebar-profile-name');
             if(nameEl) nameEl.innerText = savedName;
             const profileNameEl = document.getElementById('profileName');
-            if(profileNameEl) profileNameEl.innerText = savedName || 'User Name';
+            if(profileNameEl) profileNameEl.innerText = savedName;
         };
 
         window.handleAvatarUpload = function(event) {
@@ -341,65 +241,40 @@
             });
         };
 
-        window.switchTab = function(tab) {
-            const scanTabBtn = document.getElementById('scanTabBtn');
-            const shareTabBtn = document.getElementById('shareTabBtn');
-            const scanView = document.getElementById('scanView');
-            const shareView = document.getElementById('shareView');
-
-            if (tab === 'scan') {
-                scanTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow";
-                shareTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400";
-                scanView.classList.remove('hidden');
-                shareView.classList.add('hidden');
-                startRealScanner();
-            } else {
-                shareTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-emerald-500 bg-slate-100 dark:bg-slate-800 shadow";
-                scanTabBtn.className = "flex-1 py-2.5 rounded-lg font-bold text-xs transition text-slate-400";
-                shareView.classList.remove('hidden');
-                scanView.classList.add('hidden');
-                stopRealScanner();
-                autoUploadMyDataToCloud(); // सेयर ट्याबमा जाँदा पनि डाटा क्लाउडमा ब्याकअप गराउने
-            }
-        };
-
-        window.generatePermanentQR = function() {
+        window.generateCardQR = function() {
             const qrcodeContainer = document.getElementById('qrcode');
             if (!qrcodeContainer) return;
             qrcodeContainer.innerHTML = ""; 
-            
-            const permanentToken = `NOTEBOOK_SYNC_${CURRENT_USER_ID}`;
-            lastGeneratedToken = permanentToken;
 
             if (typeof QRCode !== 'undefined') {
                 new QRCode(qrcodeContainer, {
-                    text: permanentToken,
-                    width: 150,
-                    height: 150,
+                    text: cardUrl,
+                    width: 160,
+                    height: 160,
                     correctLevel: QRCode.CorrectLevel.H
                 });
             }
         };
 
         window.openNativeShareSheet = async function() {
-            if (!lastGeneratedToken) generatePermanentQR();
-            await autoUploadMyDataToCloud();
             try {
                 const wrapper = document.getElementById('qrcodeWrapper');
                 if (window.html2canvas) {
                     html2canvas(wrapper, { backgroundColor: '#ffffff', scale: 2 }).then(async (canvas) => {
                         canvas.toBlob(async (blob) => {
-                            const file = new File([blob], "digital-notebook-qr.png", { type: "image/png" });
+                            const file = new File([blob], "digital-card-qr.png", { type: "image/png" });
                             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                                 await navigator.share({
-                                    title: 'Digital NoteBook Permanent Sync',
-                                    text: `My Sync ID: ${lastGeneratedToken}`,
+                                    title: 'KAMAL G.C. - Digital Card',
+                                    text: 'Check out my Digital Business Card:',
+                                    url: cardUrl,
                                     files: [file]
                                 });
                             } else if (navigator.share) {
                                 await navigator.share({
-                                    title: 'Digital NoteBook Permanent Sync',
-                                    text: `My Sync ID: ${lastGeneratedToken}`
+                                    title: 'KAMAL G.C. - Digital Card',
+                                    text: 'Check out my Digital Business Card:',
+                                    url: cardUrl
                                 });
                             }
                         }, 'image/png');
@@ -409,171 +284,6 @@
                 showFeedback("Sharing cancelled!", "error");
             }
         };
-
-        window.restoreFromCloud = async function(userIdToFetch) {
-            try {
-                const dbRef = ref(db);
-                const snapshot = await get(child(dbRef, `users/${userIdToFetch}`));
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    
-                    if (data.notes) {
-                        localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
-                        localStorage.setItem('notes', JSON.stringify(data.notes));
-                    }
-                    if (data.incomes) {
-                        localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
-                        localStorage.setItem('incomes', JSON.stringify(data.incomes));
-                    }
-                    if (data.transactions) {
-                        localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
-                        localStorage.setItem('transactions', JSON.stringify(data.transactions));
-                    }
-                    if (data.savings) {
-                        localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
-                        localStorage.setItem('savings', JSON.stringify(data.savings));
-                    }
-                    if (data.investments) {
-                        localStorage.setItem('digital_notebook_investments', JSON.stringify(data.investments));
-                        localStorage.setItem('investments', JSON.stringify(data.investments));
-                    }
-
-                    window.dispatchEvent(new Event('storage'));
-                    return { success: true, message: "Data synced successfully!" };
-                } else {
-                    return { success: false, message: "No cloud backup found for this ID!" };
-                }
-            } catch (error) {
-                return { success: false, message: error.message };
-            }
-        };
-
-        async function handleScanSuccess(text) {
-            if (isProcessingScan || typeof text !== 'string') return;
-            isProcessingScan = true;
-
-            let targetUserId = "";
-            if (text.startsWith('NOTEBOOK_SYNC_')) {
-                targetUserId = text.replace('NOTEBOOK_SYNC_', '');
-            } else {
-                targetUserId = text.trim();
-            }
-
-            if (targetUserId === CURRENT_USER_ID) {
-                playBeep(false);
-                showFeedback("Cannot scan your own QR code!", "error");
-                isProcessingScan = false;
-                return;
-            }
-
-            playBeep(true);
-            showFeedback("Syncing data from cloud...", "success");
-            stopRealScanner();
-
-            const res = await window.restoreFromCloud(targetUserId);
-            if (res.success) {
-                alert("Data synced successfully!");
-                window.location.href = "index.html";
-            } else {
-                showFeedback(res.message, "error");
-                isProcessingScan = false;
-                startRealScanner();
-            }
-        }
-
-        window.submitManualToken = function() {
-            const token = document.getElementById('manualTokenInput').value.trim();
-            if(!token) {
-                showFeedback("Please enter a token or User ID!", "error");
-                return;
-            }
-            handleScanSuccess(token);
-        };
-
-        window.scanImageFromFile = function(e) {
-            if (!e.target.files || e.target.files.length === 0) return;
-            const imageFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const imgElement = document.getElementById('imageToCrop');
-                imgElement.src = event.target.result;
-                document.getElementById('cropperModal').style.display = 'flex';
-                if (cropperInstance) cropperInstance.destroy();
-                cropperInstance = new Cropper(imgElement, { aspectRatio: 1, viewMode: 1 });
-            };
-            reader.readAsDataURL(imageFile);
-        };
-
-        window.closeCropper = function() {
-            document.getElementById('cropperModal').style.display = 'none';
-            if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
-            document.getElementById('fileInput').value = '';
-        };
-
-        window.performCroppedScan = function() {
-            if (!cropperInstance) return;
-            const croppedCanvas = cropperInstance.getCroppedCanvas({ width: 500, height: 500 });
-            croppedCanvas.toBlob((blob) => {
-                closeCropper();
-                const html5QrCodeFromFile = new Html5Qrcode("reader");
-                html5QrCodeFromFile.scanFile(blob, true)
-                    .then(decodedText => { handleScanSuccess(decodedText); })
-                    .catch(err => { showFeedback("No valid QR found in cropped area!", "error"); });
-            }, 'image/png');
-        };
-
-        window.toggleTorch = function() {
-            if (!html5QrCode || !html5QrCode.isScanning) return;
-            torchOn = !torchOn;
-            html5QrCode.applyVideoConstraints({ advanced: [{ torch: torchOn }] }).catch(err => {});
-        };
-
-        window.startRealScanner = function() {
-            const spinner = document.getElementById('scannerLoading');
-            if (spinner) spinner.classList.remove('hidden');
-            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-
-            if (!html5QrCode.isScanning) {
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 170, height: 170 } },
-                    (decodedText) => { 
-                        if (!isProcessingScan) {
-                            handleScanSuccess(decodedText); 
-                        }
-                    },
-                    () => {}
-                ).catch((err) => {
-                    if (spinner) spinner.classList.add('hidden');
-                    showFeedback("Camera permission needed.", "error");
-                });
-            }
-        };
-
-        window.stopRealScanner = function() {
-            const spinner = document.getElementById('scannerLoading');
-            if (spinner) spinner.classList.add('hidden');
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().catch(err => {});
-            }
-        };
-
-        function playBeep(isSuccess) {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const audioCtx = new AudioContext();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.type = isSuccess ? 'sine' : 'sawtooth';
-                oscillator.frequency.setValueAtTime(isSuccess ? 880 : 300, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + (isSuccess ? 0.15 : 0.3));
-            } catch (e) {}
-        }
 
         function showFeedback(message, type) {
             const fb = document.getElementById('feedbackMsg');
