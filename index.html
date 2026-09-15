@@ -642,29 +642,28 @@ tailwind.config = {
     }
 
     window.triggerBiometricAuth = async function() {
-        try {
-            if (window.PublicKeyCredential) {
-                const publicKey = {
-                    challenge: new Uint8Array([21, 31, 105, 78, 18, 45, 7, 88]),
-                    rp: { name: "Digital NoteBook" },
-                    user: {
-                        id: new Uint8Array([1, 2, 3, 4]),
-                        name: "user@digitalnotebook",
-                        displayName: "Digital NoteBook User"
-                    },
-                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                    timeout: 60000,
-                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
-                };
-                
-                // बायोमेट्रिक प्रमाणीकरण माग्ने
-                await navigator.credentials.get({ publicKey });
+    try {
+        if (window.PublicKeyCredential) {
+            const publicKey = {
+                challenge: new Uint8Array([21, 31, 105, 78, 18, 45, 7, 88]),
+                timeout: 60000,
+                userVerification: "required"
+            };
+            
+            const credential = await navigator.credentials.get({ publicKey });
+            if (credential) {
                 document.getElementById('security-lock-screen').classList.add('hidden');
+                currentEnteredPin = "";
+                updatePinDots();
             }
-        } catch (error) {
-            console.log("Biometric cancelled or failed", error);
+        } else {
+            alert("Biometrics not supported on this browser. Please use MPIN.");
         }
+    } catch (error) {
+        console.log("Biometric cancelled or failed", error);
     }
+}
+
 
     let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'en';
 
