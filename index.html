@@ -76,14 +76,14 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- SECURITY LOCK SCREEN (DASHBOARD ENTRY LOCK) -->
+<!-- SECURITY LOCK SCREEN (4-DIGIT APP MPIN & BIOMETRIC) -->
 <div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
             🔒
         </div>
         <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security MPIN</h2>
+            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter App MPIN</h2>
             <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN to access Dashboard</p>
         </div>
 
@@ -164,7 +164,7 @@ tailwind.config = {
             <button id="auth-action-btn" onclick="handleAuthSubmit()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition shadow-lg">Sign Up</button>
         </div>
 
-        <!-- UNDERLINE FOOTER SWITCH -->
+        <!-- FOOTER SWITCH -->
         <div class="text-center pt-2 border-t border-slate-800">
             <p id="auth-switch-text" class="text-xs text-slate-400">
                 Already have an account? 
@@ -172,21 +172,6 @@ tailwind.config = {
             </p>
         </div>
 
-    </div>
-</div>
-
-<!-- 1. LANGUAGE SELECTION MODAL -->
-<div id="language-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 hidden">
-    <div class="bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 w-80 text-center shadow-2xl space-y-5">
-        <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400">🌐</div>
-        <div class="space-y-1">
-            <h3 class="text-base font-bold text-white">Select Your Language</h3>
-            <p class="text-xs text-slate-400">Choose your preferred language</p>
-        </div>
-        <div class="grid grid-cols-2 gap-3 pt-2">
-            <button onclick="setLanguage('en')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">English 🇬🇧</button>
-            <button onclick="setLanguage('np')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">नेपाली 🇳🇵</button>
-        </div>
     </div>
 </div>
 
@@ -494,39 +479,28 @@ tailwind.config = {
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
         
-        if (!email || !password) {
-            return;
-        }
+        if (!email || !password) return;
 
         if (isLoginMode) {
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {})
-                .catch((error) => {});
+            signInWithEmailAndPassword(auth, email, password).catch(() => {});
         } else {
             const confirmPassword = document.getElementById('auth-confirm-password').value;
-            if (password !== confirmPassword) {
-                return;
-            }
+            if (password !== confirmPassword) return;
 
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(() => {
                     toggleAuthMode('login');
                     document.getElementById('auth-password').value = '';
                     document.getElementById('auth-confirm-password').value = '';
                 })
-                .catch((error) => {});
+                .catch(() => {});
         }
     }
 
     window.handleForgotPassword = function() {
         const email = document.getElementById('auth-email').value;
-        if (!email) {
-            return;
-        }
-        
-        sendPasswordResetEmail(auth, email)
-            .then(() => {})
-            .catch((error) => {});
+        if (!email) return;
+        sendPasswordResetEmail(auth, email).catch(() => {});
     }
 
     async function backupToCloud(userId = "default_user") {
@@ -559,9 +533,8 @@ tailwind.config = {
                 if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
                 if (data.theme) localStorage.setItem('theme', data.theme);
                 return { success: true };
-            } else {
-                return { success: false };
             }
+            return { success: false };
         } catch (error) {
             return { success: false };
         }
@@ -599,7 +572,7 @@ tailwind.config = {
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
+        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
         const lockScreen = document.getElementById('security-lock-screen');
         
         if (savedPin && savedPin.length === 4) {
@@ -624,7 +597,7 @@ tailwind.config = {
     }
 
     function updateActiveTimestamp() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
+        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
         if (savedPin && savedPin.length === 4) {
             localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
         }
@@ -670,7 +643,7 @@ tailwind.config = {
     }
 
     function verifyEnteredPin() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
+        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
         if (currentEnteredPin === savedPin) {
             document.getElementById('security-lock-screen').classList.add('hidden');
             localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
@@ -727,7 +700,7 @@ tailwind.config = {
         }
     });
 
-    let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'np';
+    let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'en';
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
