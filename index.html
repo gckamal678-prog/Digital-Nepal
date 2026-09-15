@@ -83,18 +83,16 @@ tailwind.config = {
             🔒
         </div>
         <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security PIN</h2>
-            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 6-digit PIN to access Dashboard</p>
+            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security MPIN</h2>
+            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN to access Dashboard</p>
         </div>
 
-        <!-- 6 Digit Dots Display -->
+        <!-- 4 Digit Dots Display -->
         <div class="flex justify-center gap-3 py-2">
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-0"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-1"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-2"></div>
             <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-3"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-4"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-5"></div>
         </div>
 
         <!-- Biometric Button -->
@@ -122,7 +120,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- MANDATORY AUTHENTICATION & LOGIN OVERLAY (UPDATED WITH DYNAMIC SIGN UP & LOGIN TOGGLE) -->
+<!-- MANDATORY AUTHENTICATION & LOGIN OVERLAY -->
 <div id="login-overlay" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-5 text-white">
         
@@ -133,8 +131,8 @@ tailwind.config = {
         </div>
 
         <div class="text-center space-y-1">
-            <h2 id="auth-form-title" class="text-base font-bold text-emerald-400">नयाँ अकाउन्ट बनाउनुहोस् (Sign Up)</h2>
-            <p id="auth-form-subtitle" class="text-xs text-slate-400">Digital NoteBook मा स्वागत छ</p>
+            <h2 id="auth-form-title" class="text-base font-bold text-emerald-400">Sign Up</h2>
+            <p id="auth-form-subtitle" class="text-xs text-slate-400">Welcome to Digital NoteBook</p>
         </div>
 
         <!-- FORM INPUTS -->
@@ -148,7 +146,7 @@ tailwind.config = {
                 </button>
             </div>
 
-            <!-- Confirm Password (Only visible in Sign Up Mode) -->
+            <!-- Confirm Password -->
             <div id="confirm-password-container" class="relative">
                 <input type="password" id="auth-confirm-password" placeholder="Confirm password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 pr-10">
                 <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', 'eye-icon-2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
@@ -169,8 +167,8 @@ tailwind.config = {
         <!-- UNDERLINE FOOTER SWITCH -->
         <div class="text-center pt-2 border-t border-slate-800">
             <p id="auth-switch-text" class="text-xs text-slate-400">
-                पहिले नै खाता छ भने? 
-                <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In गर्नुहोस्</button>
+                Already have an account? 
+                <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In</button>
             </p>
         </div>
 
@@ -183,7 +181,7 @@ tailwind.config = {
         <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 mx-auto flex items-center justify-center text-emerald-400">🌐</div>
         <div class="space-y-1">
             <h3 class="text-base font-bold text-white">Select Your Language</h3>
-            <p class="text-xs text-slate-400">तपाईंलाई मनपर्ने भाषा छान्नुहोस्</p>
+            <p class="text-xs text-slate-400">Choose your preferred language</p>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-2">
             <button onclick="setLanguage('en')" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500 text-white text-xs font-mono transition-all">English 🇬🇧</button>
@@ -219,11 +217,6 @@ tailwind.config = {
             </div>
         </div>
     </div>
-</div>
-
-<!-- TOAST NOTIFICATION -->
-<div id="toast-notification" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2 rounded-xl shadow-xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
-    <span id="toast-message">Message</span>
 </div>
 
 <div class="flex min-h-screen w-full">
@@ -398,7 +391,7 @@ tailwind.config = {
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="calculate.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">🧮</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calculate" data-np="हिसाब गर्नुहोस्">calculate</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Calculate" data-np="हिसाब गर्नुहोस्">Calculate</span></span>
                     </a>
                     <a href="notebook.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📓</span>
@@ -406,7 +399,7 @@ tailwind.config = {
                     </a>
                     <a href="calendar.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">📅</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="calendar" data-np="पात्रो">calendar</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Calendar" data-np="पात्रो">Calendar</span></span>
                     </a>
                 </div>
 
@@ -417,7 +410,7 @@ tailwind.config = {
                     </a>
                     <a href="account.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
                         <span class="text-base mb-1">👤</span>
-                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="account" data-np="खाता">account</span></span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Account" data-np="खाता">Account</span></span>
                     </a>
                 </div>
             </div>
@@ -467,19 +460,19 @@ tailwind.config = {
         const switchText = document.getElementById('auth-switch-text');
 
         if (isLoginMode) {
-            titleEl.innerText = "लगइन गर्नुहोस् (Login)";
-            subTitleEl.innerText = "तपाईंको खातामा प्रवेश गर्नुहोस्";
+            titleEl.innerText = "Log In";
+            subTitleEl.innerText = "Access your account";
             confirmContainer.classList.add('hidden');
             forgotContainer.classList.remove('hidden');
             actionBtn.innerText = "Login";
-            switchText.innerHTML = `खाता छैन भने? <button onclick="toggleAuthMode('signup')" class="text-emerald-400 font-bold hover:underline ml-1">नयाँ अकाउन्ट बनाउनुहोस्</button>`;
+            switchText.innerHTML = `Don't have an account? <button onclick="toggleAuthMode('signup')" class="text-emerald-400 font-bold hover:underline ml-1">Sign Up</button>`;
         } else {
-            titleEl.innerText = "नयाँ अकाउन्ट बनाउनुहोस् (Sign Up)";
-            subTitleEl.innerText = "Digital NoteBook मा स्वागत छ";
+            titleEl.innerText = "Sign Up";
+            subTitleEl.innerText = "Welcome to Digital NoteBook";
             confirmContainer.classList.remove('hidden');
             forgotContainer.classList.add('hidden');
             actionBtn.innerText = "Sign Up";
-            switchText.innerHTML = `पहिले नै खाता छ भने? <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In गर्नुहोस्</button>`;
+            switchText.innerHTML = `Already have an account? <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In</button>`;
         }
     }
 
@@ -502,52 +495,38 @@ tailwind.config = {
         const password = document.getElementById('auth-password').value;
         
         if (!email || !password) {
-            showToast("Please fill in all fields.");
             return;
         }
 
         if (isLoginMode) {
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    showToast("Login successful.");
-                })
-                .catch((error) => {
-                    showToast("Login failed: " + error.message);
-                });
+                .then((userCredential) => {})
+                .catch((error) => {});
         } else {
             const confirmPassword = document.getElementById('auth-confirm-password').value;
             if (password !== confirmPassword) {
-                showToast("Passwords do not match!");
                 return;
             }
 
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    showToast("Account successfully created! Please log in.");
                     toggleAuthMode('login');
                     document.getElementById('auth-password').value = '';
                     document.getElementById('auth-confirm-password').value = '';
                 })
-                .catch((error) => {
-                    showToast("Error: " + error.message);
-                });
+                .catch((error) => {});
         }
     }
 
     window.handleForgotPassword = function() {
         const email = document.getElementById('auth-email').value;
         if (!email) {
-            showToast("Please enter your email address first.");
             return;
         }
         
         sendPasswordResetEmail(auth, email)
-            .then(() => {
-                showToast("Password reset link sent to your email.");
-            })
-            .catch((error) => {
-                showToast("Error: " + error.message);
-            });
+            .then(() => {})
+            .catch((error) => {});
     }
 
     async function backupToCloud(userId = "default_user") {
@@ -562,9 +541,9 @@ tailwind.config = {
                 updatedAt: new Date().toISOString()
             };
             await set(ref(db, 'users/' + userId), localData);
-            return { success: true, message: "Data successfully saved to cloud!" };
+            return { success: true };
         } catch (error) {
-            return { success: false, message: error.message };
+            return { success: false };
         }
     }
 
@@ -579,25 +558,23 @@ tailwind.config = {
                 if (data.savings) localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
                 if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
                 if (data.theme) localStorage.setItem('theme', data.theme);
-                return { success: true, message: "Data successfully synced from cloud!" };
+                return { success: true };
             } else {
-                return { success: false, message: "No backup found in cloud!" };
+                return { success: false };
             }
         } catch (error) {
-            return { success: false, message: error.message };
+            return { success: false };
         }
     }
 
     window.handleCloudBackup = async function() {
         let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
-        const result = await backupToCloud(userId);
-        showToast(result.message);
+        await backupToCloud(userId);
     };
 
     window.handleCloudRestore = async function() {
         let userId = auth.currentUser ? auth.currentUser.uid : (localStorage.getItem('my_unique_userid') || "default_user");
         const result = await restoreFromCloud(userId);
-        showToast(result.message);
         if(result.success) location.reload();
     };
 
@@ -619,24 +596,13 @@ tailwind.config = {
 </script>
 
 <script>
-    function showToast(message) {
-        const toast = document.getElementById('toast-notification');
-        document.getElementById('toast-message').innerText = message;
-        toast.classList.remove('opacity-0', 'pointer-events-none');
-        toast.classList.add('opacity-100');
-        setTimeout(() => {
-            toast.classList.remove('opacity-100');
-            toast.classList.add('opacity-0', 'pointer-events-none');
-        }, 2000);
-    }
-
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
         const lockScreen = document.getElementById('security-lock-screen');
         
-        if (savedPin && savedPin.length === 6) {
+        if (savedPin && savedPin.length === 4) {
             const lastActiveTime = localStorage.getItem('last_active_timestamp');
             const currentTime = new Date().getTime();
             const twoMinutes = 2 * 60 * 1000;
@@ -659,7 +625,7 @@ tailwind.config = {
 
     function updateActiveTimestamp() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
-        if (savedPin && savedPin.length === 6) {
+        if (savedPin && savedPin.length === 4) {
             localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
         }
     }
@@ -669,10 +635,10 @@ tailwind.config = {
     });
 
     window.pressPinKey = function(digit) {
-        if (currentEnteredPin.length < 6) {
+        if (currentEnteredPin.length < 4) {
             currentEnteredPin += digit;
             updatePinDots();
-            if (currentEnteredPin.length === 6) {
+            if (currentEnteredPin.length === 4) {
                 verifyEnteredPin();
             }
         }
@@ -691,7 +657,7 @@ tailwind.config = {
     }
 
     function updatePinDots() {
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 4; i++) {
             const dot = document.getElementById(`dot-${i}`);
             if (i < currentEnteredPin.length) {
                 dot.classList.add('bg-emerald-500');
@@ -706,13 +672,11 @@ tailwind.config = {
     function verifyEnteredPin() {
         const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_pin_lock');
         if (currentEnteredPin === savedPin) {
-            showToast("Unlocked successfully!");
             document.getElementById('security-lock-screen').classList.add('hidden');
             localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             currentEnteredPin = "";
             updatePinDots();
         } else {
-            showToast("Incorrect PIN. Try again.");
             currentEnteredPin = "";
             updatePinDots();
         }
@@ -737,7 +701,6 @@ tailwind.config = {
                         attestation: "none"
                     };
                     await navigator.credentials.create({ publicKey });
-                    showToast("Biometric Verified Successfully!");
                     document.getElementById('security-lock-screen').classList.add('hidden');
                     localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
                     return;
@@ -752,15 +715,10 @@ tailwind.config = {
             }).catch(() => null);
 
             if (credential) {
-                showToast("Biometric Verified Successfully!");
                 document.getElementById('security-lock-screen').classList.add('hidden');
                 localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
-            } else {
-                showToast("Please use your 6-digit PIN.");
             }
-        } catch (error) {
-            showToast("Please use your 6-digit PIN.");
-        }
+        } catch (error) {}
     }
 
     document.addEventListener("visibilitychange", () => {
@@ -922,7 +880,6 @@ tailwind.config = {
 
         loadUserData();
         updateDynamicHeader();
-        showToast(currentLang === 'np' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
     }
 
     function loadUserData() {
