@@ -122,7 +122,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- MANDATORY AUTHENTICATION & LOGIN OVERLAY -->
+<!-- MANDATORY AUTHENTICATION & LOGIN OVERLAY (UPDATED WITH DYNAMIC SIGN UP & LOGIN TOGGLE) -->
 <div id="login-overlay" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-5 text-white">
         
@@ -133,22 +133,45 @@ tailwind.config = {
         </div>
 
         <div class="text-center space-y-1">
-            <h2 class="text-base font-bold text-emerald-400" data-translate="loginTitle">Digital NoteBook</h2>
-            <p class="text-xs text-slate-400" data-translate="loginSubtitle">Please sign in or register to continue</p>
+            <h2 id="auth-form-title" class="text-base font-bold text-emerald-400">नयाँ अकाउन्ट बनाउनुहोस् (Sign Up)</h2>
+            <p id="auth-form-subtitle" class="text-xs text-slate-400">Digital NoteBook मा स्वागत छ</p>
         </div>
 
+        <!-- FORM INPUTS -->
         <div class="space-y-3">
-            <input type="email" id="auth-email" data-translate-placeholder="emailPlaceholder" placeholder="Enter email" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-            <input type="password" id="auth-password" data-translate-placeholder="passwordPlaceholder" placeholder="Enter password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="email" id="auth-email" placeholder="Enter email address" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
             
-            <div class="text-right">
-                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline" data-translate="forgotPasswordBtn">Forgot Password?</button>
+            <div class="relative">
+                <input type="password" id="auth-password" placeholder="Enter password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 pr-10">
+                <button type="button" onclick="togglePasswordVisibility('auth-password', 'eye-icon-1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                    <i id="eye-icon-1" class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+
+            <!-- Confirm Password (Only visible in Sign Up Mode) -->
+            <div id="confirm-password-container" class="relative">
+                <input type="password" id="auth-confirm-password" placeholder="Confirm password" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 pr-10">
+                <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', 'eye-icon-2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                    <i id="eye-icon-2" class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            
+            <div id="forgot-password-container" class="text-right hidden">
+                <button onclick="handleForgotPassword()" class="text-[11px] text-emerald-400 hover:underline">Forgot Password?</button>
             </div>
         </div>
 
-        <div class="flex gap-2 pt-1">
-            <button onclick="handleEmailSignUp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition" data-translate="signUpBtn">Sign Up</button>
-            <button onclick="handleEmailLogin()" class="w-1/2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="loginBtn">Login</button>
+        <!-- ACTION BUTTON -->
+        <div class="pt-1">
+            <button id="auth-action-btn" onclick="handleAuthSubmit()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition shadow-lg">Sign Up</button>
+        </div>
+
+        <!-- UNDERLINE FOOTER SWITCH -->
+        <div class="text-center pt-2 border-t border-slate-800">
+            <p id="auth-switch-text" class="text-xs text-slate-400">
+                पहिले नै खाता छ भने? 
+                <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In गर्नुहोस्</button>
+            </p>
         </div>
 
     </div>
@@ -324,7 +347,7 @@ tailwind.config = {
                 </a>
             </div>
 
-            <!-- ROW 1: Financial Summaries (Updated to 5 columns including Total Saving) -->
+            <!-- ROW 1: Financial Summaries -->
             <div id="summary-cards-area" class="grid grid-cols-5 gap-1.5 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
                 <div class="flex flex-col items-center p-0.5">
                     <span class="text-base mb-0.5">💵</span>
@@ -432,28 +455,49 @@ tailwind.config = {
         }
     });
 
-    window.handleEmailSignUp = function() {
-        const email = document.getElementById('auth-email').value;
-        const password = document.getElementById('auth-password').value;
-        
-        if (!email || !password) {
-            showToast("Please fill in all fields.");
-            return;
-        }
+    let isLoginMode = false;
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                signOut(auth).then(() => {
-                    showToast("Account successfully created! Please login with your credentials.");
-                    document.getElementById('auth-password').value = '';
-                });
-            })
-            .catch((error) => {
-                showToast("Error: " + error.message);
-            });
+    window.toggleAuthMode = function(mode) {
+        isLoginMode = (mode === 'login');
+        const titleEl = document.getElementById('auth-form-title');
+        const subTitleEl = document.getElementById('auth-form-subtitle');
+        const confirmContainer = document.getElementById('confirm-password-container');
+        const forgotContainer = document.getElementById('forgot-password-container');
+        const actionBtn = document.getElementById('auth-action-btn');
+        const switchText = document.getElementById('auth-switch-text');
+
+        if (isLoginMode) {
+            titleEl.innerText = "लगइन गर्नुहोस् (Login)";
+            subTitleEl.innerText = "तपाईंको खातामा प्रवेश गर्नुहोस्";
+            confirmContainer.classList.add('hidden');
+            forgotContainer.classList.remove('hidden');
+            actionBtn.innerText = "Login";
+            switchText.innerHTML = `खाता छैन भने? <button onclick="toggleAuthMode('signup')" class="text-emerald-400 font-bold hover:underline ml-1">नयाँ अकाउन्ट बनाउनुहोस्</button>`;
+        } else {
+            titleEl.innerText = "नयाँ अकाउन्ट बनाउनुहोस् (Sign Up)";
+            subTitleEl.innerText = "Digital NoteBook मा स्वागत छ";
+            confirmContainer.classList.remove('hidden');
+            forgotContainer.classList.add('hidden');
+            actionBtn.innerText = "Sign Up";
+            switchText.innerHTML = `पहिले नै खाता छ भने? <button onclick="toggleAuthMode('login')" class="text-emerald-400 font-bold hover:underline ml-1">Log In गर्नुहोस्</button>`;
+        }
     }
 
-    window.handleEmailLogin = function() {
+    window.togglePasswordVisibility = function(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+
+    window.handleAuthSubmit = function() {
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
         
@@ -462,13 +506,32 @@ tailwind.config = {
             return;
         }
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                showToast("Login successful.");
-            })
-            .catch((error) => {
-                showToast("Login failed: " + error.message);
-            });
+        if (isLoginMode) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    showToast("Login successful.");
+                })
+                .catch((error) => {
+                    showToast("Login failed: " + error.message);
+                });
+        } else {
+            const confirmPassword = document.getElementById('auth-confirm-password').value;
+            if (password !== confirmPassword) {
+                showToast("Passwords do not match!");
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    showToast("Account successfully created! Please log in.");
+                    toggleAuthMode('login');
+                    document.getElementById('auth-password').value = '';
+                    document.getElementById('auth-confirm-password').value = '';
+                })
+                .catch((error) => {
+                    showToast("Error: " + error.message);
+                });
+        }
     }
 
     window.handleForgotPassword = function() {
@@ -538,7 +601,6 @@ tailwind.config = {
         if(result.success) location.reload();
     };
 
-    // Automatic background cloud backup whenever data changes or periodically when logged in
     async function triggerAutomaticCloudBackup() {
         let userId = auth.currentUser ? auth.currentUser.uid : localStorage.getItem('my_unique_userid');
         if (userId && auth.currentUser) {
@@ -546,7 +608,6 @@ tailwind.config = {
         }
     }
 
-    // Hook auto backup on storage changes and regular intervals
     window.addEventListener('storage', () => {
         triggerAutomaticCloudBackup();
     });
@@ -554,7 +615,7 @@ tailwind.config = {
         if (auth.currentUser) {
             triggerAutomaticCloudBackup();
         }
-    }, 60000); // Auto backup every 1 minute if user is logged in
+    }, 60000);
 </script>
 
 <script>
@@ -569,7 +630,6 @@ tailwind.config = {
         }, 2000);
     }
 
-    // Security PIN & Biometric Verification Logic
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
@@ -781,7 +841,6 @@ tailwind.config = {
     setInterval(updateDynamicHeader, 1000);
 
     function updateSummaryCards() {
-        // Total Income Calculation
         const incomeKeys = ['digital_notebook_incomes', 'incomes', 'income_data', 'add_income_list'];
         let incomes = [];
         for (let key of incomeKeys) {
@@ -796,7 +855,6 @@ tailwind.config = {
         const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || item.val || item.total || item.price || 0), 0);
         if(document.getElementById('summary-income')) document.getElementById('summary-income').innerText = `Rs ${totalIncome.toLocaleString()}`;
 
-        // Total Saving Calculation (from saving.html data stores)
         const savingKeys = ['digital_notebook_savings', 'savings', 'saving_data', 'add_saving_list'];
         let savings = [];
         for (let key of savingKeys) {
@@ -811,7 +869,6 @@ tailwind.config = {
         const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || item.val || item.total || item.price || 0), 0);
         if(document.getElementById('summary-saving')) document.getElementById('summary-saving').innerText = `Rs ${totalSaving.toLocaleString()}`;
 
-        // Transactions Calculation (Invest, Receivable, Payable)
         const txKeys = ['digital_notebook_transactions', 'transactions', 'advanced_notebook_notes', 'notes', 'transaction_list'];
         let transactions = [];
         for (let key of txKeys) {
