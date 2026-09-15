@@ -163,7 +163,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 2. SECURITY & LOCK SETTINGS (4-Digit MPIN & Biometric) -->
+            <!-- 2. SECURITY & LOCK SETTINGS (4-Digit MPIN) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span data-i18n="security_title">Security & Lock Settings</span>
@@ -187,21 +187,6 @@ tailwind.config = {
                             </button>
                         </div>
                         <button onclick="saveAppPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold" data-i18n="btn_save_pin">Save MPIN</button>
-                    </div>
-
-                    <!-- Biometric / Fingerprint Lock -->
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 mt-3">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-fingerprint text-emerald-500 text-base"></i>
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-800 dark:text-white" data-i18n="biometric_lock_label">Biometric / Fingerprint Unlock</h4>
-                                <p class="text-[10px] text-slate-400" data-i18n="biometric_sub_label">Use device fingerprint or face ID</p>
-                            </div>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="biometric-lock-toggle" onchange="toggleBiometricSetting(this)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -309,8 +294,6 @@ tailwind.config = {
             dangerZoneTitle: "Danger Zone",
             security_title: "Security & Lock Settings",
             pin_lock_label: "App 4-Digit MPIN Lock",
-            biometric_lock_label: "Biometric / Fingerprint Unlock",
-            biometric_sub_label: "Use device fingerprint or face ID",
             btn_save_pin: "Save MPIN",
             email_password_title: "Email & Change Password",
             current_email_label: "Current Email",
@@ -337,8 +320,6 @@ tailwind.config = {
             dangerZoneTitle: "खतरा क्षेत्र",
             security_title: "सुरक्षा र लक सेटिंग्स",
             pin_lock_label: "एप ४-अंकको MPIN लक",
-            biometric_lock_label: "बायोमेट्रिक / फिंगरप्रिन्ट अनलक",
-            biometric_sub_label: "यन्त्रको फिंगरप्रिन्ट वा फेस आईडी प्रयोग गर्नुहोस्",
             btn_save_pin: "MPIN सेभ गर्नुहोस्",
             email_password_title: "इमेल र पासवर्ड परिवर्तन",
             current_email_label: "हालको इमेल",
@@ -525,46 +506,6 @@ tailwind.config = {
         showToast(currentLang === 'NEP' ? 'MPIN सफलतापूर्वक सेभ भयो!' : 'MPIN saved successfully!', 'success');
     }
 
-    // Biometric / Fingerprint (WebAuthn API) Integration
-    async function toggleBiometricSetting(checkbox) {
-        if (checkbox.checked) {
-            if (!window.PublicKeyCredential) {
-                showToast(currentLang === 'NEP' ? 'तपाईंको ब्राउजरले बायोमेट्रिक समर्थन गर्दैन!' : 'Biometric authentication not supported on this browser!', 'error');
-                checkbox.checked = false;
-                return;
-            }
-
-            try {
-                // WebAuthn registration/verification test challenge
-                const publicKey = {
-                    challenge: new Uint8Array([21, 31, 105, 78, 18, 45, 7, 88]),
-                    rp: { name: "Digital NoteBook" },
-                    user: {
-                        id: new Uint8Array([1, 2, 3, 4]),
-                        name: auth.currentUser ? auth.currentUser.email : "user@digitalnotebook",
-                        displayName: "Digital NoteBook User"
-                    },
-                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                    timeout: 60000,
-                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
-                };
-
-                const credential = await navigator.credentials.create({ publicKey });
-                if (credential) {
-                    localStorage.setItem('app_biometric', 'enabled');
-                    showToast(currentLang === 'NEP' ? 'बायोमेट्रिक / फिंगरप्रिन्ट सफलतापूर्वक सक्रिय भयो!' : 'Biometric / Fingerprint successfully enabled!', 'success');
-                }
-            } catch (error) {
-                console.error(error);
-                showToast(currentLang === 'NEP' ? 'बायोमेट्रिक प्रमाणीकरण असफल भयो वा रद्द गरियो!' : 'Biometric verification failed or cancelled!', 'error');
-                checkbox.checked = false;
-            }
-        } else {
-            localStorage.removeItem('app_biometric');
-            showToast(currentLang === 'NEP' ? 'बायोमेट्रिक लक बन्द भयो!' : 'Biometric Lock disabled!', 'success');
-        }
-    }
-
     function backupData() {
         const allData = {};
         for (let i = 0; i < localStorage.length; i++) {
@@ -636,11 +577,6 @@ tailwind.config = {
             document.getElementById('pin-lock-toggle').checked = true;
             document.getElementById('pin-setup-box').classList.remove('hidden');
             document.getElementById('new-app-pin').value = savedPin;
-        }
-
-        const savedBiometric = localStorage.getItem('app_biometric');
-        if (savedBiometric === 'enabled') {
-            document.getElementById('biometric-lock-toggle').checked = true;
         }
     });
 </script>
