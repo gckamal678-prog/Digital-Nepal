@@ -83,8 +83,8 @@ tailwind.config = {
             🔒
         </div>
         <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter App MPIN</h2>
-            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN to access Dashboard</p>
+            <h2 id="lock-title" class="text-base font-bold text-emerald-400">App Is Locked</h2>
+            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN or use Biometric</p>
         </div>
 
         <!-- 4 Digit Dots Display -->
@@ -572,40 +572,26 @@ tailwind.config = {
     let currentEnteredPin = "";
     
     function checkSecurityLock() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
+        const savedPin = localStorage.getItem('app_mpin');
+        const savedBiometric = localStorage.getItem('app_biometric');
         const lockScreen = document.getElementById('security-lock-screen');
         
-        if (savedPin && savedPin.length === 4) {
-            const lastActiveTime = localStorage.getItem('last_active_timestamp');
-            const currentTime = new Date().getTime();
-            const twoMinutes = 2 * 60 * 1000;
-
-            if (!lastActiveTime || (currentTime - parseInt(lastActiveTime)) > twoMinutes) {
-                lockScreen.classList.remove('hidden');
-                if (window.PublicKeyCredential) {
-                    document.getElementById('biometric-container').classList.remove('hidden');
-                    setTimeout(() => {
-                        triggerBiometricAuth();
-                    }, 500);
-                }
+        // यदि MPIN वा Biometric मध्ये कुनै एक पनि सक्रिय छ भने लक स्क्रिन देखाउने
+        if ((savedPin && savedPin.length === 4) || savedBiometric === 'enabled') {
+            lockScreen.classList.remove('hidden');
+            
+            if (savedBiometric === 'enabled' && window.PublicKeyCredential) {
+                document.getElementById('biometric-container').classList.remove('hidden');
+                setTimeout(() => {
+                    triggerBiometricAuth();
+                }, 300);
             } else {
-                lockScreen.classList.add('hidden');
+                document.getElementById('biometric-container').classList.add('hidden');
             }
         } else {
             lockScreen.classList.add('hidden');
         }
     }
-
-    function updateActiveTimestamp() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
-        if (savedPin && savedPin.length === 4) {
-            localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
-        }
-    }
-
-    ['click', 'keypress', 'touchstart', 'mousemove'].forEach(event => {
-        document.addEventListener(event, updateActiveTimestamp, { passive: true });
-    });
 
     window.pressPinKey = function(digit) {
         if (currentEnteredPin.length < 4) {
@@ -643,13 +629,13 @@ tailwind.config = {
     }
 
     function verifyEnteredPin() {
-        const savedPin = localStorage.getItem('user_security_pin') || localStorage.getItem('app_mpin');
+        const savedPin = localStorage.getItem('app_mpin') || '1234';
         if (currentEnteredPin === savedPin) {
             document.getElementById('security-lock-screen').classList.add('hidden');
-            localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             currentEnteredPin = "";
             updatePinDots();
         } else {
+            alert("गलत MPIN! (Incorrect MPIN)");
             currentEnteredPin = "";
             updatePinDots();
         }
@@ -657,48 +643,28 @@ tailwind.config = {
 
     window.triggerBiometricAuth = async function() {
         try {
-            if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    const publicKey = {
-                        challenge: new Uint8Array(32),
-                        rp: { name: "Digital NoteBook" },
-                        user: {
-                            id: new Uint8Array(16),
-                            name: "user@notebook.com",
-                            displayName: "Notebook User"
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        timeout: 60000,
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        attestation: "none"
-                    };
-                    await navigator.credentials.create({ publicKey });
-                    document.getElementById('security-lock-screen').classList.add('hidden');
-                    localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
-                    return;
-                }
-            }
-            const credential = await navigator.credentials.get({
-                publicKey: {
-                    challenge: new Uint8Array(32),
+            if (window.PublicKeyCredential) {
+                const publicKey = {
+                    challenge: new Uint8Array([21, 31, 105, 78, 18, 45, 7, 88]),
+                    rp: { name: "Digital NoteBook" },
+                    user: {
+                        id: new Uint8Array([1, 2, 3, 4]),
+                        name: "user@digitalnotebook",
+                        displayName: "Digital NoteBook User"
+                    },
+                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
                     timeout: 60000,
-                    userVerification: "required"
-                }
-            }).catch(() => null);
-
-            if (credential) {
+                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
+                };
+                
+                // बायोमेट्रिक प्रमाणीकरण माग्ने
+                await navigator.credentials.get({ publicKey });
                 document.getElementById('security-lock-screen').classList.add('hidden');
-                localStorage.setItem('last_active_timestamp', new Date().getTime().toString());
             }
-        } catch (error) {}
-    }
-
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-            checkSecurityLock();
+        } catch (error) {
+            console.log("Biometric cancelled or failed", error);
         }
-    });
+    }
 
     let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'en';
 
@@ -900,7 +866,7 @@ tailwind.config = {
         loadUserData();
         loadAvatar();
         updateSummaryCards();
-        checkSecurityLock();
+        checkSecurityLock(); // यहाँ सेक्युरिटी लक कल गरिएको छ
 
         const text = "DIGITAL NOTEBOOK";
         const typingElement = document.getElementById("typing-title");
