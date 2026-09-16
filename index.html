@@ -576,7 +576,6 @@ tailwind.config = {
         const savedBiometric = localStorage.getItem('app_biometric');
         const lockScreen = document.getElementById('security-lock-screen');
         
-        // यदि MPIN वा Biometric मध्ये कुनै एक पनि सक्रिय छ भने लक स्क्रिन देखाउने
         if ((savedPin && savedPin.length === 4) || savedBiometric === 'enabled') {
             lockScreen.classList.remove('hidden');
             
@@ -865,7 +864,7 @@ tailwind.config = {
         loadUserData();
         loadAvatar();
         updateSummaryCards();
-        checkSecurityLock(); // यहाँ सेक्युरिटी लक कल गरिएको छ
+        checkSecurityLock();
 
         const text = "DIGITAL NOTEBOOK";
         const typingElement = document.getElementById("typing-title");
@@ -900,6 +899,24 @@ tailwind.config = {
         }, 100);
 
         setTimeout(typeWriter, 200);
+    });
+</script>
+
+<!-- Service Worker Registration & Auto-Sync Script -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => console.log('Service Worker Registered!', reg))
+                .catch((err) => console.log('Service Worker Registration Failed!', err));
+        });
+    }
+
+    window.addEventListener('online', async () => {
+        console.log('Internet connected! Syncing offline data to Firebase...');
+        if (typeof window.handleCloudBackup === 'function') {
+            await window.handleCloudBackup();
+        }
     });
 </script>
 </body>
