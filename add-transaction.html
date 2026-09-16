@@ -604,7 +604,13 @@ tailwind.config = {
         let totalSum = 0;
         
         partyItems.forEach((i, index) => {
-            totalSum += i.total;
+            // Receivable लाई जोड्ने, Payable र Expense लाई घटाउने
+            if(i.type === 'Receivable') {
+                totalSum += i.total;
+            } else {
+                totalSum -= i.total;
+            }
+
             message += `${index + 1}. Date: ${i.date}\n`;
             message += `   Type: ${i.type}\n`;
             message += `   Amount: Rs ${i.total.toFixed(2)}\n`;
@@ -632,7 +638,12 @@ tailwind.config = {
         let html = `<html><head><title>Party Ledger - ${partyName}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f2f2f2;}</style></head><body><h2>Party Ledger Report: ${partyName}</h2><table><tr><th>Date</th><th>Type</th><th>NPR</th><th>INR</th><th>Total (NPR)</th><th>Note</th></tr>`;
         let sum = 0;
         partyItems.forEach(i => {
-            sum += i.total;
+            // Receivable लाई जोड्ने, Payable र Expense लाई घटाउने
+            if(i.type === 'Receivable') {
+                sum += i.total;
+            } else {
+                sum -= i.total;
+            }
             html += `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.npr}</td><td>${i.inr}</td><td>Rs ${i.total.toFixed(2)}</td><td>${i.note || ''}</td></tr>`;
         });
         html += `</table><h3>Total Balance Impact: Rs ${sum.toFixed(2)}</h3></body></html>`;
@@ -660,7 +671,7 @@ tailwind.config = {
         document.getElementById('txn-total-calc').value = tx.total;
         document.getElementById('txn-note').value = tx.note;
 
-        handleTypeCode(); // Keep original function setup
+        handleTypeChange(); // Fixed function call
         document.getElementById('txn-submit-btn').innerText = currentLang === 'NEP' ? 'अपडेट गर्नुहोस्' : 'Update Transaction';
         document.getElementById('txn-cancel-btn').classList.remove('hidden');
 
@@ -738,6 +749,16 @@ tailwind.config = {
         const dateInput = document.getElementById('txn-date');
         if(dateInput && !dateInput.value) {
             dateInput.valueAsDate = new Date();
+        }
+    });
+</script>
+
+<script>
+    // Auto-Sync Data to Firebase when Online from Add Transaction Page
+    window.addEventListener('online', async () => {
+        console.log('Internet connected! Syncing offline data to Firebase...');
+        if (typeof window.handleCloudBackup === 'function') {
+            await window.handleCloudBackup();
         }
     });
 </script>
