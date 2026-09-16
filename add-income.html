@@ -539,7 +539,7 @@ tailwind.config = {
         let sum = 0;
         incomes.forEach(i => {
             sum += i.total;
-            text += `📅 ${i.date} | *${i.sourceName}* %0A   NPR: ${i.npr} | INR: ${i.inr} | Total: Rs ${i.total.toFixed(2)}%0A-------------------%0A`;
+            text += ` ${i.date} | *${i.sourceName}* %0A   NPR: ${i.npr} | INR: ${i.inr} | Total: Rs ${i.total.toFixed(2)}%0A-------------------%0A`;
         });
         text += `%0A*Grand Total Income:* Rs ${sum.toFixed(2)}`;
 
