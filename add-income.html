@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook - Income Sources</title>
-<!-- html2pdf library for direct PDF generation and sharing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -32,7 +31,6 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
 
-<!-- TOAST NOTIFICATION -->
 <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
 
 <div class="flex min-h-screen w-full">
@@ -51,9 +49,7 @@ tailwind.config = {
                     </h1>
                 </div>
             </div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">
-                ✕
-            </button>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-lg focus:outline-none">✕</button>
         </div>
 
         <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
@@ -70,7 +66,6 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- SIDEBAR NAVIGATION -->
             <nav class="space-y-1 font-medium">
                 <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
                 <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>💰</span> <span class="lang-text" data-en="Income Sources" data-np="आम्दानी स्रोतहरू">Income Sources</span></a>
@@ -105,7 +100,6 @@ tailwind.config = {
 
     <div class="flex-1 flex flex-col h-full w-full overflow-hidden">
         
-        <!-- HEADER SECTION (Navbar) -->
         <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
             <div class="flex items-center space-x-2.5">
                 <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
@@ -130,7 +124,6 @@ tailwind.config = {
             </div>
         </header>
 
-        <!-- MAIN CONTENT -->
         <main class="p-4 space-y-4 flex-1 w-full max-w-2xl mx-auto overflow-y-auto">
             <div>
                 <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-1"></p>
@@ -139,7 +132,6 @@ tailwind.config = {
                 </h2>
             </div>
 
-            <!-- INCOME FORM SECTION -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 space-y-3">
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-plus-circle text-emerald-500"></i> <span class="lang-text" data-en="Add Income Source Form" data-np="आम्दानी स्रोत थप्ने फारम">Add Income Source Form</span>
@@ -179,7 +171,6 @@ tailwind.config = {
                 </form>
             </div>
 
-            <!-- SAVED TRANSACTIONS / INCOME GROUPED LIST SECTION -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 space-y-3">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                     <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
@@ -193,7 +184,6 @@ tailwind.config = {
                     </div>
                 </div>
 
-                <!-- SEARCH & SORT CONTROLS -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-search"></i></span>
@@ -207,9 +197,7 @@ tailwind.config = {
                     </div>
                 </div>
 
-                <div id="income-list-container" class="space-y-2 pt-1 max-h-80 overflow-y-auto">
-                    <!-- Grouped Records Will Show Here -->
-                </div>
+                <div id="income-list-container" class="space-y-2 pt-1 max-h-80 overflow-y-auto"></div>
 
                 <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs font-bold">
                     <span><span class="lang-text" data-en="Grand Total Income:" data-np="कुल जम्मा आम्दानी:">Grand Total Income:</span></span>
@@ -230,16 +218,12 @@ tailwind.config = {
             <button onclick="closePdfModal()" class="text-slate-400 hover:text-white text-base font-bold">✕</button>
         </div>
         
-        <div id="pdf-preview-container" class="p-4 overflow-y-auto flex-1 bg-slate-100 dark:bg-slate-950 flex justify-center">
-            <!-- PDF Content Rendered Here for Preview -->
-        </div>
+        <div id="pdf-preview-container" class="p-4 overflow-y-auto flex-1 bg-slate-100 dark:bg-slate-950 flex justify-center"></div>
 
+        <!-- Print बटन मात्र राखिएको छ, Share / Download बटन हटाइएको छ -->
         <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end gap-2">
             <button onclick="printFromModal()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-print"></i> Print
-            </button>
-            <button onclick="shareFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-share-nodes"></i> Share / Download
             </button>
         </div>
     </div>
@@ -329,7 +313,7 @@ tailwind.config = {
         localStorage.setItem('profile_email', email);
 
         loadUserData();
-        showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
+        showToast('विवरण सफलतापूर्वक सेभ भयो!', 'success');
     }
 
     function handleAvatarUpload(event) {
@@ -340,7 +324,7 @@ tailwind.config = {
                 const base64Image = e.target.result;
                 localStorage.setItem('profile_avatar', base64Image);
                 loadAvatar();
-                showToast(currentLang === 'NEP' ? 'प्रोफाइल फोटो अपडेट भयो!' : 'Profile photo updated!', 'success');
+                showToast('प्रोफाइल फोटो अपडेट भयो!', 'success');
             };
             reader.readAsDataURL(file);
         }
@@ -539,7 +523,7 @@ tailwind.config = {
         }
     }
 
-    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Address, Contact, Email अंग्रेजीमा)
+    // PDF प्रिभ्यू र फिक्स गरिएको लेआउट (20% प्रोफाइल, 55% लोगो, 25% ठेगाना)
     function generateAndShareIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -557,15 +541,26 @@ tailwind.config = {
         
         let html = `
         <div id="pdf-printable-content" style="background-color: #ffffff; color: #333333; font-family: 'Poppins', sans-serif; width: 100%; max-width: 650px; padding: 25px; border-radius: 12px; box-sizing: border-box;">
+            
             <table style="width: 100%; border-bottom: 2px solid #16a34a; padding-bottom: 15px; margin-bottom: 20px; border-collapse: collapse;">
                 <tr>
-                    <td style="vertical-align: top; width: 150px;">
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a; margin-bottom: 6px;">
-                            <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- बायाँतर्फ प्रोफाइल फोटो नामको ठीक माथि (20%) -->
+                    <td style="vertical-align: middle; width: 20%; text-align: center;">
+                        <div style="display: inline-block; text-align: center;">
+                            <div style="width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid #16a34a; margin: 0 auto 4px auto;">
+                                <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div style="font-size: 11px; font-weight: 700; color: #1f2937;">${profileName}</div>
                         </div>
-                        <div style="font-size: 13px; font-weight: 700; color: #1f2937;">${profileName}</div>
                     </td>
-                    <td style="vertical-align: top; text-align: right; font-size: 12px; color: #555; line-height: 1.5;">
+
+                    <!-- बीचमा bannerlogo.png (55%) -->
+                    <td style="vertical-align: middle; text-align: center; width: 55%; padding: 0 10px;">
+                        <img src="bannerlogo.png" style="width: 100%; max-width: 100%; height: auto; object-fit: contain; display: inline-block;">
+                    </td>
+
+                    <!-- दायाँतर्फ ठेगाना र विवरण व्यवस्थित रूपमा (25%) -->
+                    <td style="vertical-align: middle; text-align: left; font-size: 10px; color: #555; line-height: 1.4; width: 25%; padding-left: 10px;">
                         <div>📍 Address: ${profileAddress}</div>
                         <div>📞 Contact: ${profileMobile}</div>
                         <div>✉️ Email: ${profileEmail}</div>
@@ -633,41 +628,6 @@ tailwind.config = {
         setTimeout(() => {
             printWindow.print();
         }, 500);
-    }
-
-    function shareFromModal() {
-        const element = document.getElementById('pdf-printable-content');
-        let opt = {
-            margin:       0.4,
-            filename:     `Income_Report.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().from(element).outputPdf('blob').then((pdfBlob) => {
-            let file = new File([pdfBlob], `Income_Report.pdf`, { type: 'application/pdf' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    title: 'Income Report PDF',
-                    text: 'Here is my Income Report.',
-                    files: [file],
-                }).catch(() => {
-                    downloadPDFBlob(pdfBlob);
-                });
-            } else {
-                downloadPDFBlob(pdfBlob);
-            }
-        });
-    }
-
-    function downloadPDFBlob(blob) {
-        let link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Income_Report.pdf`;
-        link.click();
-        showToast('PDF सफलतापूर्वक डाउनलोड भयो!', 'success');
     }
 
     document.addEventListener("DOMContentLoaded", () => {
