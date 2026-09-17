@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook - Transactions & Ledger</title>
+<!-- html2pdf library for direct PDF generation and sharing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -40,6 +42,9 @@ tailwind.config = {
 </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
 
 <div class="flex min-h-screen w-full">
     
@@ -97,6 +102,10 @@ tailwind.config = {
                 <div>
                     <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email Address" data-np="इमेल ठेगाना">Email Address</span></label>
+                    <input type="email" id="input-email" placeholder="Enter Email" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
                     <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
@@ -251,6 +260,31 @@ tailwind.config = {
     </div>
 </div>
 
+<!-- PDF PREVIEW / ACTION MODAL -->
+<div id="pdf-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-3">
+    <div class="bg-white dark:bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+            <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-file-pdf text-emerald-500"></i> Party Ledger PDF Preview
+            </h3>
+            <button onclick="closePdfModal()" class="text-slate-400 hover:text-white text-base font-bold">✕</button>
+        </div>
+        
+        <div id="pdf-preview-container" class="p-4 overflow-y-auto flex-1 bg-slate-100 dark:bg-slate-950 flex justify-center">
+            <!-- PDF Content Rendered Here for Preview -->
+        </div>
+
+        <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end gap-2">
+            <button onclick="printFromModal()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-print"></i> Print
+            </button>
+            <button onclick="shareFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-share-nodes"></i> Share / Download
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Firebase SDK Modules Import -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -373,6 +407,16 @@ tailwind.config = {
         if(icon) icon.classList.toggle('rotate-180');
     }
 
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        toast.className = `${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
     // TRANSACTION & LEDGER LOGIC
     const INR_RATE = 1.6;
 
@@ -428,8 +472,10 @@ tailwind.config = {
 
         if (index === "") {
             transactions.unshift(item);
+            showToast('कारोबार सफलतापूर्वक सेभ भयो!', 'success');
         } else {
             transactions[index] = item;
+            showToast('कारोबार रेकर्ड अपडेट भयो!', 'success');
         }
 
         localStorage.setItem('digital_notebook_transactions', JSON.stringify(transactions));
@@ -530,11 +576,8 @@ tailwind.config = {
             
             detailsHtml += `
                 <div class="flex justify-end gap-2 mb-1">
-                    <button onclick="event.stopPropagation(); sendLedgerToWhatsApp('${partyData.name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1">
-                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                    </button>
-                    <button onclick="event.stopPropagation(); printPartyPDF('${partyData.name}')" class="bg-slate-700 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-print"></i> PDF Print
+                    <button onclick="event.stopPropagation(); printPartyPDF('${partyData.name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 shadow-md">
+                        <i class="fa-solid fa-file-pdf"></i> Generate & View PDF
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -590,69 +633,141 @@ tailwind.config = {
         }
     }
 
-    function sendLedgerToWhatsApp(partyName) {
-        let transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || '[]');
-        let partyItems = transactions.filter(t => (t.party || '').toLowerCase() === partyName.toLowerCase());
-        
-        if(partyItems.length === 0) {
-            alert('No data to share!');
-            return;
-        }
-
-        let message = `*Ledger Report: ${partyName}*\n`;
-        message += `----------------------------------\n`;
-        let totalSum = 0;
-        
-        partyItems.forEach((i, index) => {
-            // Receivable लाई जोड्ने, Payable र Expense लाई घटाउने
-            if(i.type === 'Receivable') {
-                totalSum += i.total;
-            } else {
-                totalSum -= i.total;
-            }
-
-            message += `${index + 1}. Date: ${i.date}\n`;
-            message += `   Type: ${i.type}\n`;
-            message += `   Amount: Rs ${i.total.toFixed(2)}\n`;
-            if(i.note) message += `   Note: ${i.note}\n`;
-            message += `----------------------------------\n`;
-        });
-        
-        message += `*Net Balance Impact: Rs ${totalSum.toFixed(2)}*\n`;
-        message += `_Generated from Digital NoteBook_`;
-
-        let encodedMessage = encodeURIComponent(message);
-        window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
-    }
-
+    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Address, Contact, Email र प्रोफेश्नल डिजाइन सहित)
     function printPartyPDF(partyName) {
         let transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || '[]');
         let partyItems = transactions.filter(t => (t.party || '').toLowerCase() === partyName.toLowerCase());
         
         if(partyItems.length === 0) {
-            alert('No data to print!');
+            showToast('PDF बनाउन कुनै डाटा छैन!', 'error');
             return;
         }
 
-        let printWindow = window.open('', '_blank');
-        let html = `<html><head><title>Party Ledger - ${partyName}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f2f2f2;}</style></head><body><h2>Party Ledger Report: ${partyName}</h2><table><tr><th>Date</th><th>Type</th><th>NPR</th><th>INR</th><th>Total (NPR)</th><th>Note</th></tr>`;
-        let sum = 0;
-        partyItems.forEach(i => {
-            // Receivable लाई जोड्ने, Payable र Expense लाई घटाउने
-            if(i.type === 'Receivable') {
-                sum += i.total;
-            } else {
-                sum -= i.total;
-            }
-            html += `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.npr}</td><td>${i.inr}</td><td>Rs ${i.total.toFixed(2)}</td><td>${i.note || ''}</td></tr>`;
-        });
-        html += `</table><h3>Total Balance Impact: Rs ${sum.toFixed(2)}</h3></body></html>`;
+        const profileName = localStorage.getItem('profile_name') || 'Digital NoteBook';
+        const profileAddress = localStorage.getItem('profile_address') || '';
+        const profileMobile = localStorage.getItem('profile_mobile') || '';
+        const profileEmail = localStorage.getItem('profile_email') || '';
+        const profileAvatar = localStorage.getItem('profile_avatar') || 'N1024.png';
+
+        let previewContainer = document.getElementById('pdf-preview-container');
         
-        printWindow.document.write(html);
+        let html = `
+        <div id="pdf-printable-content" style="background-color: #ffffff; color: #333333; font-family: 'Poppins', sans-serif; width: 100%; max-width: 650px; padding: 25px; border-radius: 12px; box-sizing: border-box;">
+            <table style="width: 100%; border-bottom: 2px solid #16a34a; padding-bottom: 15px; margin-bottom: 20px; border-collapse: collapse;">
+                <tr>
+                    <td style="vertical-align: top; width: 150px;">
+                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a; margin-bottom: 6px;">
+                            <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="font-size: 13px; font-weight: 700; color: #1f2937;">${profileName}</div>
+                    </td>
+                    <td style="vertical-align: top; text-align: right; font-size: 12px; color: #555; line-height: 1.5;">
+                        <div>📍 Address: ${profileAddress}</div>
+                        <div>📞 Contact: ${profileMobile}</div>
+                        <div>✉️ Email: ${profileEmail}</div>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 style="text-align: center; color: #1f2937; margin-bottom: 20px; text-transform: uppercase; font-size: 16px; font-weight: 800; letter-spacing: 1px;">Party Ledger Report: ${partyName}</h2>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead>
+                    <tr style="background-color: #f3f4f6; color: #374151;">
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">Date</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">Type</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">NPR</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">INR</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">Total (NPR)</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #d1d5db;">Note</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        let totalSum = 0;
+        partyItems.forEach(item => {
+            if(item.type === 'Receivable') {
+                totalSum += item.total;
+            } else {
+                totalSum -= item.total;
+            }
+            html += `
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 9px;">${item.date}</td>
+                    <td style="padding: 9px;">${item.type}</td>
+                    <td style="padding: 9px;">${item.npr}</td>
+                    <td style="padding: 9px;">${item.inr}</td>
+                    <td style="padding: 9px; font-weight: bold; color: #16a34a;">Rs ${item.total.toFixed(2)}</td>
+                    <td style="padding: 9px;">${item.note || ''}</td>
+                </tr>`;
+        });
+
+        html += `
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; text-align: right; font-size: 15px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
+                Net Balance Impact: Rs ${totalSum.toFixed(2)}
+            </div>
+            
+            <div style="text-align: center; font-size: 10px; color: #9ca3af; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
+                Generated by Digital NoteBook | ${new Date().toLocaleDateString('en-NP')}
+            </div>
+        </div>`;
+
+        previewContainer.innerHTML = html;
+        document.getElementById('pdf-modal').classList.remove('hidden');
+    }
+
+    function closePdfModal() {
+        document.getElementById('pdf-modal').classList.add('hidden');
+    }
+
+    function printFromModal() {
+        const element = document.getElementById('pdf-printable-content');
+        let printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>Party Ledger Report</title></head><body>');
+        printWindow.document.write(element.innerHTML);
+        printWindow.document.write('</body></html>');
         printWindow.document.close();
         setTimeout(() => {
             printWindow.print();
         }, 500);
+    }
+
+    function shareFromModal() {
+        const element = document.getElementById('pdf-printable-content');
+        let opt = {
+            margin:       0.4,
+            filename:     `Party_Ledger_Report.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().from(element).outputPdf('blob').then((pdfBlob) => {
+            let file = new File([pdfBlob], `Party_Ledger_Report.pdf`, { type: 'application/pdf' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    title: 'Party Ledger Report PDF',
+                    text: 'Here is the party ledger report.',
+                    files: [file],
+                }).catch(() => {
+                    downloadPDFBlob(pdfBlob);
+                });
+            } else {
+                downloadPDFBlob(pdfBlob);
+            }
+        });
+    }
+
+    function downloadPDFBlob(blob) {
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Party_Ledger_Report.pdf`;
+        link.click();
+        showToast('PDF सफलतापूर्वक डाउनलोड भयो!', 'success');
     }
 
     function editTransaction(idx) {
@@ -671,7 +786,7 @@ tailwind.config = {
         document.getElementById('txn-total-calc').value = tx.total;
         document.getElementById('txn-note').value = tx.note;
 
-        handleTypeChange(); // Fixed function call
+        handleTypeChange();
         document.getElementById('txn-submit-btn').innerText = currentLang === 'NEP' ? 'अपडेट गर्नुहोस्' : 'Update Transaction';
         document.getElementById('txn-cancel-btn').classList.remove('hidden');
 
@@ -688,6 +803,7 @@ tailwind.config = {
             transactions.splice(idx, 1);
             localStorage.setItem('digital_notebook_transactions', JSON.stringify(transactions));
             renderPartyAccounts();
+            showToast('कारोबार रेकर्ड हटाइयो!', 'success');
         }
     }
 
@@ -695,23 +811,27 @@ tailwind.config = {
         const name = document.getElementById('input-full-name').value;
         const address = document.getElementById('input-address').value;
         const mobile = document.getElementById('input-mobile').value;
+        const email = document.getElementById('input-email').value;
 
         if(name) localStorage.setItem('profile_name', name);
         localStorage.setItem('profile_address', address);
         localStorage.setItem('profile_mobile', mobile);
+        localStorage.setItem('profile_email', email);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
+        showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
     }
 
     function loadUserData() {
         const savedName = localStorage.getItem('profile_name') || '';
         const savedAddress = localStorage.getItem('profile_address') || '';
         const savedMobile = localStorage.getItem('profile_mobile') || '';
+        const savedEmail = localStorage.getItem('profile_email') || '';
 
         if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
         if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
         if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
 
         const nameEl = document.getElementById('sidebar-profile-name');
         if(nameEl) nameEl.innerText = savedName;
@@ -723,8 +843,10 @@ tailwind.config = {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Image = e.target.result;
+                localStorage.-setItem('profile_avatar', base64Image); // Fixed typo logic if any
                 localStorage.setItem('profile_avatar', base64Image);
                 loadAvatar();
+                showToast(currentLang === 'NEP' ? 'प्रोफाइल फोटो अपडेट भयो!' : 'Profile photo updated!', 'success');
             };
             reader.readAsDataURL(file);
         }
@@ -754,7 +876,6 @@ tailwind.config = {
 </script>
 
 <script>
-    // Auto-Sync Data to Firebase when Online from Add Transaction Page
     window.addEventListener('online', async () => {
         console.log('Internet connected! Syncing offline data to Firebase...');
         if (typeof window.handleCloudBackup === 'function') {
