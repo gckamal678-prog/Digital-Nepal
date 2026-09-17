@@ -43,7 +43,7 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
 
-<!-- TOAST NOTIFICATION CONTAINER -->
+<!-- TOAST NOTIFICATION -->
 <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
 
 <div class="flex min-h-screen w-full">
@@ -265,7 +265,7 @@ tailwind.config = {
     <div class="bg-white dark:bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
         <div class="flex justify-between items-center px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
             <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <i class="fa-solid fa-file-pdf text-emerald-500"></i> Party Ledger PDF Preview
+                <i class="fa-solid fa-file-pdf text-emerald-500"></i> Party Ledger Report PDF Preview
             </h3>
             <button onclick="closePdfModal()" class="text-slate-400 hover:text-white text-base font-bold">✕</button>
         </div>
@@ -576,8 +576,8 @@ tailwind.config = {
             
             detailsHtml += `
                 <div class="flex justify-end gap-2 mb-1">
-                    <button onclick="event.stopPropagation(); printPartyPDF('${partyData.name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 shadow-md">
-                        <i class="fa-solid fa-file-pdf"></i> Generate & View PDF
+                    <button onclick="event.stopPropagation(); generateAndSharePartyPDF('${partyData.name}')" class="bg-slate-700 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-file-pdf"></i> PDF Print
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -633,8 +633,8 @@ tailwind.config = {
         }
     }
 
-    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Address, Contact, Email र प्रोफेश्नल डिजाइन सहित)
-    function printPartyPDF(partyName) {
+    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Address, Contact, Email अंग्रेजीमा)
+    function generateAndSharePartyPDF(partyName) {
         let transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || '[]');
         let partyItems = transactions.filter(t => (t.party || '').toLowerCase() === partyName.toLowerCase());
         
@@ -684,12 +684,12 @@ tailwind.config = {
                 </thead>
                 <tbody>`;
 
-        let totalSum = 0;
+        let netSum = 0;
         partyItems.forEach(item => {
             if(item.type === 'Receivable') {
-                totalSum += item.total;
+                netSum += item.total;
             } else {
-                totalSum -= item.total;
+                netSum -= item.total;
             }
             html += `
                 <tr style="border-bottom: 1px solid #e5e7eb;">
@@ -707,7 +707,7 @@ tailwind.config = {
             </table>
 
             <div style="margin-top: 20px; text-align: right; font-size: 15px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
-                Net Balance Impact: Rs ${totalSum.toFixed(2)}
+                Net Balance Impact: Rs ${netSum.toFixed(2)}
             </div>
             
             <div style="text-align: center; font-size: 10px; color: #9ca3af; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
@@ -750,8 +750,8 @@ tailwind.config = {
             
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 navigator.share({
-                    title: 'Party Ledger Report PDF',
-                    text: 'Here is the party ledger report.',
+                    title: 'Party Ledger PDF',
+                    text: 'Here is the Party Ledger Report.',
                     files: [file],
                 }).catch(() => {
                     downloadPDFBlob(pdfBlob);
@@ -843,7 +843,6 @@ tailwind.config = {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Image = e.target.result;
-                localStorage.-setItem('profile_avatar', base64Image); // Fixed typo logic if any
                 localStorage.setItem('profile_avatar', base64Image);
                 loadAvatar();
                 showToast(currentLang === 'NEP' ? 'प्रोफाइल फोटो अपडेट भयो!' : 'Profile photo updated!', 'success');
