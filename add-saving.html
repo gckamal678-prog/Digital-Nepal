@@ -236,9 +236,7 @@ tailwind.config = {
                         <button onclick="generateAndShareSavingsPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-file-pdf"></i> Generate & View PDF
                         </button>
-                        <button onclick="shareSavingsWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md"><i class="fa-brands fa-whatsapp"></i> <span class="lang-text" data-en="Share WhatsApp" data-np="ह्वाट्सएप शेयर">Share WhatsApp</span></button>
-                    </div>
-
+                    
                     <!-- GROUPED SAVINGS LIST CONTAINER -->
                     <div id="savings-list-container" class="space-y-2 pt-2 max-h-80 overflow-y-auto"></div>
 
@@ -706,24 +704,6 @@ tailwind.config = {
         link.href = URL.createObjectURL(blob);
         link.download = `Savings_Report.pdf`;
         link.click();
-    }
-
-    function shareSavingsWhatsApp() {
-        let savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || '[]');
-        if(savings.length === 0) {
-            alert(currentLang === 'NEP' ? 'कुनै रेकर्ड फेला परेन।' : 'No savings records found to share.');
-            return;
-        }
-
-        let text = "*Digital NoteBook - Savings Report*%0A%0A";
-        let sum = 0;
-        savings.forEach(i => {
-            sum += i.total;
-            text += `• *${i.title}* (${i.date}): Rs ${i.total.toFixed(2)}%0A`;
-        });
-        text += `%0A*Total Savings: Rs ${sum.toFixed(2)}*`;
-
-        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
     
     function saveProfileDetails() {
