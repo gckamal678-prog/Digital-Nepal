@@ -652,6 +652,16 @@ tailwind.config = {
         }
     }
 
+    // बायोमेट्रिक र पिन सेट गर्ने सुधार्न गरिएको अपडेटेड फंक्सन
+    window.setAppSecurityPin = function(pinValue, enableBio = true) {
+        if(pinValue && pinValue.length === 4) {
+            localStorage.setItem('app_mpin', pinValue);
+            if(enableBio) {
+                localStorage.setItem('app_biometric', 'enabled');
+            }
+        }
+    }
+
     window.triggerBiometricAuth = async function() {
         try {
             if (window.PublicKeyCredential) {
