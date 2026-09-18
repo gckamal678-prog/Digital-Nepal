@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "np.com.kamalgc.dn.twa",
-        "sha256_cert_fingerprints": ["FE:8D:CC:68:AC:15:C0:3E:BB:C1:5F:02:3E:D7:58:E2:79:63:68:1D:A2:B4:6B:FF:9A:E1:A4:80:6E:C6:5F:A7"]
+        "sha256_cert_fingerprints": ["56:B7:F7:60:19:B8:E4:72:16:D9:C3:B4:AF:CD:4E:B0:A2:6E:4B:24:89:D2:98:E4:AE:B3:34:3A:01:47:F6:69"]
       }
     }]
