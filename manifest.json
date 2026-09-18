@@ -30,12 +30,12 @@
     {
       "src": "/Screenshot1.jpg",
       "sizes": "1080x1920",
-      "type": "image/jpg",
+      "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Mobile Screen"
     },
     {
-      "src": "/Screenshot2.jpg",
+      "src": "/Screenshot2.jpeg",
       "sizes": "1920x1080",
       "type": "image/jpg",
       "form_factor": "wide",
