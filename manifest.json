@@ -28,16 +28,16 @@
   ],
   "screenshots": [
     {
-      "src": "/Screenshot1.jpg",
+      "src": "/Screenshot1.png",
       "sizes": "1080x1920",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "Mobile Screen"
     },
     {
-      "src": "/Screenshot2.jpeg",
+      "src": "/Screenshot2.png",
       "sizes": "1920x1080",
-      "type": "image/jpg",
+      "type": "image/png",
       "form_factor": "wide",
       "label": "Desktop Screen"
     }
