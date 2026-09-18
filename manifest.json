@@ -21,14 +21,14 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshot1.png",
+      "src": "/Screenshot1.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Home Screen"
     },
     {
-      "src": "/screenshot2.png",
+      "src": "/Screenshot2.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
