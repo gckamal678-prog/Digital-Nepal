@@ -1,38 +1,45 @@
 {
+  "id": "/",
   "name": "DigitalNepal",
   "short_name": "DigitalNepal",
   "description": "Digital Nepal App for daily management",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "orientation": "portrait",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["finance", "productivity"],
   "icons": [
     {
       "src": "/N512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/N1024.png",
       "sizes": "1024x1024",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "/Screenshot1.png",
+      "src": "/Screenshot1.jpg",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpg",
       "form_factor": "narrow",
-      "label": "Home Screen"
+      "label": "Mobile Screen"
     },
     {
-      "src": "/Screenshot2.png",
+      "src": "/Screenshot2.jpg",
       "sizes": "1920x1080",
-      "type": "image/png",
+      "type": "image/jpg",
       "form_factor": "wide",
-      "label": "Desktop View"
+      "label": "Desktop Screen"
     }
   ]
 }
